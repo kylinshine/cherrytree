@@ -6881,12 +6881,129 @@ lsaia30678</rich_text></node><node name="tumblr api" prog_lang="custom-colors" r
 </rich_text><rich_text justification="left"></rich_text><rich_text>
 </rich_text><table char_offset="217" col_max="200" col_min="100"><row><cell>title</cell><cell>字符串</cell><cell>博客的名字博客的显示标题</cell></row><row><cell>posts</cell><cell>数字</cell><cell>博客帖子总数</cell></row><row><cell>name</cell><cell>字符串</cell><cell>博客用户</cell></row><row><cell>updated</cell><cell>数字</cell><cell>最近一篇文章的时间，以秒为单位</cell></row><row><cell>description</cell><cell>字符串</cell><cell>博客的描述</cell></row><row><cell>ask</cell><cell>布尔</cell><cell>博客是否允许提问</cell></row><row><cell>ask_anon</cell><cell>布尔</cell><cell>博客是否允许匿名问题</cell></row><row><cell>likes</cell><cell>数字</cell><cell>喜欢帖子的数量</cell></row><row><cell>is_blocked_from_primary</cell><cell>布尔</cell><cell>博客是否已被主叫用户的主博客阻止</cell></row><row><cell>响应字段</cell><cell>类型</cell><cell>描述</cell></row></table><table char_offset="372" col_max="500" col_min="100"><row><cell>avatar_ur</cell><cell>字符串</cell><cell>头像的地址,如果是html浏览器直接得到头像图片</cell></row><row><cell>响应字段</cell><cell>类型</cell><cell>描述</cell></row></table><table char_offset="639" col_max="500" col_min="100"><row><cell>liked_posts</cell><cell>数组</cell><cell>用户喜欢的帖子信息</cell></row><row><cell>liked_count</cell><cell>数字</cell><cell>喜欢帖子的总数</cell></row><row><cell>响应字段</cell><cell>类型</cell><cell>描述</cell></row></table></node><node name="pytumblr" prog_lang="sh" readonly="False" tags="" unique_id="51"><rich_text>pip install pytumblr #安装pytumblr包以及相关依赖
 更改原有包的requests中相关方法,加入代理 那么就可以使用本地ssr代理访问tumblr使用提供的api
-demo:
+更改pytumblr包下面的request.py文件 加入代理
+__proxies = {
+        'http': 'http://127.0.0.1:1080',
+        'https': 'http://127.0.0.1:1080',
+    }
+def get(self, url, params):
+        &quot;&quot;&quot;
+        Issues a GET request against the API, properly formatting the params
+
+        :param url: a string, the url you are requesting
+        :param params: a dict, the key-value of all the paramaters needed
+                       in the request
+        :returns: a dict parsed of the JSON response
+        &quot;&quot;&quot;
+        url = self.host + url
+        if params:
+            url = url + &quot;?&quot; + urllib.parse.urlencode(params)
+
+        try:
+            resp = requests.get(url, allow_redirects=False, headers=self.headers, auth=self.oauth,proxies=self.__proxies) #这里加入代理
+        except TooManyRedirects as e:
+            resp = e.response
+
+        return self.json_parse(resp)
+
+def post(self, url, params={}, files=[]):
+        &quot;&quot;&quot;
+        Issues a POST request against the API, allows for multipart data uploads
+
+        :param url: a string, the url you are requesting
+        :param params: a dict, the key-value of all the parameters needed
+                       in the request
+        :param files: a list, the list of tuples of files
+
+        :returns: a dict parsed of the JSON response
+        &quot;&quot;&quot;
+        url = self.host + url
+        try:
+            if files:
+                return self.post_multipart(url, params, files)                              #这个方法也需要更改
+            else:
+                data = urllib.parse.urlencode(params)
+                if not PY3:
+                    data = str(data)
+                resp = requests.post(url, data=data, headers=self.headers, auth=self.oauth,proxies=self.__proxies) #这里加入代理
+                return self.json_parse(resp)
+        except HTTPError as e:
+            return self.json_parse(e.response)
+
+def post_multipart(self, url, params, files):
+        &quot;&quot;&quot;
+        Generates and issues a multipart request for data files
+
+        :param url: a string, the url you are requesting
+        :param params: a dict, a key-value of all the parameters
+        :param files:  a dict, matching the form '{name: file descriptor}'
+
+        :returns: a dict parsed from the JSON response
+        &quot;&quot;&quot;
+        resp = requests.post(
+            url,
+            data=params,
+            params=params,
+            files=files,
+            headers=self.headers,
+            allow_redirects=False,
+            auth=self.oauth,
+			proxies=self.__proxies    #这里加入代理
+        )
+        return self.json_parse(resp)
+发布图片:
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# With Pycharm
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+
+import pytumblr
 client = pytumblr.TumblrRestClient(
-  '9VhS4ytWYGNFnyYSItPKdZNxxlDkTh8hDI6IEBxCGmZCTuvrad',
-  'nWu7pm8HjNlpn0VPzNkcZKfLB15Y4VInUfrrBT5gpY5oj2q7Th',
-  'rV1jT2NZuhQc9Z3P9wJKYMWDPdwix0x0QjxLomnYpiF2Om1CFo',
-  'otFrQg0IRVFC75RSogpMrsV6ePniKX5VKNhLky3EdJTGVB0lyE'
-)
-# Make the request
-client.reblog('2ndpussyportrait.tumblr.com', id=114604786040, reblog_key='frPLDmSW', comment='test')</rich_text></node></cherrytree>
+    '9VhS4ytWYGNFnyYSItPKdZNxxlDkTh8hDI6IEBxCGmZCTuvrad',
+    'nWu7pm8HjNlpn0VPzNkcZKfLB15Y4VInUfrrBT5gpY5oj2q7Th',
+    'lgnKPjMutSSTun3Tw6h9HsBRr02Rqw0Qj2uwlInlCqxYv5RsGx',
+    'vdpYKS1s5epZNXmvhGcUUIfOL21U0ITrcE1jEppjimqA4N7MLT')
+
+#a = client.follow('2ndpussyportrait.tumblr.com')
+A = client.create_photo('godbells', state=&quot;published&quot;, tags=[&quot;testing&quot;, &quot;ok&quot;],
+                        source=&quot;https://68.media.tumblr.com/b965fbb2e501610a29d80ffb6fb3e1ad/tumblr_n55vdeTse11rn1906o1_500.jpg&quot;)
+# testReblog = client.reblog('2ndpussyportrait.tumblr.com', id=114604786040, reblog_key='frPLDmSW', comment='test')
+print(A)
+转发文章:
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# With Pycharm
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+
+import pytumblr
+client = pytumblr.TumblrRestClient(
+    '9VhS4ytWYGNFnyYSItPKdZNxxlDkTh8hDI6IEBxCGmZCTuvrad',
+    'nWu7pm8HjNlpn0VPzNkcZKfLB15Y4VInUfrrBT5gpY5oj2q7Th',
+    'lgnKPjMutSSTun3Tw6h9HsBRr02Rqw0Qj2uwlInlCqxYv5RsGx',
+    'vdpYKS1s5epZNXmvhGcUUIfOL21U0ITrcE1jEppjimqA4N7MLT')
+
+#a = client.follow('2ndpussyportrait.tumblr.com')
+# A = client.create_photo('godbells', state=&quot;published&quot;, tags=[&quot;testing&quot;, &quot;ok&quot;],
+#                         source=&quot;https://68.media.tumblr.com/b965fbb2e501610a29d80ffb6fb3e1ad/tumblr_n55vdeTse11rn1906o1_500.jpg&quot;)
+A = client.reblog('godbells',
+                  id=168531815700,
+                  reblog_key='nIiU8Jy1',
+                  comment='&lt;/p&gt;还在为翻墙找不着梯子烦恼吗，还在为梯子速度不佳看视频卡顿烦恼吗，老哥梯子服务超过200人，速度快质量佳,买梯子就买老哥梯子！&lt;/font&gt;&lt;/font&gt;&lt;/p&gt;&lt;h2&gt;&lt;b&gt;&lt;a href=&quot;http://www.lgssr.org&quot;&gt;&lt;font style=&quot;vertical-align: inherit;&quot;&gt;点我注册&lt;/font&gt;&lt;/font&gt;')
+print(A)
+
+
+
+
+
+
+
+
+
+
+
+
+</rich_text></node></cherrytree>
