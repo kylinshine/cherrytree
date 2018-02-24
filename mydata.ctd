@@ -7026,7 +7026,7 @@ having count(*)&gt;1)
 group by video
 
 
-select id,reblogkey from posts #筛选出资源重复后去重，保留id最大的一个,以及上面不重复的,就是最后去重的结果
+select id,reblogkey,video from posts #筛选出资源重复后去重，保留id最大的一个,以及上面不重复的,就是最后去重的结果
 where id in 
 (select max(id),video        
 from posts
@@ -7038,6 +7038,19 @@ having count(*)&gt;1)
 group by video)
 
 
+
+CREATE table reblog   #建立一个新表存放非重复资源
+AS
+select id,reblogkey,video from posts
+where id in 
+(select max(id) as id      
+from posts
+where video in
+(select video from posts  
+where video&lt;&gt;''
+group by video 
+having count(*)&gt;1)
+group by video)
 
 
 
