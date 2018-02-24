@@ -6995,6 +6995,49 @@ A = client.reblog('godbells',
                   comment='&lt;/p&gt;还在为翻墙找不着梯子烦恼吗，还在为梯子速度不佳看视频卡顿烦恼吗，老哥梯子服务超过200人，速度快质量佳,买梯子就买老哥梯子！&lt;/font&gt;&lt;/font&gt;&lt;/p&gt;&lt;h2&gt;&lt;b&gt;&lt;a href=&quot;http://www.lgssr.org&quot;&gt;&lt;font style=&quot;vertical-align: inherit;&quot;&gt;点我注册&lt;/font&gt;&lt;/font&gt;')
 print(A)
 
+数据库去重:
+select video from posts  #以video资源为分组对象,筛选出重复次数超过1的资源
+where video&lt;&gt;''
+group by video 
+having count(*)&gt;1
+
+select video from posts  #以video资源为分组对象,筛选出不重复的
+where video&lt;&gt;''
+group by video 
+having count(*)=1
+
+select id,reblogkey,video    #查出重复资源
+from posts
+where video in
+(select video from posts  
+where video&lt;&gt;''
+group by video 
+having count(*)&gt;1)
+
+
+
+select max(id),video        #对重复的资源分组,找出id最大的
+from posts
+where video in
+(select video from posts  
+where video&lt;&gt;''
+group by video 
+having count(*)&gt;1)
+group by video
+
+
+select id,reblogkey from posts #筛选出资源重复后去重，保留id最大的一个,以及上面不重复的,就是最后去重的结果
+where id in 
+(select max(id),video        
+from posts
+where video in
+(select video from posts  
+where video&lt;&gt;''
+group by video 
+having count(*)&gt;1)
+group by video)
+
+
 
 
 
