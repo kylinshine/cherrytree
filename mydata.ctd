@@ -2696,7 +2696,101 @@ class MySQLHelper:
     def close(self):  
         self.cursor.close()  
         self.conn.close()  
-        
+##############################################pymysql读取表中大量数据###############################################
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/2/28
+import pymysql
+import requests
+import os
+import queue
+import random
+import threading
+import time
+
+class CheckTumblrBlog():
+    def __init__(self, host, user, password,port=3306,charset=&quot;utf8&quot;):
+        self.host = host
+        self.user = user
+        self.password = password
+        self.port = port
+        self.charset = charset
+        self.count = 0
+        try:
+            self.conn = pymysql.connect(
+                host=self.host,
+                user=self.user,
+                passwd=self.password,
+                port=self.port,
+                charset=self.charset,
+                cursorclass=pymysql.cursors.SSDictCursor)   #数据量太大的时候选择这个选项
+            self.cursor = self.conn.cursor()
+        except:
+            print('Mysql connect error!')
+
+    def setDB(self,dbname):          #更改数据库
+        try:
+            self.conn.select_db(dbname)
+        except:
+            print('select DB error')
+
+    def queryAll(self, sql,count):   #执行select语句,count是每次循环读取多少数据
+        limlit = int(count)
+        try:
+            self.cursor.execute(sql)
+            while True:
+                rows = self.cursor.fetchmany(limlit)
+                if rows:
+                    for row in rows:
+                        print (row)
+                    time.sleep(1)
+                    self.count += len(rows)   #这个len是每次读取数据返回后，实际返回的数据行数
+                else:
+                    break
+        except:
+            print ('Get Data Error!')
+        finally:
+            self.close()
+
+    def complete(self):
+        print (self.count)
+
+
+    def commit(self):
+        self.conn.commit()
+
+    def close(self):
+        self.cursor.close()
+        self.conn.close()
+
+
+if __name__ == '__main__':
+    test = CheckTumblrBlog('127.0.0.1','root','78619808')
+    test.setDB('tumblr')
+    test.queryAll('select * from posts ','50')
+    test.complete()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         
         
