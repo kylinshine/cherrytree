@@ -7308,4 +7308,1079 @@ select distinct id,reblogkey,video from publish   #查询有没有重复
 
 
 
-</rich_text></node></cherrytree>
+</rich_text></node><node name="源码注解" prog_lang="custom-colors" readonly="False" tags="" unique_id="53"><rich_text></rich_text><node name="PSpider注解" prog_lang="python" readonly="False" tags="" unique_id="54"><rich_text>简介: PSpider
+Python编写的一个简单的网络蜘蛛框架，需要Python3.5 
+Spider的特点
+支持多线程爬行模式（使用线程和请求）
+支持分布式爬网模式（使用线程，请求和redis）
+支持使用代理进行爬网（使用线程和队列）
+定义一些实用函数和类，例如：UrlFilter，get_string_num等
+更少的代码行，easyer阅读，理解和扩展
+PSpider模块
+实用程序模块：为蜘蛛定义一些实用程序函数和类
+实例模块：为多线程蜘蛛定义获取器，解析器，保存器的类
+并发模块：定义多线程蜘蛛和分布式蜘蛛的WebSpiderFrame
+PSpider的程序
+多线程蜘蛛 程序
+①：Fetcher从UrlQueue获取URL，并根据此URL进行请求 
+②：将①的结果放到HtmlQueue中，Parser可以得到它 
+③：Parser从HtmlQueue获取项目，并解析它得到新的URL和保存的项目 
+④：把新的Url放到UrlQueue中，所以Fetcher可以得到它
+⑤：把保存的项目放到ItemQueue中，这样Saver就可以得到它 
+⑥：Saver从ItemQueue获取项目，并将其保存到文件系统或数据库 
+⑦：Proxieser从Web或数据库获取代理，并将代理放到ProxiesQueue中 
+⑧：如果需要，Fetcher从ProxiesQueue获取代理，并根据此代理发出请求
+分布式蜘蛛程序
+类似于多线程蜘蛛。唯一的区别是从redis获取url而不是队列。
+github: https://github.com/xianhu/PSpider
+结构
+│
+├__init__.py    #版本号,和导入相关包
+│  
+├─concurrent
+│  │  threads_pool.py
+│  │  threads_pool_dist.py
+│  │  __init__.py
+│  │  
+│  └─threads_inst
+│          threads_inst_base.py
+│          threads_inst_fetch.py
+│          threads_inst_parse.py
+│          threads_inst_proxies.py
+│          threads_inst_save.py
+│          __init__.py
+│          
+├─instances
+│      inst_fetch.py
+│      inst_parse.py
+│      inst_proxies.py
+│      inst_save.py
+│      __init__.py
+│      
+└─utilities
+        util_config.py
+        util_fetch.py
+        util_parse.py
+        util_urlfilter.py
+        __init__.py
+
+包的__init__.py:
+__version__ = &quot;1.1.5&quot;                    #版本号
+
+from .utilities import *                #导入工具类
+from .instances import Fetcher, Parser, Saver, Proxieser  #导入抓取实例,分析,存储,代理
+from .concurrent import TPEnum, WebSpider, WebSpiderDist   #导入枚举类,多线程抓取,分布式抓取
+utilities工具类的__init__.py
+from .util_config import *   
+from .util_fetch import *
+from .util_parse import *
+from .util_urlfilter import UrlFilter
+util_config.py
+
+__all__ = [
+    &quot;CONFIG_FETCH_MESSAGE&quot;,
+    &quot;CONFIG_PARSE_MESSAGE&quot;,
+    &quot;CONFIG_URL_PATTERN&quot;,
+]
+
+
+CONFIG_FETCH_MESSAGE = &quot;priority=%s, keys=%s, deep=%s, repeat=%s, url=%s&quot;
+CONFIG_PARSE_MESSAGE = &quot;priority=%s, keys=%s, deep=%s, url=%s&quot;
+
+
+CONFIG_URL_PATTERN = r&quot;\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg|bmg|rpm|deb|dmg|jar|jad|bin|msi|&quot; \
+                     &quot;pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|java|c|cc|js|css|log|&quot; \
+                     &quot;jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff|&quot; \
+                     &quot;mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|mp4a|wav|ogg|rmvb)$&quot;
+util_fetch.py                     
+                     
+import re
+import sys
+import traceback
+
+__all__ = [
+    &quot;extract_error_info&quot;,
+    &quot;parse_error_info&quot;,
+]
+
+
+def extract_error_info():
+    &quot;&quot;&quot;
+    extract error information from exception, return a string
+    &quot;&quot;&quot;
+    _type, _value, _traceback = sys.exc_info()
+    tb_list = traceback.extract_tb(_traceback)
+    error_info = &quot;-&gt;&quot;.join([&quot;[file=%s, line=%s, func=%s]&quot; % (tb.filename, tb.lineno, tb.name) for tb in tb_list])
+    return &quot;error_info=%s, error_type=%s, error=%s&quot; % (error_info, _type, _value)
+
+
+def parse_error_info(line):
+    &quot;&quot;&quot;
+    parse error information based on CONFIG_***_MESSAGE, return a tuple (priority, keys, deep, url)
+    &quot;&quot;&quot;
+    regu = re.search(r&quot;priority=(?P&lt;priority&gt;\d+?),\s*?keys=(?P&lt;keys&gt;.+?),\s*?deep=(?P&lt;deep&gt;\d+?),\s*?(repeat=\d+,)?\s*?url=(?P&lt;url&gt;.+?)$&quot;, line)
+    return int(regu.group(&quot;priority&quot;)), eval(regu.group(&quot;keys&quot;).strip()), int(regu.group(&quot;deep&quot;)), regu.group(&quot;url&quot;).strip()
+
+util_parse.py
+
+import re
+import urllib.parse
+
+__all__ = [
+    &quot;get_string_num&quot;,
+    &quot;get_string_strip&quot;,
+    &quot;get_url_legal&quot;,
+    &quot;get_url_params&quot;,
+]
+
+
+def get_string_num(string, ignore_sign=False):
+    &quot;&quot;&quot;
+    get a float number from a string
+    &quot;&quot;&quot;
+    string_re = re.search(r&quot;(?P&lt;sign&gt;-?)(?P&lt;num&gt;\d+(\.\d+)?)&quot;, get_string_strip(string.replace(&quot;,&quot;, &quot;&quot;), replace_char=&quot;&quot;), flags=re.IGNORECASE)
+    return float((string_re.group(&quot;sign&quot;) if not ignore_sign else &quot;&quot;) + string_re.group(&quot;num&quot;)) if string_re else 0.0
+
+
+def get_string_strip(string, replace_char=&quot; &quot;):
+    &quot;&quot;&quot;
+    get a string which striped \t, \r, \n from a string, also change None to &quot;&quot;
+    &quot;&quot;&quot;
+    return re.sub(r&quot;\s+&quot;, replace_char, string, flags=re.IGNORECASE).strip() if string else &quot;&quot;
+
+
+def get_url_legal(url, base_url, encoding=None):
+    &quot;&quot;&quot;
+    get a legal url from a url, based on base_url
+    &quot;&quot;&quot;
+    url_join = urllib.parse.urljoin(base_url, url, allow_fragments=True)
+    return urllib.parse.quote(url_join, safe=&quot;%/:=&amp;?~#+!$,;'@()*[]|&quot;, encoding=encoding)
+
+
+def get_url_params(url, keep_blank_value=False, encoding=&quot;utf-8&quot;):
+    &quot;&quot;&quot;
+    get main_part(a string) and query_part(a dictionary) from a url
+    &quot;&quot;&quot;
+    frags = urllib.parse.urlparse(url, allow_fragments=True)
+    main_part = urllib.parse.urlunparse((frags.scheme, frags.netloc, frags.path, frags.params, &quot;&quot;, &quot;&quot;))
+    query_part = urllib.parse.parse_qs(frags.query, keep_blank_values=keep_blank_value, encoding=encoding)
+    return main_part, query_part
+
+util_urlfilter.py
+
+
+import re
+import pybloom_live
+from .util_config import CONFIG_URL_PATTERN
+
+
+class UrlFilter(object):
+    &quot;&quot;&quot;
+    class of UrlFilter, to filter url by regexs and (bloomfilter or set)
+    &quot;&quot;&quot;
+
+    def __init__(self, black_patterns=(CONFIG_URL_PATTERN,), white_patterns=(r&quot;^http&quot;,), capacity=None):
+        &quot;&quot;&quot;
+        constructor, use instance of BloomFilter if capacity else instance of set
+        &quot;&quot;&quot;
+        self._re_black_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in black_patterns] if black_patterns else []
+        self._re_white_list = [re.compile(pattern, flags=re.IGNORECASE) for pattern in white_patterns] if white_patterns else []
+
+        self._url_set = set() if not capacity else None
+        self._bloom_filter = pybloom_live.ScalableBloomFilter(capacity, error_rate=0.001) if capacity else None
+        return
+
+    def update(self, url_list):
+        &quot;&quot;&quot;
+        update this urlfilter using url_list
+        &quot;&quot;&quot;
+        if self._url_set is not None:
+            self._url_set.update(url_list)
+        else:
+            for url in url_list:
+                self._bloom_filter.add(url)
+        return
+
+    def check(self, url):
+        &quot;&quot;&quot;
+        check the url based on self._re_black_list and self._re_white_list
+        &quot;&quot;&quot;
+        for re_black in self._re_black_list:
+            if re_black.search(url):
+                return False
+
+        for re_white in self._re_white_list:
+            if re_white.search(url):
+                return True
+
+        return False if self._re_white_list else True
+
+    def check_and_add(self, url):
+        &quot;&quot;&quot;
+        check the url to make sure it hasn't been fetched, and add url to urlfilter
+        &quot;&quot;&quot;
+        result = False
+        if self.check(url):
+            if self._url_set is not None:
+                result = url not in self._url_set
+                self._url_set.add(url)
+            else:
+                result = not self._bloom_filter.add(url)
+        return result
+
+
+instances/__init__.py
+
+from .inst_fetch import Fetcher
+from .inst_parse import Parser
+from .inst_save import Saver
+from .inst_proxies import Proxieser
+
+instances/inst_fetch.py
+
+&quot;&quot;&quot;
+inst_fetch.py by xianhu
+&quot;&quot;&quot;
+
+import time
+import random
+import logging
+import requests
+from ..utilities import CONFIG_FETCH_MESSAGE, extract_error_info
+
+
+class Fetcher(object):
+    &quot;&quot;&quot;
+    class of Fetcher, must include function working()
+    &quot;&quot;&quot;
+
+    def __init__(self, max_repeat=3, sleep_time=0):
+        &quot;&quot;&quot;
+        constructor
+        :param max_repeat: default 3, maximum repeat count of fetching for a url
+        :param sleep_time: default 0, sleeping time after a fetching for a url
+        &quot;&quot;&quot;
+        self._max_repeat = max_repeat
+        self._sleep_time = sleep_time
+        return
+
+    def working(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -&gt; (int, bool, object):
+        &quot;&quot;&quot;
+        working function, must &quot;try, except&quot; and don't change the parameters and return
+        :return fetch_result: can be -1(fetch failed), 0(need repeat), 1(fetch success)
+        :return proxies_state: can be False(unavaiable), True(avaiable), default True
+        :return content: can be any object, for example string, list, etc
+        &quot;&quot;&quot;
+        logging.debug(&quot;%s start: %s&quot;, self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+
+        time.sleep(random.randint(0, self._sleep_time))
+        try:
+            fetch_result, proxies_state, content = self.url_fetch(priority, url, keys, deep, repeat, proxies=proxies)
+        except Exception:
+            if repeat &gt;= self._max_repeat:
+                fetch_result, proxies_state, content = -1, True, None
+                logging.error(&quot;%s error: %s, %s&quot;, self.__class__.__name__, extract_error_info(), CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+            else:
+                fetch_result, proxies_state, content = 0, True, None
+                logging.debug(&quot;%s repeat: %s, %s&quot;, self.__class__.__name__, extract_error_info(), CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+
+        logging.debug(&quot;%s end: fetch_result=%s, proxies_state=%s, url=%s&quot;, self.__class__.__name__, fetch_result, proxies_state, url)
+        return fetch_result, proxies_state, content
+
+    def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -&gt; (int, bool, object):
+        &quot;&quot;&quot;
+        fetch the content of a url, you can rewrite this function, parameters and return refer to self.working()
+        &quot;&quot;&quot;
+        response = requests.get(url, params=None, headers={}, data=None, proxies=proxies, timeout=(3.05, 10))
+        if response.history:
+            logging.debug(&quot;%s redirect: %s&quot;, self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
+
+        content = (response.status_code, response.url, response.text)
+        return 1, True, content
+        
+instances/inst_parse.py
+
+import re
+import logging
+import datetime
+from ..utilities import CONFIG_PARSE_MESSAGE, extract_error_info, get_url_legal
+
+
+class Parser(object):
+    &quot;&quot;&quot;
+    class of Parser, must include function working()
+    &quot;&quot;&quot;
+
+    def __init__(self, max_deep=0):
+        &quot;&quot;&quot;
+        constructor
+        :param max_deep: default 0, if -1, spider will not stop until all urls are fetched
+        &quot;&quot;&quot;
+        self._max_deep = max_deep
+        return
+
+    def working(self, priority: int, url: str, keys: dict, deep: int, content: object) -&gt; (int, list, list):
+        &quot;&quot;&quot;
+        working function, must &quot;try, except&quot; and don't change the parameters and return
+        :return parse_result: can be -1(parse failed), 1(parse success)
+        :return url_list: a list of [(url, keys, priority), (url, keys, priority), ...]
+        :return save_list: a list of [item(a list or tuple), item(a list or tuple), ...]
+        &quot;&quot;&quot;
+        logging.debug(&quot;%s start: %s&quot;, self.__class__.__name__, CONFIG_PARSE_MESSAGE % (priority, keys, deep, url))
+
+        try:
+            parse_result, url_list, save_list = self.htm_parse(priority, url, keys, deep, content)
+        except Exception:
+            parse_result, url_list, save_list = -1, [], []
+            logging.error(&quot;%s error: %s, %s&quot;, self.__class__.__name__, extract_error_info(), CONFIG_PARSE_MESSAGE % (priority, keys, deep, url))
+
+        logging.debug(&quot;%s end: parse_result=%s, len(url_list)=%s, len(save_list)=%s, url=%s&quot;, self.__class__.__name__, parse_result, len(url_list), len(save_list), url)
+        return parse_result, url_list, save_list
+
+    def htm_parse(self, priority: int, url: str, keys: dict, deep: int, content: object) -&gt; (int, list, list):
+        &quot;&quot;&quot;
+        parse the content of a url, you can rewrite this function, parameters and return refer to self.working()
+        &quot;&quot;&quot;
+        status_code, url_now, html_text = content
+
+        url_list = []
+        if (self._max_deep &lt; 0) or (deep &lt; self._max_deep):
+            tmp_list = re.findall(r&quot;&lt;a.+?href=\&quot;(?P&lt;url&gt;.{5,}?)\&quot;.*?&gt;&quot;, html_text, flags=re.IGNORECASE)
+            url_list = [(_url, keys, priority+1) for _url in [get_url_legal(href, url) for href in tmp_list]]
+
+        title = re.search(r&quot;&lt;title&gt;(?P&lt;title&gt;.+?)&lt;/title&gt;&quot;, html_text, flags=re.IGNORECASE)
+        save_list = [(url, title.group(&quot;title&quot;).strip(), datetime.datetime.now()), ] if title else []
+
+        return 1, url_list, save_list
+
+instances/inst_proxies.py
+
+import time
+import logging
+from ..utilities import extract_error_info
+
+
+class Proxieser(object):
+    &quot;&quot;&quot;
+    class of Proxieser, must include function working()
+    &quot;&quot;&quot;
+
+    def __init__(self, sleep_time=10):
+        &quot;&quot;&quot;
+        constructor
+        :param sleep_time: default 10, sleeping time after a fetching for proxies
+        &quot;&quot;&quot;
+        self._sleep_time = sleep_time
+        return
+
+    def working(self) -&gt; (int, list):
+        &quot;&quot;&quot;
+        working function, must &quot;try, except&quot; and don't change the parameters and return
+        :return proxies_result: can be -1(get proxies failed), 1(get proxies success)
+        :return proxies_list: a proxies list which getting from web or database
+        &quot;&quot;&quot;
+        logging.debug(&quot;%s start&quot;, self.__class__.__name__)
+
+        time.sleep(self._sleep_time)
+        try:
+            proxies_result, proxies_list = self.proxies_get()
+        except Exception:
+            proxies_result, proxies_list = -1, []
+            logging.error(&quot;%s error: %s&quot;, self.__class__.__name__, extract_error_info())
+
+        logging.debug(&quot;%s end: proxies_result=%s, len(proxies_list)=%s&quot;, self.__class__.__name__, proxies_result, len(proxies_list))
+        return proxies_result, proxies_list
+
+    def proxies_get(self) -&gt; (int, list):
+        &quot;&quot;&quot;
+        get proxies from web or database, you can rewrite this function, parameters and return refer to self.working()
+        &quot;&quot;&quot;
+        raise NotImplementedError
+
+
+instances/inst_save.py
+
+
+import sys
+import logging
+from ..utilities import extract_error_info
+
+
+class Saver(object):
+    &quot;&quot;&quot;
+    class of Saver, must include function working()
+    &quot;&quot;&quot;
+
+    def __init__(self, save_pipe=sys.stdout):
+        &quot;&quot;&quot;
+        constructor
+        :param save_pipe: default sys.stdout, also can be a file handler
+        &quot;&quot;&quot;
+        self._save_pipe = save_pipe
+        return
+
+    def working(self, url: str, keys: dict, item: (list, tuple)) -&gt; int:
+        &quot;&quot;&quot;
+        working function, must &quot;try, except&quot; and don't change the parameters and return
+        :return save_result: can be -1(save failed), 1(save success)
+        &quot;&quot;&quot;
+        logging.debug(&quot;%s start: keys=%s, url=%s&quot;, self.__class__.__name__, keys, url)
+
+        try:
+            save_result = self.item_save(url, keys, item)
+        except Exception:
+            save_result = -1
+            logging.error(&quot;%s error: %s, keys=%s, url=%s&quot;, self.__class__.__name__, extract_error_info(), keys, url)
+
+        logging.debug(&quot;%s end: save_result=%s, url=%s&quot;, self.__class__.__name__, save_result, url)
+        return save_result
+
+    def item_save(self, url: str, keys: dict, item: (list, tuple)) -&gt; int:
+        &quot;&quot;&quot;
+        save the item of a url, you can rewrite this function, parameters and return refer to self.working()
+        &quot;&quot;&quot;
+        self._save_pipe.write(&quot;\t&quot;.join([str(col) for col in item]) + &quot;\n&quot;)
+        self._save_pipe.flush()
+        return 1
+
+concurrent/__init__.py
+
+from .threads_inst import TPEnum
+from .threads_pool import ThreadPool as WebSpider
+from .threads_pool_dist import DistThreadPool as WebSpiderDist
+
+
+concurrent/threads_pool.py    #正常多线程池抓取
+
+import copy
+import queue
+import logging
+import threading
+from .threads_inst import *
+from ..utilities import CONFIG_FETCH_MESSAGE
+
+
+class ThreadPool(object):
+    &quot;&quot;&quot;
+    class of ThreadPool
+    &quot;&quot;&quot;
+
+    def __init__(self, fetcher, parser, saver, proxieser=None, url_filter=None, monitor_sleep_time=5):
+        &quot;&quot;&quot;
+        constructor
+        &quot;&quot;&quot;
+        self._inst_fetcher = fetcher                    # fetcher instance, subclass of Fetcher
+        self._inst_parser = parser                      # parser instance, subclass of Parser
+        self._inst_saver = saver                        # saver instance, subclass of Saver
+        self._inst_proxieser = proxieser                # default: None, proxieser instance, subclass of Proxieser
+
+        self._queue_fetch = queue.PriorityQueue()       # (priority, counter, url, keys, deep, repeat)
+        self._queue_parse = queue.PriorityQueue()       # (priority, counter, url, keys, deep, content)
+        self._queue_save = queue.Queue()                # (url, keys, item), item can be anything
+        self._queue_proxies = queue.Queue()             # {&quot;http&quot;: &quot;http://auth@ip:port&quot;, &quot;https&quot;: &quot;https://auth@ip:port&quot;}
+
+        self._thread_proxieser = None                   # proxieser thread
+        self._thread_fetcher_list = []                  # fetcher threads list
+        self._thread_parsar_list = []                   # parser and saver threads list
+
+        self._thread_stop_flag = False                  # default: False, stop flag of threads
+        self._url_filter = url_filter                   # default: None, also can be UrlFilter()
+
+        self._number_dict = {
+            TPEnum.TASKS_RUNNING: 0,                    # the count of tasks which are running
+
+            TPEnum.URL_FETCH_NOT: 0,                    # the count of urls which haven't been fetched
+            TPEnum.URL_FETCH_SUCC: 0,                   # the count of urls which have been fetched successfully
+            TPEnum.URL_FETCH_FAIL: 0,                   # the count of urls which have been fetched failed
+            TPEnum.URL_FETCH_COUNT: 0,                  # the count of urls which appeared in self._queue_fetch
+
+            TPEnum.HTM_PARSE_NOT: 0,                    # the count of urls which haven't been parsed
+            TPEnum.HTM_PARSE_SUCC: 0,                   # the count of urls which have been parsed successfully
+            TPEnum.HTM_PARSE_FAIL: 0,                   # the count of urls which have been parsed failed
+
+            TPEnum.ITEM_SAVE_NOT: 0,                    # the count of urls which haven't been saved
+            TPEnum.ITEM_SAVE_SUCC: 0,                   # the count of urls which have been saved successfully
+            TPEnum.ITEM_SAVE_FAIL: 0,                   # the count of urls which have been saved failed
+
+            TPEnum.PROXIES_LEFT: 0,                     # the count of proxies which are avaliable
+            TPEnum.PROXIES_FAIL: 0,                     # the count of proxies which banned by website
+        }
+        self._lock = threading.Lock()                   # the lock which self._number_dict needs
+
+        # set monitor thread
+        self._monitor = MonitorThread(&quot;monitor&quot;, self, sleep_time=monitor_sleep_time)
+        self._monitor.setDaemon(True)
+        self._monitor.start()
+        return
+
+    def set_start_url(self, url, priority=0, keys=None, deep=0):
+        &quot;&quot;&quot;
+        set start url based on &quot;priority&quot;, &quot;keys&quot; and &quot;deep&quot;, keys must be a dictionary, and repeat must be 0
+        &quot;&quot;&quot;
+        self.add_a_task(TPEnum.URL_FETCH, (priority, self.get_number_dict(TPEnum.URL_FETCH_COUNT), url, keys or {}, deep, 0))
+        logging.debug(&quot;%s set_start_url: %s&quot;, self.__class__.__name__, CONFIG_FETCH_MESSAGE % (priority, keys or {}, deep, 0, url))
+        return
+
+    def start_working(self, fetcher_num=10):
+        &quot;&quot;&quot;
+        start this thread pool
+        &quot;&quot;&quot;
+        logging.info(&quot;%s start: urls_count=%s, fetcher_num=%s&quot;, self.__class__.__name__, self.get_number_dict(TPEnum.URL_FETCH_NOT), fetcher_num)
+
+        self._thread_proxieser = ProxiesThread(&quot;proxieser&quot;, self._inst_proxieser, self) if self._inst_proxieser else None
+        self._thread_fetcher_list = [FetchThread(&quot;fetcher-%d&quot; % (i+1), copy.deepcopy(self._inst_fetcher), self) for i in range(fetcher_num)]
+        self._thread_parsar_list = [ParseThread(&quot;parser&quot;, self._inst_parser, self), SaveThread(&quot;saver&quot;, self._inst_saver, self)]
+
+        if self.get_proxies_flag():
+            self._thread_proxieser.setDaemon(True)
+            self._thread_proxieser.start()
+
+        for thread in self._thread_fetcher_list:
+            thread.setDaemon(True)
+            thread.start()
+
+        for thread in self._thread_parsar_list:
+            thread.setDaemon(True)
+            thread.start()
+
+        logging.info(&quot;%s start success&quot;, self.__class__.__name__)
+        return
+
+    def wait_for_finished(self):
+        &quot;&quot;&quot;
+        wait for the finished of this thread pool
+        &quot;&quot;&quot;
+        logging.info(&quot;%s wait for finished&quot;, self.__class__.__name__)
+        self._thread_stop_flag = True
+
+        for thread in self._thread_fetcher_list:
+            if thread.is_alive():
+                thread.join()
+
+        for thread in self._thread_parsar_list:
+            if thread.is_alive():
+                thread.join()
+
+        if self.get_proxies_flag():
+            if self._thread_proxieser.is_alive():
+                self._thread_proxieser.join()
+
+        if self._monitor.is_alive():
+            self._monitor.join()
+
+        logging.info(&quot;%s finished: %s&quot;, self.__class__.__name__, self._number_dict)
+        return self._number_dict
+
+    # ================================================================================================================================
+    def get_proxies_flag(self):
+        &quot;&quot;&quot;
+        get the proxies flag of this pool
+        &quot;&quot;&quot;
+        return True if self._inst_proxieser else False
+
+    def get_thread_stop_flag(self):
+        &quot;&quot;&quot;
+        get the stop flag of threads
+        &quot;&quot;&quot;
+        return self._thread_stop_flag
+
+    def get_current_state(self):
+        &quot;&quot;&quot;
+        get current state of this pool
+        &quot;&quot;&quot;
+        return self._number_dict
+
+    def get_number_dict(self, key):
+        &quot;&quot;&quot;
+        get the value of self._number_dict based on key
+        &quot;&quot;&quot;
+        return self._number_dict[key]
+
+    def update_number_dict(self, key, value):
+        &quot;&quot;&quot;
+        update the value of self._number_dict based on key
+        &quot;&quot;&quot;
+        self._lock.acquire()
+        self._number_dict[key] += value
+        self._lock.release()
+        return
+
+    def is_all_tasks_done(self):
+        &quot;&quot;&quot;
+        check if all tasks are done, according to self._number_dict
+        &quot;&quot;&quot;
+        return False if self._number_dict[TPEnum.TASKS_RUNNING] or self._number_dict[TPEnum.URL_FETCH_NOT] or \
+                        self._number_dict[TPEnum.HTM_PARSE_NOT] or self._number_dict[TPEnum.ITEM_SAVE_NOT] else True
+
+    # ================================================================================================================================
+    def add_a_task(self, task_name, task_content):
+        &quot;&quot;&quot;
+        add a task based on task_name, also for proxies
+        &quot;&quot;&quot;
+        if task_name == TPEnum.PROXIES:
+            self._queue_proxies.put_nowait(task_content)
+            self.update_number_dict(TPEnum.PROXIES_LEFT, +1)
+        elif task_name == TPEnum.URL_FETCH and ((task_content[-1] &gt; 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[2])):
+            self._queue_fetch.put_nowait(task_content)
+            self.update_number_dict(TPEnum.URL_FETCH_NOT, +1)
+            self.update_number_dict(TPEnum.URL_FETCH_COUNT, +1)
+        elif task_name == TPEnum.HTM_PARSE:
+            self._queue_parse.put_nowait(task_content)
+            self.update_number_dict(TPEnum.HTM_PARSE_NOT, +1)
+        elif task_name == TPEnum.ITEM_SAVE:
+            self._queue_save.put_nowait(task_content)
+            self.update_number_dict(TPEnum.ITEM_SAVE_NOT, +1)
+        return
+
+    def get_a_task(self, task_name):
+        &quot;&quot;&quot;
+        get a task based on task_name, if queue is empty, raise queue.Empty, also for proxies
+        &quot;&quot;&quot;
+        task_content = None
+        if task_name == TPEnum.PROXIES:
+            task_content = self._queue_proxies.get(block=True, timeout=5)
+            self.update_number_dict(TPEnum.PROXIES_LEFT, -1)
+            return task_content
+        elif task_name == TPEnum.URL_FETCH:
+            task_content = self._queue_fetch.get(block=True, timeout=5)
+            self.update_number_dict(TPEnum.URL_FETCH_NOT, -1)
+        elif task_name == TPEnum.HTM_PARSE:
+            task_content = self._queue_parse.get(block=True, timeout=5)
+            self.update_number_dict(TPEnum.HTM_PARSE_NOT, -1)
+        elif task_name == TPEnum.ITEM_SAVE:
+            task_content = self._queue_save.get(block=True, timeout=5)
+            self.update_number_dict(TPEnum.ITEM_SAVE_NOT, -1)
+        self.update_number_dict(TPEnum.TASKS_RUNNING, +1)
+        return task_content
+
+    def finish_a_task(self, task_name):
+        &quot;&quot;&quot;
+        finish a task based on task_name, call queue.task_done(), also for proxies
+        &quot;&quot;&quot;
+        if task_name == TPEnum.PROXIES:
+            self._queue_proxies.task_done()
+            return
+        elif task_name == TPEnum.URL_FETCH:
+            self._queue_fetch.task_done()
+        elif task_name == TPEnum.HTM_PARSE:
+            self._queue_parse.task_done()
+        elif task_name == TPEnum.ITEM_SAVE:
+            self._queue_save.task_done()
+        self.update_number_dict(TPEnum.TASKS_RUNNING, -1)
+        return
+    # ================================================================================================================================
+
+
+
+concurrent/threads_pool_dist.py   #用redis实现分布式
+
+
+import redis
+from .threads_inst import TPEnum
+from .threads_pool import ThreadPool
+
+
+class DistThreadPool(ThreadPool):
+    &quot;&quot;&quot;
+    class of DistThreadPool, as the subclass of ThreadPool
+    &quot;&quot;&quot;
+
+    def __init__(self, fetcher, parser, saver, proxieser=None, url_filter=None, monitor_sleep_time=5):
+        &quot;&quot;&quot;
+        constructor
+        &quot;&quot;&quot;
+        ThreadPool.__init__(self, fetcher, parser, saver, proxieser=proxieser, url_filter=url_filter, monitor_sleep_time=monitor_sleep_time)
+
+        self._redis_client = None           # redis client object
+        self._key_high_priority = None      # redis key, value is a urls list, which wait to fetch, high priority
+        self._key_low_priority = None       # redis key, value is a urls list, which wait to fetch, low priority
+
+        # make the spider run forever
+        self.update_number_dict(TPEnum.URL_FETCH_NOT, -1)
+        return
+
+    def init_redis(self, host=&quot;localhost&quot;, port=6379, db=0, key_high_priority=&quot;spider.high&quot;, key_low_priority=&quot;spider.low&quot;):
+        &quot;&quot;&quot;
+        initial redis client object
+        &quot;&quot;&quot;
+        if not self._redis_client:
+            self._redis_client = redis.Redis(host=host, port=port, db=db)
+            self._key_high_priority = key_high_priority
+            self._key_low_priority = key_low_priority
+        return
+
+    # ================================================================================================================================
+    def add_a_task(self, task_name, task_content):
+        &quot;&quot;&quot;
+        add a task based on task_name, also for proxies
+        &quot;&quot;&quot;
+        if task_name == TPEnum.PROXIES:
+            self._queue_proxies.put_nowait(task_content)
+            self.update_number_dict(TPEnum.PROXIES_LEFT, +1)
+        elif task_name == TPEnum.URL_FETCH and ((task_content[-1] &gt; 0) or (not self._url_filter) or self._url_filter.check_and_add(task_content[2])):
+            self._redis_client.lpush(self._key_high_priority if task_content[0] &lt; 100 else self._key_low_priority, task_content)
+            self.update_number_dict(TPEnum.URL_FETCH_COUNT, +1)
+        elif task_name == TPEnum.HTM_PARSE:
+            self._queue_parse.put_nowait(task_content)
+            self.update_number_dict(TPEnum.HTM_PARSE_NOT, +1)
+        elif task_name == TPEnum.ITEM_SAVE:
+            self._queue_save.put_nowait(task_content)
+            self.update_number_dict(TPEnum.ITEM_SAVE_NOT, +1)
+        return
+
+    def get_a_task(self, task_name):
+        &quot;&quot;&quot;
+        get a task based on task_name, if queue is empty, raise queue.Empty, also for proxies
+        &quot;&quot;&quot;
+        task_content = None
+        if task_name == TPEnum.PROXIES:
+            task_content = self._queue_proxies.get(block=True, timeout=5)
+            self.update_number_dict(TPEnum.PROXIES_LEFT, -1)
+            return task_content
+        elif task_name == TPEnum.URL_FETCH:
+            task_content = eval(self._redis_client.rpop(self._key_high_priority) or self._redis_client.rpop(self._key_low_priority))
+        elif task_name == TPEnum.HTM_PARSE:
+            task_content = self._queue_parse.get(block=True, timeout=5)
+            self.update_number_dict(TPEnum.HTM_PARSE_NOT, -1)
+        elif task_name == TPEnum.ITEM_SAVE:
+            task_content = self._queue_save.get(block=True, timeout=5)
+            self.update_number_dict(TPEnum.ITEM_SAVE_NOT, -1)
+        self.update_number_dict(TPEnum.TASKS_RUNNING, +1)
+        return task_content
+
+    def finish_a_task(self, task_name):
+        &quot;&quot;&quot;
+        finish a task based on task_name, call queue.task_done(), also for proxies
+        &quot;&quot;&quot;
+        if task_name == TPEnum.PROXIES:
+            self._queue_proxies.task_done()
+            return
+        elif task_name == TPEnum.URL_FETCH:
+            pass
+        elif task_name == TPEnum.HTM_PARSE:
+            self._queue_parse.task_done()
+        elif task_name == TPEnum.ITEM_SAVE:
+            self._queue_save.task_done()
+        self.update_number_dict(TPEnum.TASKS_RUNNING, -1)
+        return
+    # ================================================================================================================================
+
+concurrent\threads_inst\__init__.py
+
+
+from .threads_inst_base import TPEnum, MonitorThread
+from .threads_inst_fetch import FetchThread
+from .threads_inst_parse import ParseThread
+from .threads_inst_save import SaveThread
+from .threads_inst_proxies import ProxiesThread
+
+concurrent\threads_inst\threads_inst_base.py
+
+import enum
+import time
+import queue
+import logging
+import threading
+from ...utilities import extract_error_info
+
+
+class TPEnum(enum.Enum):
+    &quot;&quot;&quot;
+    enum of TPEnum, to mark the status of web_spider
+    &quot;&quot;&quot;
+    TASKS_RUNNING = &quot;tasks_running&quot;         # flag of tasks_running
+
+    URL_FETCH = &quot;url_fetch&quot;                 # flag of url_fetch **
+    URL_FETCH_NOT = &quot;url_fetch_not&quot;         # flag of url_fetch_not
+    URL_FETCH_SUCC = &quot;url_fetch_succ&quot;       # flag of url_fetch_succ
+    URL_FETCH_FAIL = &quot;url_fetch_fail&quot;       # flag of url_fetch_fail
+    URL_FETCH_COUNT = &quot;url_fetch_count&quot;     # flag of url_fetch_count, for priority_queue
+
+    HTM_PARSE = &quot;htm_parse&quot;                 # flag of htm_parse **
+    HTM_PARSE_NOT = &quot;htm_parse_not&quot;         # flag of htm_parse_not
+    HTM_PARSE_SUCC = &quot;htm_parse_succ&quot;       # flag of htm_parse_succ
+    HTM_PARSE_FAIL = &quot;htm_parse_fail&quot;       # flag of htm_parse_fail
+
+    ITEM_SAVE = &quot;item_save&quot;                 # flag of item_save **
+    ITEM_SAVE_NOT = &quot;item_save_not&quot;         # flag of item_save_not
+    ITEM_SAVE_SUCC = &quot;item_save_succ&quot;       # flag of item_save_succ
+    ITEM_SAVE_FAIL = &quot;item_save_fail&quot;       # flag of item_save_fail
+
+    PROXIES = &quot;proxies&quot;                     # flag of proxies **
+    PROXIES_LEFT = &quot;proxies_left&quot;           # flag of proxies_left --&gt; URL_FETCH_NOT
+    PROXIES_FAIL = &quot;proxies_fail&quot;           # flag of proxies_fail --&gt; URL_FETCH_FAIL
+
+
+class BaseThread(threading.Thread):
+    &quot;&quot;&quot;
+    class of BaseThread, as base class of each thread
+    &quot;&quot;&quot;
+
+    def __init__(self, name, worker, pool):
+        &quot;&quot;&quot;
+        constructor
+        &quot;&quot;&quot;
+        threading.Thread.__init__(self, name=name)
+        self._worker = worker
+        self._pool = pool
+        return
+
+    def run(self):
+        &quot;&quot;&quot;
+        rewrite run function, auto running and must call self.working()
+        &quot;&quot;&quot;
+        logging.debug(&quot;%s[%s] start...&quot;, self.__class__.__name__, self.getName())
+
+        while True:
+            try:
+                if not self.working():
+                    break
+            except (queue.Empty, TypeError):
+                if self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done():
+                    break
+            except Exception:
+                logging.error(&quot;%s[%s] error: %s&quot;, self.__class__.__name__, self.getName(), extract_error_info())
+                break
+
+        logging.debug(&quot;%s[%s] end...&quot;, self.__class__.__name__, self.getName())
+        return
+
+    def working(self):
+        &quot;&quot;&quot;
+        procedure of each thread, return True to continue, False to stop
+        &quot;&quot;&quot;
+        raise NotImplementedError
+
+
+# ===============================================================================================================================
+def init_monitor_thread(self, name, pool, sleep_time=5):
+    &quot;&quot;&quot;
+    constructor of MonitorThread
+    &quot;&quot;&quot;
+    BaseThread.__init__(self, name, None, pool)
+
+    self._sleep_time = sleep_time
+    self._init_time = time.time()
+
+    self._last_fetch_num = 0
+    self._last_parse_num = 0
+    self._last_save_num = 0
+    return
+
+
+def work_monitor(self):
+    &quot;&quot;&quot;
+    monitor the pool, auto running, and return False if you need stop thread
+    &quot;&quot;&quot;
+    time.sleep(self._sleep_time)
+    info = &quot;%s status: running_tasks=%s;&quot; % (self._pool.__class__.__name__, self._pool.get_number_dict(TPEnum.TASKS_RUNNING))
+
+    cur_fetch_not = self._pool.get_number_dict(TPEnum.URL_FETCH_NOT)
+    cur_fetch_succ = self._pool.get_number_dict(TPEnum.URL_FETCH_SUCC)
+    cur_fetch_fail = self._pool.get_number_dict(TPEnum.URL_FETCH_FAIL)
+    cur_fetch_all = cur_fetch_succ + cur_fetch_fail
+    info += &quot; fetch:[NOT=%d, SUCC=%d, FAIL=%d, %d/(%ds)];&quot; % (cur_fetch_not, cur_fetch_succ, cur_fetch_fail, cur_fetch_all-self._last_fetch_num, self._sleep_time)
+    self._last_fetch_num = cur_fetch_all
+
+    cur_parse_not = self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT)
+    cur_parse_succ = self._pool.get_number_dict(TPEnum.HTM_PARSE_SUCC)
+    cur_parse_fail = self._pool.get_number_dict(TPEnum.HTM_PARSE_FAIL)
+    cur_parse_all = cur_parse_succ + cur_parse_fail
+    info += &quot; parse:[NOT=%d, SUCC=%d, FAIL=%d, %d/(%ds)];&quot; % (cur_parse_not, cur_parse_succ, cur_parse_fail, cur_parse_all-self._last_parse_num, self._sleep_time)
+    self._last_parse_num = cur_parse_all
+
+    cur_save_not = self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT)
+    cur_save_succ = self._pool.get_number_dict(TPEnum.ITEM_SAVE_SUCC)
+    cur_save_fail = self._pool.get_number_dict(TPEnum.ITEM_SAVE_FAIL)
+    cur_save_all = cur_save_succ + cur_save_fail
+    info += &quot; save:[NOT=%d, SUCC=%d, FAIL=%d, %d/(%ds)];&quot; % (cur_save_not, cur_save_succ, cur_save_fail, cur_save_all-self._last_save_num, self._sleep_time)
+    self._last_save_num = cur_save_all
+
+    info += &quot; proxies:[LEFT=%d, FAIL=%d];&quot; % (self._pool.get_number_dict(TPEnum.PROXIES_LEFT), self._pool.get_number_dict(TPEnum.PROXIES_FAIL)) if self._pool.get_proxies_flag() else &quot;&quot;
+    info += &quot; total_seconds=%d&quot; % (time.time() - self._init_time)
+
+    logging.info(info)
+    return not (self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done())
+
+
+MonitorThread = type(&quot;MonitorThread&quot;, (BaseThread, ), dict(__init__=init_monitor_thread, working=work_monitor))
+
+
+
+
+concurrent\threads_inst\threads_inst_fetch.py  #多线程抓取类
+
+import time
+import logging
+from .threads_inst_base import TPEnum, BaseThread
+
+
+class FetchThread(BaseThread):
+    &quot;&quot;&quot;
+    class of FetchThread, as the subclass of BaseThread
+    &quot;&quot;&quot;
+
+    def __init__(self, name, worker, pool):
+        &quot;&quot;&quot;
+        constructor
+        &quot;&quot;&quot;
+        BaseThread.__init__(self, name, worker, pool)
+        self._proxies = None
+        return
+
+    def working(self):
+        &quot;&quot;&quot;
+        procedure of fetching, auto running, and return True
+        &quot;&quot;&quot;
+        # ----*----
+        if self._pool.get_proxies_flag() and (not self._proxies):
+            self._proxies = self._pool.get_a_task(TPEnum.PROXIES)
+
+        # ----1----
+        priority, counter, url, keys, deep, repeat = self._pool.get_a_task(TPEnum.URL_FETCH)
+
+        # ----2----
+        fetch_result, proxies_state, content = self._worker.working(priority, url, keys, deep, repeat, proxies=self._proxies)
+
+        # ----3----
+        if fetch_result &gt; 0:
+            self._pool.update_number_dict(TPEnum.URL_FETCH_SUCC, +1)
+            self._pool.add_a_task(TPEnum.HTM_PARSE, (priority, counter, url, keys, deep, content))
+        elif fetch_result == 0:
+            self._pool.add_a_task(TPEnum.URL_FETCH, (priority+1, counter, url, keys, deep, repeat+1))
+        else:
+            self._pool.update_number_dict(TPEnum.URL_FETCH_FAIL, +1)
+
+        # ----*----
+        if (not proxies_state) and self._proxies:
+            self._pool.update_number_dict(TPEnum.PROXIES_FAIL, +1)
+            self._pool.finish_a_task(TPEnum.PROXIES)
+            self._proxies = None
+
+        # ----4----
+        self._pool.finish_a_task(TPEnum.URL_FETCH)
+
+        # ----*----
+        while (self._pool.get_number_dict(TPEnum.HTM_PARSE_NOT) &gt; 500) or (self._pool.get_number_dict(TPEnum.ITEM_SAVE_NOT) &gt; 500):
+            logging.debug(&quot;%s[%s] sleep 5 seconds because of too many 'HTM_PARSE_NOT' or 'ITEM_SAVE_NOT'...&quot;, self.__class__.__name__, self.getName())
+            time.sleep(5)
+
+        # ----5----
+        return True
+        
+
+concurrent\threads_inst\threads_inst_parse.py  #解析类
+# _*_ coding: utf-8 _*_
+
+&quot;&quot;&quot;
+threads_inst_parse.py by xianhu
+&quot;&quot;&quot;
+
+from .threads_inst_base import TPEnum, BaseThread
+
+
+class ParseThread(BaseThread):
+    &quot;&quot;&quot;
+    class of ParseThread, as the subclass of BaseThread
+    &quot;&quot;&quot;
+
+    def working(self):
+        &quot;&quot;&quot;
+        procedure of parsing, auto running, and return True
+        &quot;&quot;&quot;
+        # ----1----
+        priority, counter, url, keys, deep, content = self._pool.get_a_task(TPEnum.HTM_PARSE)
+
+        # ----2----
+        parse_result, url_list, save_list = self._worker.working(priority, url, keys, deep, content)
+
+        # ----3----
+        if parse_result &gt; 0:
+            self._pool.update_number_dict(TPEnum.HTM_PARSE_SUCC, +1)
+            for _url, _keys, _priority in url_list:
+                self._pool.add_a_task(TPEnum.URL_FETCH, (_priority, self._pool.get_number_dict(TPEnum.URL_FETCH_COUNT), _url, _keys, deep+1, 0))
+            for item in save_list:
+                self._pool.add_a_task(TPEnum.ITEM_SAVE, (url, keys, item))
+        else:
+            self._pool.update_number_dict(TPEnum.HTM_PARSE_FAIL, +1)
+
+        # ----4----
+        self._pool.finish_a_task(TPEnum.HTM_PARSE)
+
+        # ----5----
+        return True
+
+
+concurrent\threads_inst\threads_inst_proxies.py  #代理类
+
+
+import time
+import logging
+from .threads_inst_base import TPEnum, BaseThread
+
+
+class ProxiesThread(BaseThread):
+    &quot;&quot;&quot;
+    class of ProxiesThread, as the subclass of BaseThread
+    &quot;&quot;&quot;
+
+    def working(self):
+        &quot;&quot;&quot;
+        procedure of proxies, auto running, and return False if you need stop thread
+        &quot;&quot;&quot;
+        # ----2----
+        proxies_result, proxies_list = self._worker.working()
+
+        # ----3----
+        for proxies in proxies_list:
+            self._pool.add_a_task(TPEnum.PROXIES, proxies)
+
+        # ----*----
+        while (self._pool.get_number_dict(TPEnum.PROXIES_LEFT) &gt; 100) and (not self._pool.is_all_tasks_done()):
+            logging.debug(&quot;%s[%s] sleep 5 seconds because of too many 'PROXIES_LEFT'...&quot;, self.__class__.__name__, self.getName())
+            time.sleep(5)
+
+        # ----*----
+        while (not self._pool.get_thread_stop_flag()) and self._pool.is_all_tasks_done():
+            logging.debug(&quot;%s[%s] sleep 5 seconds because all tasks are done...&quot;, self.__class__.__name__, self.getName())
+            time.sleep(5)
+
+        # ----5----
+        return not (self._pool.get_thread_stop_flag() and self._pool.is_all_tasks_done())
+
+concurrent\threads_inst\threads_inst_save  #保存类
+
+&quot;&quot;&quot;
+threads_inst_save.py by xianhu
+&quot;&quot;&quot;
+
+from .threads_inst_base import TPEnum, BaseThread
+
+
+class SaveThread(BaseThread):
+    &quot;&quot;&quot;
+    class of SaveThread, as the subclass of BaseThread
+    &quot;&quot;&quot;
+
+    def working(self):
+        &quot;&quot;&quot;
+        procedure of saving, auto running, and return True
+        &quot;&quot;&quot;
+        # ----1----
+        url, keys, item = self._pool.get_a_task(TPEnum.ITEM_SAVE)
+
+        # ----2----
+        save_result = self._worker.working(url, keys, item)
+
+        # ----3----
+        if save_result &gt; 0:
+            self._pool.update_number_dict(TPEnum.ITEM_SAVE_SUCC, +1)
+        else:
+            self._pool.update_number_dict(TPEnum.ITEM_SAVE_FAIL, +1)
+
+        # ----4----
+        self._pool.finish_a_task(TPEnum.ITEM_SAVE)
+
+        # ----5----
+        return True
+</rich_text></node></node></cherrytree>
