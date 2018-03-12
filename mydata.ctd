@@ -7334,8 +7334,8 @@ PSpider的程序
 类似于多线程蜘蛛。唯一的区别是从redis获取url而不是队列。
 github: https://github.com/xianhu/PSpider
 结构
-│
-├__init__.py    #版本号,和导入相关包
+│       
+│__init__.py#版本号,和导入相关包
 │  
 ├─concurrent
 │  │  threads_pool.py   #正常多线程,单机多线程
@@ -7364,13 +7364,14 @@ github: https://github.com/xianhu/PSpider
         util_urlfilter.py #过滤
         __init__.py
 
-包的__init__.py:
+__init__.py:
 __version__ = &quot;1.1.5&quot;                    #版本号
 
 from .utilities import *                #导入工具类
 from .instances import Fetcher, Parser, Saver, Proxieser  #导入抓取实例,分析,存储,代理
 from .concurrent import TPEnum, WebSpider, WebSpiderDist   #导入枚举类,多线程抓取,分布式抓取
-utilities工具类的__init__.py
+
+utilities/__init__.py
 from .util_config import *   
 from .util_fetch import *
 from .util_parse import *
@@ -7394,7 +7395,7 @@ CONFIG_URL_PATTERN = r&quot;\.(cab|iso|zip|rar|tar|gz|bz2|7z|tgz|apk|exe|app|pkg
                      &quot;pdf|doc|docx|xls|xlsx|ppt|pptx|txt|md|odf|odt|rtf|py|java|c|cc|js|css|log|&quot; \
                      &quot;jpg|jpeg|png|gif|bmp|xpm|xbm|ico|drm|dxf|eps|psd|pcd|pcx|tif|tiff|&quot; \
                      &quot;mp3|mp4|swf|mkv|avi|flv|mov|wmv|wma|3gp|mpg|mpeg|mp4a|wav|ogg|rmvb)$&quot;
-utilities/util_fetch.py      #工具类抓取              
+utilities/util_fetch.py      #工具类抓取异常类              
                      
 import re
 import sys
@@ -7459,7 +7460,7 @@ def get_url_legal(url, base_url, encoding=None):  #获得一个合法的url
     return urllib.parse.quote(url_join, safe=&quot;%/:=&amp;?~#+!$,;'@()*[]|&quot;, encoding=encoding)
 
 
-def get_url_params(url, keep_blank_value=False, encoding=&quot;utf-8&quot;): #讲一个url转换成主网址和参数
+def get_url_params(url, keep_blank_value=False, encoding=&quot;utf-8&quot;): #将一个url转换成主网址和参数
     &quot;&quot;&quot;
     get main_part(a string) and query_part(a dictionary) from a url
     &quot;&quot;&quot;
@@ -7587,7 +7588,7 @@ class Fetcher(object):   #抓取类
                 logging.debug(&quot;%s repeat: %s, %s&quot;, self.__class__.__name__, extract_error_info(), CONFIG_FETCH_MESSAGE % (priority, keys, deep, repeat, url))
 
         logging.debug(&quot;%s end: fetch_result=%s, proxies_state=%s, url=%s&quot;, self.__class__.__name__, fetch_result, proxies_state, url)
-        return fetch_result, proxies_state, content  #返回这三个值,content是元祖,使用其中的源码需要content[2] 这样
+        return fetch_result, proxies_state, content  #返回这三个值,content是元祖,使用其中的源码需要content[2]这样，后面使用三个参数接受返回值
 
     def url_fetch(self, priority: int, url: str, keys: dict, deep: int, repeat: int, proxies=None) -&gt; (int, bool, object):
         &quot;&quot;&quot;
