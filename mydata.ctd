@@ -5291,7 +5291,95 @@ if __name__==&quot;__main__&quot;:
 
 
 
-</rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
+</rich_text></node><node name="qt" prog_lang="python" readonly="False" tags="" unique_id="55"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/3/15
+import sys
+from PyQt5 import QtCore, QtWidgets
+import requests
+import base64
+import qrcode
+
+class HelloPyQt(QtWidgets.QWidget):
+    def __init__(self, parent = None):
+        super(HelloPyQt, self).__init__(parent)  #调用父类的初始化函数
+        self.setWindowTitle('老哥梯子 www.lgssr.org')
+        self.setFixedSize(400, 300)
+        vbox = QtWidgets.QVBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
+        self.inputbox = QtWidgets.QLineEdit()
+        vbox.addWidget(self.inputbox)
+        self.tranbtn = QtWidgets.QPushButton('获取节点')
+        self.erweima = QtWidgets.QPushButton('二维码')
+        self.outputbox = QtWidgets.QTextEdit()
+        hbox.addWidget(self.tranbtn)
+        hbox.addWidget(self.erweima)
+        vbox.addLayout(hbox)
+        self.outputbox = QtWidgets.QTextEdit()
+        vbox.addWidget(self.outputbox)
+        self.setLayout(vbox)
+        self.inputbox.setText(&quot;http://www.lgssr.org/link/siHDpZ1QIHPRDb2M?mu=0&quot;)
+        self.outputbox.setText('\t\t说    明\n把订阅地址填上点击获取\n读取完ssr地址右键select all(全选),右键copy\n运行小飞机右键剪切版批量倒入ssr://链接')
+        self.tranbtn.clicked.connect(self.btnPress_Clicked)
+        self.erweima.clicked.connect(self.btnerweima_Clicked)
+
+
+        # # self.setWindowTitle(&quot;PyQt Test&quot;)  #设置标题
+        # self.setFixedSize(400,300)    #设置窗口大小
+        # self.textHello = QtWidgets.QTextEdit(&quot;This is a test program written in python with PyQt lib!&quot;) #添加一个文本框
+        # self.textworld = QtWidgets.QTextEdit(&quot;This is second text!&quot;)
+        # self.btnPress = QtWidgets.QPushButton(u&quot;按我&quot;) #添加一个按钮
+        # self.btnAbout = QtWidgets.QPushButton(u&quot;关于&quot;) #添加一个按钮
+        # v_layout = QtWidgets.QVBoxLayout()  #添加一个垂直布局
+        # h_layout = QtWidgets.QHBoxLayout()  #添加一个水平布局
+        # v_layout.addWidget(self.textHello) #把文本框放进垂直布局
+        # v_layout.addWidget(self.textworld) #把按钮放进垂直布局
+        # h_layout.addWidget(self.btnPress) #把按钮放进水平布局
+        # h_layout.addWidget(self.btnAbout) #把按钮放进水平布局
+        # v_layout.addLayout(h_layout) #把水平布局放进垂直布局
+        # self.setLayout(v_layout) #利用布局来水平布局
+        # self.connect(self.btnPress,QtCore.SIGNAL('clicked()'),self.btnPress_Clicked) #信号连接槽函数，挡在按钮上按时触发后面的函数
+        # self.connect(self.btnAbout,QtCore.SIGNAL('clicked()'),self.btnAbout_Clicked) #信号连接槽函数，挡在按钮上按时触发后面的函数
+
+    def btnPress_Clicked(self):
+        url = self.inputbox.text().strip()
+        if not url:
+            QtWidgets.QMessageBox.warning(self, 'warning', '请输入订阅地址')
+            return
+        try:
+            html = requests.get(url=url,timeout=5).text
+            html += &quot;=&quot; * ((4 - len(html) % 4) % 4)
+            ssrs = base64.b64decode(html).decode('utf-8')
+            self.outputbox.setText(ssrs)
+        except:
+            self.outputbox.setText('出错')
+
+        # self.textHello.setText(&quot;Hello PyQt!\nThe button has been pressed.&quot;)
+        # self.textworld.setText(&quot;Hello World!\nThe text is change.&quot;)
+
+    def btnerweima_Clicked(self):
+        url = self.inputbox.text().strip()
+        if not url:
+            QtWidgets.QMessageBox.warning(self, 'warning', '请输入订阅地址')
+            return
+        try:
+            html = requests.get(url=url, timeout=5).text
+            html += &quot;=&quot; * ((4 - len(html) % 4) % 4)
+            ssrs = base64.b64decode(html).decode('utf-8')
+            self.outputbox.setText(ssrs)
+        except:
+            self.outputbox.setText('出错')
+
+if __name__=='__main__':
+    app = QtWidgets.QApplication(sys.argv) #初始化一个app
+    mainWindow = HelloPyQt() #初始化类
+    mainWindow.show() #显示框口
+    sys.exit(app.exec_()) #进入消息循环</rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
 </rich_text><rich_text background="#ffffff" foreground="#222222">视频播放：PotPlayer</rich_text><rich_text>
