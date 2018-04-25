@@ -5443,14 +5443,42 @@ uname -a    #查看当前内核的版本号
 </rich_text><rich_text>yum -y remove kernel-3.10.0-327.el7.x86_64   #卸载旧内核
 yum -y install epel-release #安装并启用EPEL源
 
+</rich_text><rich_text scale="h1" weight="heavy">备份恢复centos系统</rich_text><rich_text>
+tar cvpzf 20180425-bak.tgz / --exclude=/proc --exclude=/lost+found --exclude=/20180425-bak.tgz --exclude=/mnt --exclude=/sys
+tar xvpfz 20180425-bak.tgz -C /
+mkdir proc
+mkdir lost+found
+mkdir mnt
+mkdir sys
+/*
+• /proc 权限：文件所有者：root群组：root 所有者：读取 执行 群组：读取 执行 其它：读取 执行
+• /lost+found 权限：文件所有者：root群组：root 所有者：读取 写入 执行 群组：读取 执行 其它：读取 执行
+• /mnt 权限：文件所有者：root群组：root 所有者：读取 写入 执行 群组：读取 执行 其它：读取 执行
+• /sys 权限：文件所有者：root群组：root 所有者：读取 写入 执行 群组：读取 执行 其它：读取 执行
 
+*/
 
-</rich_text><rich_text scale="h1" weight="heavy">centos下安装python环境和第三方包</rich_text><rich_text>
-</rich_text><rich_text background="#fafafa" foreground="#000000">yum install -y python-devel openssl-devel libxslt-devel libxml2-devel </rich_text><rich_text>gcc libffi-devel  #安装行相应的python环境(安装的多了)
-yum install -y python-devel gcc openssl-devel #python环境可以用
-yum install python-setuptools #安装easy_install
-easy_install pip #安装pip
-pip install virtualenv ipython pyreadline scrapy Django flask requests BeautifulSoup pyspider#安装相应的python第三方包
+</rich_text><rich_text scale="h1" weight="heavy">passwd</rich_text><rich_text foreground="#000000000000" scale="h1" weight="heavy">命令使用实例</rich_text><rich_text>
+passwd root
+
+</rich_text><rich_text scale="h1" weight="heavy">centos下安装python3</rich_text><rich_text>
+yum -y install wget #安装wget
+</rich_text><rich_text foreground="#000000">yum </rich_text><rich_text>-y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel gcc #安装依赖包
+mkdir /usr/local/python3  #建立python3目录
+cd /home #切换到home目录
+wget </rich_text><rich_text link="webs https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz">https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tgz</rich_text><rich_text> #下载python3.6
+tar -xzvf Python-3.6.5.tgz #解压
+cd Python-3.6.5 #进入目录
+./configure --prefix=/usr/local/python3 #修改配置
+make &amp;&amp; make install #编译安装
+ln -s /usr/local/python3/bin/python3 /usr/bin/</rich_text><rich_text foreground="#000000">python3 #建立python3 软链接
+ln </rich_text><rich_text>-s /usr/local/python3/bin/pip3 /usr/bin/pip3 #建立pip3 软链接
+
+</rich_text><rich_text scale="h1" weight="heavy">python3建立虚拟环境</rich_text><rich_text>
+python3 -m venv . #当前路径建立虚拟环境
+source ./bin/activate #激活当前虚拟环境
+pip3 install ipython scrapy #安装第三方包
+deactivate #退出虚拟环境
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下安装phantomjs</rich_text><rich_text>
 yum -y install wget install bzip2.x86_64 </rich_text><rich_text foreground="#000000">fontconfig</rich_text><rich_text> # 安装下载工具和解压工具bzip2,</rich_text><rich_text foreground="#000000">fontconfig</rich_text><rich_text>是phantomjs需求环境
@@ -5513,15 +5541,6 @@ mysqldump --socket=/home/data/mysql/mysql.sock --single-transaction=TRUE  -u roo
 mysql --socket=/home/data/mysql/mysql.sock  -u root -p emsc &lt; emsc.sql #还原
 
 
-
-
-</rich_text><rich_text scale="h1" weight="heavy">centos下tar备份系统</rich_text><rich_text>
-tar cvpzf backup.tgz / --exclude=/proc --exclude=/lost+found --exclude=/backup.tgz --exclude=/mnt --exclude=/sys
-tar xvpfz backup.tgz -C /
-mkdir proc
-mkdir lost+found
-mkdir mnt
-mkdir sys
 </rich_text><rich_text scale="h1" weight="heavy">centos下dd备份系统</rich_text><rich_text>
 1. 磁盘克隆
 也就是把整个硬盘复制一份。当然你首先需要在计算机上在接上一块新硬盘，并让系统识别。例如这块硬盘可能被识别为/dev/sdb,原有硬盘叫/dev/sda. 然后你可以在linux命令行上简单地执行：
