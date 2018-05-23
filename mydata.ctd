@@ -5444,7 +5444,8 @@ uname -a    #查看当前内核的版本号
 yum -y install epel-release #安装并启用EPEL源
 
 </rich_text><rich_text scale="h1" weight="heavy">备份恢复centos系统</rich_text><rich_text>
-tar cvpzf 20180425-bak.tgz / --exclude=/proc --exclude=/lost+found --exclude=/20180425-bak.tgz --exclude=/mnt --exclude=/sys
+tar cvpzf /home/bak/install.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home/bak --exclude=/mnt --exclude=/sys
+tar cvpzf /home/bak/20180523-py3.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home/bak --exclude=/mnt --exclude=/sys
 tar xvpfz 20180425-bak.tgz -C /
 mkdir proc
 mkdir lost+found
