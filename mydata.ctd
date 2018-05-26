@@ -5557,6 +5557,76 @@ if __name__ == '__main__':
     ssr.parseallqrcode()
 </rich_text>
 			</node>
+			<node custom_icon_id="0" foreground="" is_bold="False" name="getJsqpro" prog_lang="python" readonly="False" tags="" unique_id="57">
+				<rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# With Pycharm 2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin on 2018/5/26
+import requests
+import base64
+import time
+
+class getJsqpro(object):
+    def __init__(self,url):
+        self.url = url
+        self.getSsr()
+
+    def httpfetch(self,url):
+        headers = {
+            'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'}
+        ok = False  # 这是一个标志，表示网页访问成功
+        for _ in range(5):  # 循环10次，访问网页如果出错,记录在error这个文件里
+            try:
+                reqObj = requests.get(url, headers=headers)  # 访问url,postdata是post参数是一个字典,headers是网页头部文件
+                html = reqObj.text
+                ok = True  # 访问成功标志
+                break  # 循环退出
+            except:
+                time.sleep(1)  # 如果访问失败则休息1秒
+                continue  # 继续循环
+
+        if not ok:  # 如果循环10次都失败则写入错误url到error文件
+            open('errors', 'a').write(url + '\n')
+            return ''
+        return html
+
+    def getSsr(self):
+        req = self.httpfetch(self.url)
+        text = self.deByBase64(req)
+        ssrs = text.split('\n')[:-1]
+        for ssr in ssrs:
+            acc = ssr[6:]
+            ssrAcc = self.deByBase64(acc)
+            print (ssrAcc)
+
+
+
+    def deByBase64(self,base64Text):
+        if isinstance(base64Text, str):
+            bytes_utf_8 = base64Text.encode(encoding=&quot;utf-8&quot;) #变成二进制
+        if isinstance(base64Text, bytes):
+            bytes_utf_8 = base64Text  # 二进制就不改了
+        missing_padding = 4 - len(bytes_utf_8) % 4
+        if missing_padding:
+            bytes_utf_8 += b'=' * missing_padding
+        text = base64.b64decode(bytes_utf_8).decode(encoding=&quot;utf-8&quot;) #返回值变成str
+        return text
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    acc = getJsqpro('https://jsqpro.com/link/7G9kqlFEgOIp5dok?mu=0')
+</rich_text>
+			</node>
 		</node>
 	</node>
 	<node custom_icon_id="0" foreground="" is_bold="False" name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26">
