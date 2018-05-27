@@ -5627,6 +5627,128 @@ if __name__ == '__main__':
     acc = getJsqpro('https://jsqpro.com/link/7G9kqlFEgOIp5dok?mu=0')
 </rich_text>
 			</node>
+			<node custom_icon_id="0" foreground="" is_bold="False" name="autoSsr" prog_lang="python" readonly="False" tags="" unique_id="58">
+				<rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# With Pycharm 2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin on 2018/5/27
+
+from bs4 import BeautifulSoup
+import json
+import requests
+import time
+import re
+import base64
+import os
+import subprocess
+
+
+class AutoGetSsr(object):
+
+    def __init__(self, url):
+        self.url = url
+        self.main()
+
+    def main(self):
+        req = self.httpFetch(self.url, {
+            'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'})
+        items = self.getSSr(req)
+        self.witeSsrConfig(items)
+        time.sleep(1)
+        self.killSsr()
+        time.sleep(1)
+        self.startSSr()
+
+    def killSsr(self):
+        cmd = 'taskkill /f /im ShadowsocksR-dotnet4.0.exe'
+        output = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
+        cmdline = output.decode('gbk')
+        print(cmdline)
+
+    def startSSr(self):
+        cmd = 'start ShadowsocksR-dotnet4.0.exe'
+        os.system(cmd)
+
+    def httpFetch(self, url, headers={}):
+        ok = False  # 这是一个标志，表示网页访问成功
+        for _ in range(3):  # 循环3次，访问网页如果出错,记录在error这个文件里
+            try:
+                reqObj = requests.get(url, headers=headers)  # 访问url,postdata是post参数是一个字典,headers是网页头部文件
+                html = reqObj.text
+                ok = True  # 访问成功标志
+                break  # 循环退出
+            except:
+                time.sleep(1)  # 如果访问失败则休息1秒
+                continue  # 继续循环
+
+        if not ok:  # 如果循环10次都失败则写入错误url到error文件
+            open('errors', 'a').write(url + '\n')
+            return ''
+        return html
+
+    def getSSr(self, html):
+        soup = BeautifulSoup(html, &quot;html.parser&quot;)
+        ssrs = soup.find_all(&quot;div&quot;, class_=&quot;portfolio-item&quot;)
+        ssrList = []
+        if ssrs:
+            for ssr in ssrs:
+                ssrServer = ssr.find(id=re.compile(&quot;ip\w+&quot;)).string.lstrip()
+                ssrPort = ssr.find(id=re.compile(&quot;port\w+&quot;)).get_text(&quot;&quot;, strip=True)
+                ssrPass = ssr.find(id=re.compile(&quot;pw\w+&quot;)).get_text(&quot;&quot;, strip=True)
+                methodStr = ssr.find(text=re.compile(&quot;Method&quot;)).string.lstrip()  # 带有Method:,需要去掉
+                ssrMethod = methodStr.split(':')[-1]
+                ObfsStr = ssr.find(text=re.compile(&quot;auth&quot;))
+                if ObfsStr:
+                    ssrObfs = ObfsStr.split(' ')[-1]
+                else:
+                    ssrObfs = 'plain'
+                remarksBase = base64.b64encode(ssrServer.encode('utf-8'))
+                remarksBase64 = remarksBase.decode('utf-8').replace('=', '')  # 去掉base64加密后的=
+                acc = {
+                    &quot;remarks&quot;: ssrServer,  # 备注
+                    &quot;id&quot;: &quot;200BBA5D829A352903E74571BEE3AB0C&quot;,
+                    &quot;server&quot;: ssrServer,
+                    &quot;server_port&quot;: ssrPort,
+                    # &quot;server_udp_port&quot;: 0,
+                    &quot;password&quot;: ssrPass,
+                    &quot;method&quot;: ssrMethod,
+                    &quot;protocol&quot;: &quot;origin&quot;,
+                    &quot;protocolparam&quot;: &quot;&quot;,
+                    &quot;obfs&quot;: ssrObfs,
+                    &quot;obfsparam&quot;: &quot;&quot;,
+                    &quot;remarks_base64&quot;: remarksBase64,  # 备注base64
+                    &quot;group&quot;: '',  # 组
+                    &quot;enable&quot;: True,
+                    &quot;udp_over_tcp&quot;: False
+                }
+                ssrList.append(acc)
+            return ssrList  # 返回一个ssr列表
+        else:
+            return None
+
+    def readJson(self):
+        with open('config', mode='r+', encoding='utf-8') as f:
+            data = json.load(f)
+        return data
+
+    def witeSsrConfig(self, ssrList):
+        with open('config', mode='r+', encoding='utf-8') as f:
+            data = json.load(f)
+        ssrConfig = data['configs']
+        ssrConfig.extend(ssrList)
+        if os.path.exists(&quot;gui-config.json&quot;):
+            os.remove(&quot;gui-config.json&quot;)
+        with open(&quot;gui-config.json&quot;, mode=&quot;w+&quot;) as f:
+            json.dump(data, f)
+
+
+if __name__ == &quot;__main__&quot;:
+    a = AutoGetSsr('https://my.ishadowx.net/')
+</rich_text>
+			</node>
 		</node>
 	</node>
 	<node custom_icon_id="0" foreground="" is_bold="False" name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26">
