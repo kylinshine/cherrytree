@@ -5814,7 +5814,7 @@ def decrypt(strText):
     return deStr  # 返回解密字符串
 
 
-def encrypt(strText, compress=False):  # compress是压缩=号
+def encrypt(strText, compress=True):  # compress是压缩=号
     if isinstance(strText, str):
         text = strText.encode()  # 默认就是utf-8
     elif isinstance(strText, bytes):
@@ -5826,7 +5826,7 @@ def encrypt(strText, compress=False):  # compress是压缩=号
     except Exception as e:
         print(e)
         return None
-    if compress:
+    if compress:  #默认是压缩
         enstr = compressStr.split('=')[0]
     else:
         enstr = compressStr
@@ -5834,10 +5834,99 @@ def encrypt(strText, compress=False):  # compress是压缩=号
 
 
 if __name__ == &quot;__main__&quot;:
-    print(decrypt('YWJjcjM0cjM0NHI='))
-    print(decrypt('YWJjcjM0cjM0NHI'))
-    print(encrypt('abcr34r344r'))
-    print(encrypt(b'abcr34r344r', True))
+    print(decrypt('5Y-y6Imz5paH'))
+    print(encrypt('史艳文'))
+
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/5/29
+from utils.DecryptBase64 import encrypt
+
+'''
+根据ssr配置生成base64加密字符串
+encrypt加密函数就是上面自定义的encrypt
+'''
+
+
+def SsrStr(serverip, port, password, protocol, method, obfs, remarks='', group='', obfsparam='', protoparam=''):
+    sPassword = encrypt(password)
+    sRemarks = encrypt(remarks)
+    sGroup = encrypt(group)
+    sObfsparam = encrypt(obfsparam)
+    sProtoparam = encrypt(protoparam)
+    ssr = '{}:{}:{}:{}:{}:{}/?obfsparam={}&amp;protoparam={}&amp;remarks={}&amp;group={}' \
+        .format(serverip, port, protocol, method, obfs, sPassword, sObfsparam, sProtoparam, sRemarks, sGroup) #拼接字符串
+    ssrStr = 'ssr://' + encrypt(ssr, True)
+    return ssrStr
+
+
+if __name__ == &quot;__main__&quot;:
+    ssr = SsrStr('103.15.216.133', '443', 'hero78619808', 'auth_aes128_sha1', 'aes-256-ctr', 'tls1.2_ticket_auth','史艳文')
+    print (ssr)
+
+
+
+</rich_text></node><node name="SsrList" prog_lang="python" readonly="False" tags="" unique_id="60"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# With Pycharm 2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin on 2018/5/27
+
+from bs4 import BeautifulSoup
+import re
+from utils.Fetch import httpGet, RandomUA
+from utils.GetIp import getIp
+from utils.EncryptSsr import SsrStr
+
+
+class AutoGetSsr(object):
+
+    def __init__(self, url):
+        self.url = url
+        self.ssrDo()
+
+    def ssrDo(self):
+        ssrs = self.getSsr()
+        ssrText = '\n'.join(ssrs)
+        with open('ssrs.txt', 'w+') as f:
+            f.write(ssrText)
+
+    def getSsr(self):
+        html = httpGet(self.url, headers=RandomUA())
+        soup = BeautifulSoup(html, &quot;html.parser&quot;)
+        ssrs = soup.find_all(&quot;div&quot;, class_=&quot;portfolio-item&quot;)
+        ssrList = []
+        if ssrs:
+            for ssr in ssrs:
+                ssrServer = ssr.find(id=re.compile(&quot;ip\w+&quot;)).string.lstrip()
+                serverip = getIp(ssrServer)
+                port = ssr.find(id=re.compile(&quot;port\w+&quot;)).get_text(&quot;&quot;, strip=True)
+                password = ssr.find(id=re.compile(&quot;pw\w+&quot;)).get_text(&quot;&quot;, strip=True)
+                _method = ssr.find(text=re.compile(&quot;Method&quot;)).string.lstrip()  # 带有Method:,需要去掉
+                method = _method.split(':')[-1]
+                _obfs = ssr.find(text=re.compile(&quot;auth&quot;))
+                protocol = 'origin'  # 没有这个默认origin
+                if _obfs:
+                    obfs = _obfs.split(' ')[-1]
+                else:
+                    obfs = 'plain'
+
+                acc = SsrStr(serverip, port, password, protocol, method, obfs)
+                ssrList.append(acc)
+            return ssrList  # 返回一个ssr列表
+        else:
+            return None
+
+
+if __name__ == &quot;__main__&quot;:
+    a = AutoGetSsr('https://my.ishadowx.net/')
 </rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
