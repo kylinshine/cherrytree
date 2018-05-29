@@ -5777,7 +5777,67 @@ if __name__ == &quot;__main__&quot;:
     httpGet('http://httpbin.org/get', headers=RandomUA(), proxies=proxies, payload=payload, debug=True)  # 用代理提交参数
     httpPost(&quot;http://httpbin.org/post&quot;, headers=RandomUA(), payload=payload, debug=True)  # 正常访问提交参数
     httpPost(&quot;http://httpbin.org/post&quot;, headers=RandomUA(), proxies=proxies, payload=payload, debug=True)  # 代理访问提交参数
+    
+    
+    
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/5/29
+import base64
 
+'''
+解密密文,缺失=号的自动补全再解密,返回str字符串
+加密文本,可选择是否压缩=号,返回str字符串
+'''
+
+
+def decrypt(strText):
+    if isinstance(strText, str):
+        text = strText.encode()  # 默认就是utf-8
+    elif isinstance(strText, bytes):
+        text = strText  # 二进制不用编码了
+    else:
+        print('type error')
+    missing_padding = len(text) % 4  # 这里判断是否要补全=号
+    if missing_padding != 0:
+        text += b'=' * (4 - missing_padding)  # 补全=号
+    try:
+        deStr = base64.urlsafe_b64decode(text).decode()  # 返回uft-8
+    except Exception as e:
+        print(e)
+        return None
+    return deStr  # 返回解密字符串
+
+
+def encrypt(strText, compress=False):  # compress是压缩=号
+    if isinstance(strText, str):
+        text = strText.encode()  # 默认就是utf-8
+    elif isinstance(strText, bytes):
+        text = strText  # 二进制不用编码了
+    else:
+        print('type error')
+    try:
+        compressStr = base64.urlsafe_b64encode(text).decode()  # 返回uft-8
+    except Exception as e:
+        print(e)
+        return None
+    if compress:
+        enstr = compressStr.split('=')[0]
+    else:
+        enstr = compressStr
+    return enstr
+
+
+if __name__ == &quot;__main__&quot;:
+    print(decrypt('YWJjcjM0cjM0NHI='))
+    print(decrypt('YWJjcjM0cjM0NHI'))
+    print(encrypt('abcr34r344r'))
+    print(encrypt(b'abcr34r344r', True))
 </rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
