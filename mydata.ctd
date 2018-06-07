@@ -6024,10 +6024,11 @@ ln -s /usr/local/python3/bin/python3 /usr/bin/</rich_text><rich_text foreground=
 ln </rich_text><rich_text>-s /usr/local/python3/bin/pip3 /usr/bin/pip3 #建立pip3 软链接
 
 </rich_text><rich_text scale="h1" weight="heavy">python3建立虚拟环境</rich_text><rich_text>
-python3 -m venv . #当前路径建立虚拟环境
-source ./bin/activate #激活当前虚拟环境
-pip3 install ipython scrapy #安装第三方包
-deactivate #退出虚拟环境
+pip3 install virtualenv
+</rich_text><rich_text foreground="#0000ff">ln</rich_text><rich_text> -s /usr/local/python3/bin/virtualenv /usr/bin/</rich_text><rich_text foreground="#000000">virtualenv</rich_text><rich_text>  #建立软链接
+virtualenv ENV
+source ./bin/activate
+pip install requests pymysql scrapy
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下安装phantomjs</rich_text><rich_text>
 yum -y install wget install bzip2.x86_64 </rich_text><rich_text foreground="#000000">fontconfig</rich_text><rich_text> # 安装下载工具和解压工具bzip2,</rich_text><rich_text foreground="#000000">fontconfig</rich_text><rich_text>是phantomjs需求环境
