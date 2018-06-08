@@ -5990,11 +5990,14 @@ uname -a    #查看当前内核的版本号
 </rich_text><rich_text background="#ffffff" foreground="#333333">rpm -qa | grep kernel  #查找要删除的版本号</rich_text><rich_text foreground="#333333">
 </rich_text><rich_text>yum -y remove kernel-3.10.0-327.el7.x86_64   #卸载旧内核
 yum -y install epel-release #安装并启用EPEL源
-
+yum -y install screen 
+</rich_text><rich_text background="#ffffff" foreground="#333333">yum install net-tools</rich_text><rich_text> #用netsttc
 </rich_text><rich_text scale="h1" weight="heavy">备份恢复centos系统</rich_text><rich_text>
-tar cvpzf /home/bak/install.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home/bak --exclude=/mnt --exclude=/sys
-tar cvpzf /home/bak/20180523-py3.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home/bak --exclude=/mnt --exclude=/sys
+tar cvpzf /home/bak/install.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys  
+tar cvpjf /home/bak/install.tgz.bz2 / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys  #Bzip来压缩你的备份
+tar cvpzf /home/bak/20180523-py3.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys
 tar xvpfz 20180425-bak.tgz -C /
+restorecon -Rv / #不执行这个无法登陆系统
 mkdir proc
 mkdir lost+found
 mkdir mnt
@@ -6029,6 +6032,35 @@ pip3 install virtualenv
 virtualenv ENV
 source ./bin/activate
 pip install requests pymysql scrapy
+deactivate
+</rich_text><rich_text scale="h1" weight="heavy">centos下安装nginx和mysql</rich_text><rich_text>
+</rich_text><rich_text foreground="#000000">yum </rich_text><rich_text>-y install bzip2 #mysql要用到bzip2
+wget -c </rich_text><rich_text link="webs http://soft.vpser.net/lnmp/lnmp1.5.tar.gz">http://soft.vpser.net/lnmp/lnmp1.5.tar.gz</rich_text><rich_text> &amp;&amp; tar zxf lnmp1.5.tar.gz &amp;&amp; cd lnmp1.5 #用lnmp包编译安装nginx和mysql
+./install.sh nginx 
+./install.sh db
+chkconfig --list  
+chkconfig --level 345 mysql on #可以自己更改
+netstat -na | grep 3306 #查看端口,需要安装net-tools
+
+</rich_text><rich_text scale="h1" weight="heavy">centos下查看服务启动列表</rich_text><rich_text>
+</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files</rich_text><rich_text>
+</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files | grep enable</rich_text><rich_text> #查询自动启动
+</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files | grep zabbix</rich_text><rich_text> #过滤查询服务名
+
+</rich_text><rich_text scale="h1" weight="heavy">centos下mysql相关操作</rich_text><rich_text>
+mysql -uroot -p  #用密码登录
+use mysql ;#切换数据库
+update user set host = '%' where user = 'root'; #最好不要这样做,应该是建立一个数据库而重新建立一个普通用户
+update user set password=password('hero-mysql@78619808!@#41717670') where user='root'; #修改密码
+flush privileges; #刷新权限
+DROP USER 'hero'@'%';  #删除用户
+flush privileges;  
+create database tumblr;#创建数据库
+GRANT ALL PRIVILEGES ON tumblr.* TO 'hero'@'localhost' IDENTIFIED BY 'mysql!@#_hero@4171767078619808' WITH GRANT OPTION; #创建一个普通用户，权限只是本地可以连接
+GRANT ALL PRIVILEGES ON tumblr.* TO 'hero'@'%' IDENTIFIED BY '41717670' WITH GRANT OPTION; #%是都可以连接
+flush privileges;
+
+
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下安装phantomjs</rich_text><rich_text>
 yum -y install wget install bzip2.x86_64 </rich_text><rich_text foreground="#000000">fontconfig</rich_text><rich_text> # 安装下载工具和解压工具bzip2,</rich_text><rich_text foreground="#000000">fontconfig</rich_text><rich_text>是phantomjs需求环境
@@ -6046,49 +6078,12 @@ pyspider all #  启动所有pyspider组件 包括phantomjs，需要root权限
 </rich_text><rich_text background="#ffffff" foreground="#262626">nohup </rich_text><rich_text>pyspider all &amp; #后台启动pyspider关闭终端也可以运行
 
 
-
 </rich_text><rich_text scale="h1" weight="heavy">centos下防火墙添加端口</rich_text><rich_text>
 </rich_text><rich_text background="#ffffff" foreground="#333333">firewall-cmd --permanent --add-port=5000/tcp</rich_text><rich_text> #添加5000端口
 </rich_text><rich_text background="#ffffff" foreground="#333333">firewall-cmd --reload　#重启防火墙</rich_text><rich_text>
 firewall-cmd --state    #显示状态
 firewall-cmd --list-port #查看所有打开的端口
 vi /etc/firewalld/zones/public.xml #这个是防火墙的配置文件
-
-</rich_text><rich_text scale="h1" weight="heavy">centos下安装mysql</rich_text><rich_text>
-wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm #下载mysql源安装包
-yum localinstall mysql57-community-release-el7-8.noarch.rpm #安装mysql源
-yum install mysql-community-server #安装mysql
-systemctl start mysqld #启动mysql服务
-systemctl status mysqld #查看MySQL的启动状态
-systemctl enable mysqld #开机启动
-systemctl daemon-reload #开机启动
-grep 'temporary password' /var/log/mysqld.log #找到root默认密码
-mysql -uroot -p #登录mysql修改密码
-set password for 'root'@'localhost'=password('hero'); #修改密码
-show variables like '%password%'; #查看密码策略
-#validate_password_policy：密码策略，默认为MEDIUM策略 
-#validate_password_dictionary_file：密码策略文件，策略为STRONG才需要 
-#validate_password_length：密码最少长度 
-#validate_password_mixed_case_count：大小写字符长度，至少1个 
-#validate_password_number_count ：数字至少1个 
-#validate_password_special_char_count：特殊字符至少1个 
-#在/etc/my.cnf文件添加validate_password_policy配置，指定密码策略
-# 选择0（LOW），1（MEDIUM），2（STRONG）其中一种，选择2需要提供密码字典文件
-validate_password_policy=0 #如果不需要密码策略，添加my.cnf文件中添加如下配置禁用即可：
-validate_password = off #如果不需要密码策略，添加my.cnf文件中添加如下配置禁用即可：
-systemctl restart mysqld #重新启动mysql服务使配置生效
-mysql&gt; GRANT ALL PRIVILEGES ON *.* TO 'hero'@'%' IDENTIFIED BY 'hero1114!' WITH GRANT OPTION;#修改root允许远程连接，或者添加一个允许远程连接的帐户，为了安全起见，我添加一个新的帐户：
-[mysqld]    #修改/etc/my.cnf配置文件，在[mysqld]下添加编码配置
-character_set_server=utf8 #修改/etc/my.cnf配置文件，在[mysqld]下添加编码配置
-init_connect='SET NAMES utf8' #修改/etc/my.cnf配置文件，在[mysqld]下添加编码配置
-mkdir /home/data #创建data文件夹
-mysqladmin -u root -p sh#停掉mysql
-mv /var/lib/mysql /home/data #移动数据到数据存放目录
-[mysql]  #修改 /etc/my.cnf 文件
-socket=/home/data/mysql/mysql.sock #修改 /etc/my.cnf 文件
-chown -R mysql:mysql /home/data/mysql #调整权限
-mysqldump --socket=/home/data/mysql/mysql.sock --single-transaction=TRUE  -u root -p emsc &gt; emsc.sql #备份
-mysql --socket=/home/data/mysql/mysql.sock  -u root -p emsc &lt; emsc.sql #还原
 
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下dd备份系统</rich_text><rich_text>
