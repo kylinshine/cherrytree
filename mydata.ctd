@@ -202,6 +202,12 @@ oShellLink.Save
 AnacondaPath =&quot;D:\Program Files (x86)\Anaconda3\&quot; '添加python环境变量'
 AnacondaScripts=&quot;D:\Program Files (x86)\Anaconda3\Scripts\&quot;
 WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = AnacondaPath + &quot;;&quot; + AnacondaScripts +&quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+########################################################下载nod32更新包########################################################
+if exist &quot;D:\nginx\html&quot; del /s /q &quot;D:\nginx\html\*.*&quot;   
+if exist offline_update_eav.zip del /s /q offline_update_eav.zip
+wget -nc http://ftp.ivanovo.ac.ru/updates/eset/offline_update_eav.zip
+7za x offline_update_eav.zip -oD:\nginx\html -aoa
+
 
 
 </rich_text></node><node name="linux" prog_lang="sh" readonly="False" tags="" unique_id="28"><rich_text>
