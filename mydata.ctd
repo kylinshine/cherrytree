@@ -5876,7 +5876,52 @@ def SsrStr(serverip, port, password, protocol, method, obfs, remarks='', group='
 if __name__ == &quot;__main__&quot;:
     ssr = SsrStr('103.15.216.133', '443', 'hero78619808', 'auth_aes128_sha1', 'aes-256-ctr', 'tls1.2_ticket_auth','史艳文')
     print (ssr)
+    
+import os
+'''
+传入文件路径和文件类型,过滤文件的大小默认是从1M到10G过滤
+'''
 
+
+def FindFiles(dirPath=[],fileType=[],fileSize=[1024*1024,1024*1024*1024*10]):
+    files = []
+    fileSizeMin = int(fileSize[0])
+    fileSizeMax = int(fileSize[1])
+    for path in dirPath:
+        if os.path.isdir(path):
+            for root, dirs, names in os.walk(path):
+                for name in names:
+                    if os.path.splitext(name)[1].lower() in fileType:
+                        if fileSizeMin &lt;= os.path.getsize(os.path.join(root, name)) &lt;= fileSizeMax:
+                            files.append(os.path.join(root, name))
+    return files
+
+if __name__ == '__main__':
+    f = FindFiles(['a:/','d:/','e:/'],['.mp4', '.avi', '.wmv', '.mkv', '.vob', '.ts', '.rm', '.rmvb', '.mpg'])
+    print(f)
+    
+import hashlib
+import os
+'''
+计算文件的md5
+'''
+def GetFileMd5(filePath):
+    if os.path.isfile(filePath):
+        f = open(filePath, 'rb')
+        hashObj = hashlib.md5()
+        while True:
+            d = f.read(4096)
+            if not d:
+                break
+            hashObj.update(d)
+        hashCode = hashObj.hexdigest()
+        f.close()
+        fileMd5 = str(hashCode).lower()
+        return fileMd5
+
+if __name__ == '__main__':
+    fileMd5 = GetFileMd5('d:/fc2ppv_676186.mp4')
+    print (fileMd5)
 
 
 </rich_text></node><node name="SsrList" prog_lang="python" readonly="False" tags="" unique_id="60"><rich_text>#!/usr/bin/python
