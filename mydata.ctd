@@ -5922,6 +5922,32 @@ def GetFileMd5(filePath):
 if __name__ == '__main__':
     fileMd5 = GetFileMd5('d:/fc2ppv_676186.mp4')
     print (fileMd5)
+    
+import subprocess
+'''
+python调用wget下载文件,成功返回0,失败返回-1,传入的proxy代理字符串如果下载链接是http那么http_proxy=http://127.0.0.1:1090
+如果下载链接是https那么应该是https_proxy=http://127.0.0.1:1090
+'''
+def DownLoadFile(url,useProxy=False,proxy=None):
+    if useProxy and proxy:
+        cmd = 'wget -t 3 --no-check-certificate -c -e &quot;{}&quot; {}'.format(proxy, url)
+    else:
+        cmd = 'wget -t 3 --no-check-certificate -c {}'.format(url)
+    p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    while p.poll() is None:
+        line = p.stdout.readline()
+        line = line.strip()
+        if line:
+            print('正在下载:{}'.format(line))
+    if p.returncode == 0:
+        return 0
+    else:
+        return -1
+
+
+if __name__ == '__main__':
+    a = DownLoadFile('http://mirrors.aliyun.com/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1804.iso',True,'http_proxy=http://127.0.0.1:1090')
+    print (a)
 
 
 </rich_text></node><node name="SsrList" prog_lang="python" readonly="False" tags="" unique_id="60"><rich_text>#!/usr/bin/python
