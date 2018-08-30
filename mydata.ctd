@@ -5928,8 +5928,8 @@ import subprocess
 python调用wget下载文件,成功返回0,失败返回-1,传入的proxy代理字符串如果下载链接是http那么http_proxy=http://127.0.0.1:1090
 如果下载链接是https那么应该是https_proxy=http://127.0.0.1:1090
 '''
-def DownLoadFile(url,useProxy=False,proxy=None):
-    if useProxy and proxy:
+def DownLoadFile(url,proxy=None):
+    if proxy:
         cmd = 'wget -t 3 --no-check-certificate -c -e &quot;{}&quot; {}'.format(proxy, url)
     else:
         cmd = 'wget -t 3 --no-check-certificate -c {}'.format(url)
@@ -5946,7 +5946,7 @@ def DownLoadFile(url,useProxy=False,proxy=None):
 
 
 if __name__ == '__main__':
-    a = DownLoadFile('http://mirrors.aliyun.com/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1804.iso',True,'http_proxy=http://127.0.0.1:1090')
+    a = DownLoadFile('http://mirrors.aliyun.com/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1804.iso','http_proxy=http://127.0.0.1:1090')
     print (a)
 
 
