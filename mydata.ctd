@@ -6063,6 +6063,68 @@ class downloader:
 
 if __name__ == &quot;__main__&quot;:
     downloader().run()
+</rich_text></node><node name="demo" prog_lang="python" readonly="False" tags="" unique_id="64"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2018
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/8/31
+import threading
+import os
+import time
+import queue
+
+class FindAV(threading.Thread):
+    def __init__(self,Q,dirPath=[],fileType=[]):
+        super().__init__()
+        self.q = q
+        self.dirPath=dirPath
+        self.fileType=fileType
+
+    def run(self):
+        self.FindFiles()
+
+    def FindFiles(self,fileSize=[1024 * 1024, 1024 * 1024 * 1024 * 10]):
+        fileSizeMin = int(fileSize[0])
+        fileSizeMax = int(fileSize[1])
+        for path in self.dirPath:
+            if os.path.isdir(path):
+                for root, dirs, names in os.walk(path):
+                    for name in names:
+                        if os.path.splitext(name)[1].lower() in self.fileType:
+                            if fileSizeMin &lt;= os.path.getsize(os.path.join(root, name)) &lt;= fileSizeMax:
+                                filename =os.path.join(root, name)
+                                print ('我是生产者线程,线程名是{}正在往里塞数据,现在队列长度是{},我塞的数据是{}'.format(self.getName(),self.q.qsize(),filename))
+                                self.q.put(filename)
+
+
+class GetAV(threading.Thread):
+    def __init__(self, q):
+        super().__init__()
+        self.q = q
+    def run(self):
+        while True:
+            data = self.q.get()
+            print('我是消费者线程,线程名是{},现在队列长度是{},我读到数据是{}'.format(self.getName(),self.q.qsize(), data))
+            time.sleep(20)
+            self.q.task_done()
+
+if __name__ == '__main__':
+    q =  queue.Queue(10)
+    data = FindAV(q,['D:/','e:/','F:/','G:/'],['.mp4', '.avi', '.wmv', '.mkv', '.vob', '.ts', '.rm', '.rmvb', '.mpg'])
+    data.start()
+    for i in range(8):
+        t = GetAV(q)
+        t.setDaemon(True)
+        t.start()
+    q.join()
+
+
+
+
+
 </rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
