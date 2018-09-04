@@ -5136,64 +5136,71 @@ if __name__ == '__main__':
         shutil.move(x,newfile)
 </rich_text></node><node name="DBDriver" prog_lang="python" readonly="False" tags="" unique_id="27"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
-# With Pycharm 4.5
+# With Pycharm 2017
 # author: Kylin
 # email: kylinshine@163.com
 # QQ: 78619808
-# Created by Kylin on 2017/5/25
+# Created by Kylin on 2018/6/9
 import sqlite3
-
+'''
+封装sqlite3,创建表增删改用DbExecute,查询DbQuery,可以直接传语句，也可以用?占位,后面传入元组
+DbExecute和DbQuery 区别是commit提交
+'''
 
 class DBDriver:
-  '''''
-  The DBDriver class use to write the script data that parse from Excel file
-  '''
 
-  def __init__(self, dbfile,tablename,fields=['name','age']):
-    self.tablename = tablename
-    self.fields = fields
-    self.dbfile = dbfile
+    def __init__(self, dbfile):
+        try:
+            self.conn = sqlite3.connect(dbfile)
+            self.cur = self.conn.cursor()
+        except Exception as err:
+            print('Connect db Error: ' + str(err))
 
-  def ceratedb(self):
-    fields = [field + ' varchar(128)' for field in self.fields]
-    fieldsql= ','.join(fields)
-    createlist = [&quot;create table if not exists &quot;, self.tablename, &quot;(id integer primary key autoincrement, &quot;, fieldsql, &quot;)&quot;]
-    createsql = &quot;&quot;.join(createlist)
-    self.conn = sqlite3.connect(self.dbfile)
-    self.conn.isolation_level = None
-    self.conn.execute(createsql)  #create new table
-    return
+    def DbExecute(self, sql,*params):  #*params是一个元组
+        try:
+            self.cur.execute(sql,*params)  # 执行sql语句
+            self.conn.commit()
+        except Exception as err:
+            print('Execute sql scraipt Error: '+ str(err) )
 
-  def execdb(self, execsql):
-    #print execsql
-    self.conn.execute(execsql)
-    self.conn.commit()
-    return
+    def DbQuery(self, sql,*params):
+        try:
+            self.cur.execute(sql,*params)  # 执行sql语句
+            return self.cur.fetchall()
+        except Exception as err:
+            print('Select table Error: ' + str(err))
 
-  def select(self, selectsql):
-    self.cur = self.conn.cursor()
-    self.cur.execute(selectsql)
-    self.res = self.cur.fetchall()
-    return self.res
-
-  def getcount(self):
-    return len(self.res)
-
-  def closedb(self):
-    self.cur.close()
-    self.conn.close()
-
-  def __del__(self):
-      self.closedb()
+    def close(self):
+        self.cur.close()
+        self.conn.close()
 
 
+if __name__ == &quot;__main__&quot;:
+    Test = DBDriver('train.db')
+    tbSql1 = &quot;create table tumblr(id integer primary key,tumblrName varchar(128),total varchar(128))&quot;
+    Test.DbExecute(tbSql1)
+    tbsql2 = &quot;insert into tumblr values (1,'godbells','1000') &quot;
+    Test.DbExecute(tbsql2)
+    tbsql3= &quot;insert into tumblr values (?,?,?) &quot;
+    tbsql3p= (2,'godbells','2000')
+    Test.DbExecute(tbsql3,tbsql3p)
+    tbsql4 = &quot; select * from tumblr where id=1 &quot;
+    a = Test.DbQuery(tbsql4)
+    print (a)
+    tbsql5 = &quot; select * from tumblr where id= ?&quot;
+    tbsql5p = (2,)
+    b = Test.DbQuery(tbsql5,tbsql5p)
+    print (b)
+    tbsql6 = &quot; select * from tumblr&quot;
+    c = Test.DbQuery(tbsql6)
+    print (c)
 
-'''''
-The example for using the DBDriver class
-'''
-if __name__ == '__main__':
-    dbd = DBDriver('hero2.db', 'db',['name','age','address'])
-    dbd.ceratedb()</rich_text></node><node name="ReblogTumblr" prog_lang="python" readonly="False" tags="" unique_id="52"><rich_text>#!/usr/bin/python
+
+
+
+
+
+</rich_text></node><node name="ReblogTumblr" prog_lang="python" readonly="False" tags="" unique_id="52"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Program Name:test.py
 # IDE:Pycharm2017
