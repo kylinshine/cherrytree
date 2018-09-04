@@ -5752,6 +5752,66 @@ if __name__ == '__main__':
     a = DownLoadFile('http://mirrors.aliyun.com/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1804.iso','http_proxy=http://127.0.0.1:1090')
     print (a)
 
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2018
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/8/31
+import os
+'''
+传入文件路径和文件类型,过滤文件的大小默认是从1M到10G过滤
+'''
+class FindFiles():
+    def __init__(self,path=[],type=[],fileSize=[1024*1024,1024*1024*1024*10]):
+        self.path = path  #需要查询的路径列表
+        self.type = type  #查询的
+        self.fileSizeMin = fileSize[0]
+        self.fileSizeMax = fileSize[1]
+
+    def setType(self,str):
+        if str == 'video':
+            self.type = ['.mp4','.rmvb','.rm','.mpg','.avi','.mpg','.mkv','.vob','.3gp']
+        if str == 'photo':
+            
+
+
+    def GetFile(self):
+        files = []
+        for path in self.path:
+            if os.path.isdir(path):
+                for root, dirs, names in os.walk(path):
+                    for name in names:
+                        if os.path.splitext(name)[1].lower() in self.type:
+                            if self.fileSizeMin &lt;= os.path.getsize(os.path.join(root, name)) &lt;= self.fileSizeMax:
+                                fileName = os.path.join(root, name)
+                                files.append(fileName)
+        return files
+
+    def GetFileSize(self):
+        files = []
+        for path in self.path:
+            if os.path.isdir(path):
+                for root, dirs, names in os.walk(path):
+                    for name in names:
+                        if os.path.splitext(name)[1].lower() in self.type:
+                            if self.fileSizeMin &lt;= os.path.getsize(os.path.join(root, name)) &lt;= self.fileSizeMax:
+                                fileName = os.path.join(root, name)
+                                fileSize = os.path.getsize(fileName)
+                                files.append((fileName,fileSize))
+        return files
+
+
+
+
+
+
+if __name__ == '__main__':
+    f = FindFiles(['d:/'],['.mp4'])
+    n = f.GetFileSize()
+    print (n)
 
 </rich_text></node><node name="SsrList" prog_lang="python" readonly="False" tags="" unique_id="60"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
