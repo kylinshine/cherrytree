@@ -2434,7 +2434,166 @@ if __name__=='__main__':
     mainWindow.show() #显示框口
     sys.exit(app.exec_()) #进入消息循环
 </rich_text></node><node name="自己的程序" prog_lang="python" readonly="False" tags="" unique_id="39"><rich_text>
-</rich_text><node name="SendMail" prog_lang="python" readonly="False" tags="" unique_id="40"><rich_text>########################################################py2.7 sendmail########################################################
+</rich_text><node name="SqliteHelper" prog_lang="python" readonly="False" tags="" unique_id="27"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# With Pycharm 2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin on 2018/6/9
+import sqlite3
+'''
+封装sqlite3,创建表增删改用DbExecute,查询DbQuery,可以直接传语句，也可以用?占位,后面传入元组
+DbExecute和DbQuery 区别是commit提交
+'''
+
+class DBDriver:
+
+    def __init__(self, dbfile):
+        try:
+            self.conn = sqlite3.connect(dbfile)
+            self.cur = self.conn.cursor()
+        except Exception as err:
+            print('Connect db Error: ' + str(err))
+
+    def DbExecute(self, sql,*params):  #*params是一个元组
+        try:
+            self.cur.execute(sql,*params)  # 执行sql语句
+            self.conn.commit()
+        except Exception as err:
+            print('Execute sql scraipt Error: '+ str(err) )
+
+    def DbQuery(self, sql,*params):
+        try:
+            self.cur.execute(sql,*params)  # 执行sql语句
+            return self.cur.fetchall()
+        except Exception as err:
+            print('Select table Error: ' + str(err))
+
+    def close(self):
+        self.cur.close()
+        self.conn.close()
+
+
+if __name__ == &quot;__main__&quot;:
+    Test = DBDriver('train.db')
+    tbSql1 = &quot;create table tumblr(id integer primary key,tumblrName varchar(128),total varchar(128))&quot;
+    Test.DbExecute(tbSql1)
+    tbsql2 = &quot;insert into tumblr values (1,'godbells','1000') &quot;
+    Test.DbExecute(tbsql2)
+    tbsql3= &quot;insert into tumblr values (?,?,?) &quot;
+    tbsql3p= (2,'godbells','2000')
+    Test.DbExecute(tbsql3,tbsql3p)
+    tbsql4 = &quot; select * from tumblr where id=1 &quot;
+    a = Test.DbQuery(tbsql4)
+    print (a)
+    tbsql5 = &quot; select * from tumblr where id= ?&quot;
+    tbsql5p = (2,)
+    b = Test.DbQuery(tbsql5,tbsql5p)
+    print (b)
+    tbsql6 = &quot; select * from tumblr&quot;
+    c = Test.DbQuery(tbsql6)
+    print (c)
+
+
+
+
+
+
+</rich_text></node><node name="MysqlHelper" prog_lang="python" readonly="False" tags="" unique_id="42"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2018
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/9/4
+import pymysql
+
+'''
+mysql的占位符和sqlite不一样，sqlite是?,mysql是%s
+DbExec方法是带回滚的执行
+'''
+
+class DBHelper():
+
+    def __init__(self,host,user,passwd,db,port=3306):
+        self.host = host
+        self.port = port
+        self.user = user
+        self.passwd = passwd
+        self.db = db
+        self.charset = &quot;utf8&quot;
+        try:
+            self.conn = pymysql.connect(host=self.host,
+                                        db=self.db,
+                                        user=self.user,
+                                        passwd=self.passwd,
+                                        port=self.port,
+                                        charset=self.charset,
+                                        connect_timeout=60)
+            self.cur = self.conn.cursor()
+        except:
+            print('connect error!')
+
+    def DbExecute(self, sql,*params):  #*params是一个元组
+        try:
+            self.cur.execute(sql,*params)  # 执行sql语句
+            self.conn.commit()
+        except Exception as err:
+            print('Execute sql scraipt Error: '+ str(err) )
+
+    def DbQuery(self, sql, *params):
+        try:
+            self.cur.execute(sql, *params)  # 执行sql语句
+            return self.cur.fetchall()
+        except Exception as err:
+            print('Select table Error: ' + str(err) )
+
+    def DbExec(self, sql,*params): #这个是带回滚的
+        try:
+            self.cur.execute(sql,*params)  # 执行失败,回滚数据
+            self.conn.commit()
+        except Exception as err:
+            self.conn.rollback()
+            print('Execute sql scraipt Error,data rollback : '+ str(err) )
+
+
+    def close(self):
+        self.cur.close()
+        self.conn.close()
+
+
+
+
+
+
+
+
+
+
+if __name__ == &quot;__main__&quot;:
+    mysqldb = DBHelper('127.0.0.1','root','78619808','test')
+    sql = &quot; select * from crawlblog limit %s &quot;
+    params =(5,)
+    c = mysqldb.DbQuery(sql,params)
+    print(c)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</rich_text></node><node name="SendMail" prog_lang="python" readonly="False" tags="" unique_id="40"><rich_text>########################################################py2.7 sendmail########################################################
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm
@@ -2593,304 +2752,7 @@ class Compress_Zip(object):
 
 
 if __name__ == '__main__':
-    zip = Compress_Zip([u'F:\新建文件夹'],r'f:\123\qq.zip',debug = True)</rich_text></node><node name="MySQLHelper" prog_lang="python" readonly="False" tags="" unique_id="42"><rich_text>#--encoding:utf-8--  
-#  
-import MySQLdb  
-  
-class MySQLHelper:  
-    #myVersion=0.1  
-    def __init__(self,host,user,password,charset=&quot;utf8&quot;):  
-        self.host=host  
-        self.user=user  
-        self.password=password  
-        self.charset=charset  
-        try:  
-            self.conn=MySQLdb.connect(host=self.host,user=self.user,passwd=self.password)  
-            self.conn.set_character_set(self.charset)  
-            self.cursor=self.conn.cursor()  
-        except MySQLdb.Error as e:  
-            print ('MySql Error : %d %s' %(e.arsqlhelpergs[0],e.args[1]))  
-      
-    def setDB(self,db):  
-        try:  
-            self.conn.select_db(db)  
-        except MySQLdb.Error as e:  
-            print ('MySql Error : %d %s' %(e.args[0],e.args[1]))  
-      
-    def query(self,sql):  
-        try:  
-            rows=self.cursor.execute(sql)  
-            return rows;  
-        except MySQLdb.Error as e:  
-            print('MySql Error: %s SQL: %s'%(e,sql))  
-              
-    def queryOnlyRow(self,sql):  
-        try:  
-            self.query(sql)  
-            result=self.cursor.fetchone()  
-            desc=self.cursor.description  
-            row={}  
-            for i in range(0,len(result)):  
-                row[desc[i][0]]=result[i]  
-            return row;  
-        except MySQLdb.Error as e:  
-            print('MySql Error: %s SQL: %s'%(e,sql))  
-      
-    def queryAll(self,sql):  
-        try:  
-            self.query(sql)  
-            result=self.cursor.fetchall()  
-            desc=self.cursor.description  
-            rows=[]  
-            for cloumn in result:  
-                row={}  
-                for i in range(0,len(cloumn)):  
-                    row[desc[i][0]]=cloumn[i]  
-                rows.append(row)    
-            return rows;  
-        except MySQLdb.Error as e:  
-            print('MySql Error: %s SQL: %s'%(e,sql))  
-      
-    def insert(self,tableName,pData):  
-        try:  
-            newData={}  
-            for key in pData:  
-                newData[key]=&quot;'&quot;&quot;'&quot;+pData[key]+&quot;'&quot;  
-            key=','.join(newData.keys())  
-            value=','.join(newData.values())  
-            sql=&quot;insert into &quot;+tableName+&quot;(&quot;+key+&quot;) values(&quot;+value+&quot;)&quot;  
-            self.query(&quot;set names 'utf8'&quot;)  
-            self.query(sql)  
-            self.commit()  
-        except MySQLdb.Error as e:  
-            self.conn.rollback()  
-            print('MySql Error: %s %s'%(e.args[0],e.args[1]))  
-        finally:  
-            self.close()  
-      
-    def update(self,tableName,pData,whereData):  
-        try:  
-            newData=[]  
-            keys=pData.keys()  
-            for i in keys:  
-                item=&quot;%s=%s&quot;%(i,&quot;'&quot;&quot;'&quot;+pData[i]+&quot;'&quot;)  
-                newData.append(item)  
-            items=','.join(newData)  
-            newData2=[]  
-            keys=whereData.keys()  
-            for i in keys:  
-                item=&quot;%s=%s&quot;%(i,&quot;'&quot;&quot;'&quot;+whereData[i]+&quot;'&quot;)  
-                newData2.append(item)  
-            whereItems=&quot; AND &quot;.join(newData2)  
-            sql=&quot;update &quot;+tableName+&quot; set &quot;+items+&quot; where &quot;+whereItems  
-            self.query(&quot;set names 'utf8'&quot;)  
-            self.query(sql)  
-            self.commit()  
-        except MySQLdb.Error as e:  
-            self.conn.rollback()  
-            print('MySql Error: %s %s'%(e.args[0],e.args[1]))  
-        finally:  
-            self.close()  
-      
-    def getLastInsertRowId(self):  
-        return self.cursor.lastrowid  
-      
-    def getRowCount(self):  
-        return self.cursor.rowcount  
-      
-    def commit(self):  
-        self.conn.commit()  
-      
-    def close(self):  
-        self.cursor.close()  
-        self.conn.close()  
-##############################################pymysql读取表中大量数据###############################################
-#!/usr/bin/python
-# -*- coding: UTF-8 -*-
-# Program Name:test.py
-# IDE:Pycharm2017
-# author: Kylin
-# email: kylinshine@163.com
-# QQ: 78619808
-# Created by Kylin at 2018/2/28
-import pymysql
-import requests
-import os
-import queue
-import random
-import threading
-import time
-
-class CheckTumblrBlog():
-
-    def __init__(self, host, user, password,db,limit=10,port=3306,charset=&quot;utf8&quot;):
-        self.host = host
-        self.user = user
-        self.password = password
-        self.database = db
-        self.limit= int(limit)
-        self.port = port
-        self.charset = charset
-        try:
-            self.conn = pymysql.connect(
-                host=self.host,
-                db=self.database,
-                user=self.user,
-                passwd=self.password,
-                port=self.port,
-                charset=self.charset,
-                connect_timeout=60,
-                cursorclass=pymysql.cursors.SSDictCursor)
-            self.cursor = self.conn.cursor()
-        except:
-            print('Mysql connect error!')
-
-    def setDB(self,dbname):
-
-        try:
-            self.conn.select_db(dbname)
-        except:
-            print('select DB error')
-
-    def queryAll(self, sql):
-
-        try:
-            self.cursor.execute(sql)
-            while True:
-                rows = self.cursor.fetchmany(self.limit)
-                if rows:
-                    for row in rows:
-                        print (row)
-                    time.sleep(3)
-                else:
-                    break
-        except:
-            print ('Get Data Error!')
-        finally:
-            self.close()
-
-    def commit(self):
-        self.conn.commit()
-
-    def close(self):
-        self.cursor.close()
-        self.conn.close()
-
-
-if __name__ == '__main__':
-    test = CheckTumblrBlog('127.0.0.1','root','78619808','tumblr')
-    test.queryAll('select * from posts ')
-
-###############################################wordpress 数据远程同步方法###############################################
-import MySQLdb
-import datetime
-import time
-from  tools import *
-
-def wp_checktitle(dbconn,title):
-    '''wordpress检测是否有重复标题'''
-
-    cursor=dbconn.cursor()
-
-    sql = &quot;select post_title from wp_posts where post_title='%s'&quot; % (title)
-    cursor.execute(sql)
-
-    if cursor.rowcount == 0:
-        checkflag = 1
-    else:
-        checkflag = 0
-
-    return checkflag
-
-
-
-def  sync_wordpress(dbconn,title,content):
-    '''同步wordpress程序'''
-    
-    checkflag = wp_checktitle(dbconn,title)
-    cursor=dbconn.cursor()
-    
-    curtime = str(datetime.datetime.now())[:19]
-    
-    post_author = 1
-    post_date = curtime
-    post_date_gmt = curtime
-    post_content = content
-    post_title = title
-    post_name = post_title
-    post_modified = curtime
-    post_modified_gmt = curtime
-    post_content_filtered = ''
-    currenttime = int(time.time())
-    
-
-    if checkflag:
-       try:
-           postsql = ''
-           postsql = '''INSERT INTO `wp_posts` (
-                  `post_author` ,
-                  `post_date` ,
-                  `post_date_gmt` ,
-                  `post_content` ,
-                  `post_title` ,
-                  `post_name` ,
-                  `post_modified`,
-                  `post_modified_gmt`,
-                  `post_content_filtered`
-                  )
-                  VALUES (
-                   '%(post_author)s','%(post_date)s','%(post_date_gmt)s','%(post_content)s','%(post_title)s','%(post_name)s','%(post_modified)s','%(post_modified_gmt)s','%(post_content_filtered)s')''' % {'post_author':post_author,'post_date':post_date,'post_date_gmt':post_date_gmt,'post_content':post_content,'post_title':post_title,'post_name':post_name,'post_modified':post_modified,'post_modified_gmt':post_modified_gmt,'post_content_filtered':post_content_filtered}
-           
-
-           cursor.execute(postsql)
-           dbconn.commit()
-           
-           rowid = cursor.lastrowid
-               
-           metasql = ''
-           metasql = &quot;insert into `wp_postmeta`(`post_id`)VALUES(%s)&quot; % (rowid)
-           cursor.execute(metasql)
-           dbconn.commit()
-
-           insertsql = '''INSERT INTO `wp_term_relationships` (
-           `object_id` ,
-           `term_taxonomy_id` 
-           )
-           VALUES (
-           %(object_id)s, %(term_taxonomy_id)s) ''' % {'object_id':rowid,'term_taxonomy_id':1}
-           
-           cursor.execute(insertsql)
-           dbconn.commit()
-
-           return 1
-
-       except Exception, e:
-            print '数据库错误:', e
-            return 0
-
-       finally:
-            cursor.close()
-            dbconn.close()
-    else:
-        print 'wordpress title exist'
-        return 1
-
-title = 'titl-wptitle'
-zcontent = 'content—————–'
-
-curhost = ''##远程数据库服务器地址
-webuser = ''#数据库用户名
-webpwd =''#数据库密码
-webdb = ''#数据库名称
-
-dbconn = MySQLdb.connect(host=curhost, user=webuser, passwd=webpwd, db=webdb, port=3306, charset='utf8')
-     
-flag = sync_wordpress(dbconn,title,zcontent)
-
-if flag:
-    print 'wordpress sync success'
-else:
-    print 'wordpress sync error'</rich_text></node><node name="nod32_update" prog_lang="python" readonly="False" tags="" unique_id="43"><rich_text>#!/usr/bin/python
+    zip = Compress_Zip([u'F:\新建文件夹'],r'f:\123\qq.zip',debug = True)</rich_text></node><node name="nod32_update" prog_lang="python" readonly="False" tags="" unique_id="43"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*
 import requests
 import re
@@ -5134,72 +4996,6 @@ if __name__ == '__main__':
     for x in f:
         newfile = os.path.join('g:\\movie',os.path.basename(x))
         shutil.move(x,newfile)
-</rich_text></node><node name="DBDriver" prog_lang="python" readonly="False" tags="" unique_id="27"><rich_text>#!/usr/bin/python
-# -*- coding: UTF-8 -*-
-# With Pycharm 2017
-# author: Kylin
-# email: kylinshine@163.com
-# QQ: 78619808
-# Created by Kylin on 2018/6/9
-import sqlite3
-'''
-封装sqlite3,创建表增删改用DbExecute,查询DbQuery,可以直接传语句，也可以用?占位,后面传入元组
-DbExecute和DbQuery 区别是commit提交
-'''
-
-class DBDriver:
-
-    def __init__(self, dbfile):
-        try:
-            self.conn = sqlite3.connect(dbfile)
-            self.cur = self.conn.cursor()
-        except Exception as err:
-            print('Connect db Error: ' + str(err))
-
-    def DbExecute(self, sql,*params):  #*params是一个元组
-        try:
-            self.cur.execute(sql,*params)  # 执行sql语句
-            self.conn.commit()
-        except Exception as err:
-            print('Execute sql scraipt Error: '+ str(err) )
-
-    def DbQuery(self, sql,*params):
-        try:
-            self.cur.execute(sql,*params)  # 执行sql语句
-            return self.cur.fetchall()
-        except Exception as err:
-            print('Select table Error: ' + str(err))
-
-    def close(self):
-        self.cur.close()
-        self.conn.close()
-
-
-if __name__ == &quot;__main__&quot;:
-    Test = DBDriver('train.db')
-    tbSql1 = &quot;create table tumblr(id integer primary key,tumblrName varchar(128),total varchar(128))&quot;
-    Test.DbExecute(tbSql1)
-    tbsql2 = &quot;insert into tumblr values (1,'godbells','1000') &quot;
-    Test.DbExecute(tbsql2)
-    tbsql3= &quot;insert into tumblr values (?,?,?) &quot;
-    tbsql3p= (2,'godbells','2000')
-    Test.DbExecute(tbsql3,tbsql3p)
-    tbsql4 = &quot; select * from tumblr where id=1 &quot;
-    a = Test.DbQuery(tbsql4)
-    print (a)
-    tbsql5 = &quot; select * from tumblr where id= ?&quot;
-    tbsql5p = (2,)
-    b = Test.DbQuery(tbsql5,tbsql5p)
-    print (b)
-    tbsql6 = &quot; select * from tumblr&quot;
-    c = Test.DbQuery(tbsql6)
-    print (c)
-
-
-
-
-
-
 </rich_text></node><node name="ReblogTumblr" prog_lang="python" readonly="False" tags="" unique_id="52"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Program Name:test.py
