@@ -5988,6 +5988,75 @@ if __name__ == '__main__':
 
 
 
+</rich_text></node><node name="SyncToMysql" prog_lang="python" readonly="False" tags="" unique_id="65"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2018
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/9/5
+from utils.SqliteHelper import DBDriver
+from utils.MysqlHelper import DBHelper
+import os
+from utils.config import *
+'''
+同步本地sqlite的数据到mysql数据库,config里是mysql数据库的配置
+查询本地sqlite数据用到的是生成器,遍历生成器便可得到数据,这样比查出数据返回列表，遍历列表要快
+查询本地sqlite的字段要与占位符,以及和mysql的写入语句字段 占位符相匹配(可以一样可以不一样 但要匹配）
+'''
+
+class SyncData():
+    def __init__(self,dbPath):
+        self.mysqlDB = DBHelper(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DBNAME)
+        self.dbPath = dbPath   # 本地sqlite文件所在
+        self.sqliteDB = self.GetDb() #如果存在文件,那么返回sqlite的连接对象 进一步操作数据
+
+    def setSqliteScript(self,sqlscript,limit,offset=0): #sql是语句用select * from test limit ?,?,limit是一次读多少条记录,offset是偏移量
+        self.sqliteScript = sqlscript
+        self.limit = int(limit)
+        self.offset = int(offset)
+
+    def setMysqlScript(self, sqlscript):  #写入字段的个数要和查询字段个数匹配,占位符也要和字段个数匹配
+        self.mysqlScript = sqlscript
+
+    def GetDb(self):
+        if os.path.isfile(self.dbPath):  # 判断下sqlite的文件是否存在,存在打开
+            sqliteDB = DBDriver(self.dbPath)
+            return sqliteDB
+        else:
+            return None
+
+
+    def GetDbData(self): #生成器,遍历得到数据,每次查询limt条数据,然后偏移limit后再查询，通过循环可以查询到所有数据
+        if self.sqliteDB:
+            while True:
+                sqlParams = (self.offset,self.limit)
+                data = self.sqliteDB.DbQuery(self.sqliteScript,sqlParams)
+                if data:
+                    self.offset += self.limit
+                    yield data
+                else:
+                    break
+
+    def SyncToMysql(self):  #这里是同步到mysql,得到生成器遍历生成器,得到列表,遍历列表写入数据,通过外循环完生成器写完所有数据
+        localdatas = self.GetDbData()
+        for localdata in localdatas:
+            if localdata:
+                for data in localdata:
+                    self.mysqlDB.DbExec(self.mysqlScript, data)
+                    print('写入数据{}成功'.format(data[0]))
+
+
+if __name__ == '__main__':
+    a = SyncData('../db/tumblr.db')
+    a.setSqliteScript('select name from tumblrBlog limit ?,?',5)
+    a.setMysqlScript('replace into TumblrBlog (name) values (%s)')
+    a.SyncToMysql()
+
+
+
+
 </rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
