@@ -6427,7 +6427,17 @@ clear;case &quot;${SSR_OPTIONS}&quot; in
 	*)
 	echo &quot;选项不在范围内,2s后将重新加载,请注意选择...&quot;;sleep 2
 	/usr/bin/ssr;;
-esac</rich_text></node></node><node name="Java" prog_lang="java" readonly="False" tags="java" unique_id="2"><rich_text>
+esac</rich_text></node><node name="群晖" prog_lang="custom-colors" readonly="False" tags="" unique_id="67"><rich_text>在群晖上安装python3的三方包
+在商店直接安装python3,安装完python3的具体位置在 /volume1/@appstore/py3k/usr/local/bin下
+然后切换root模式 sudo -i 输入密码进入root模式
+wget https://bootstrap.pypa.io/ez_setup.py  #下载easy_install,出现503错误就用网页打开复制,新建ez.py 粘贴保存 上传到群晖
+python3 ez_setup.py install #安装easy_install
+/volume1/@appstore/py3k/usr/local/bin&gt;./easy_install pip #用easy_install 安装pip 注意路径 这个没有添加到环境变量，easy_install没有install参数
+/volume1/@appstore/py3k/usr/local/bin&gt;./pip install requests  #用easy_install 安装pip 注意路径 这个没有添加到环境变量
+/volume1/@appstore/py3k/usr/local/bin&gt; ./pip install requests pymysql 
+执行py3脚本
+nuhup python3 sync.py &amp;  #后台执行脚本
+</rich_text></node></node><node name="Java" prog_lang="java" readonly="False" tags="java" unique_id="2"><rich_text>
 </rich_text><node name="JDK环境" prog_lang="sh" readonly="False" tags="" unique_id="29"><rich_text>#################################################初始化jdk和jre的VBS脚本文件#################################################
 Dim MyVar
 Set shell = CreateObject(&quot;Shell.Application&quot;)
@@ -9194,7 +9204,35 @@ class SaveThread(BaseThread):
 
         # ----5----
         return True
-</rich_text></node></node><node name="zeronet" prog_lang="custom-colors" readonly="False" tags="" unique_id="62"><rich_text>zeronet的数据库在data文件夹 采用的json和sqlite两种格式来保存的
+</rich_text></node></node><node name="rclone" prog_lang="custom-colors" readonly="False" tags="" unique_id="66"><rich_text>centos 上用rclone挂在ftp google drive 、dropbox
+root# mkdir download
+root# wget https://downloads.rclone.org/v1.43.1/rclone-v1.43.1-linux-amd64.zip
+root# yum install -y unzip fuse #fuse用来挂载使用的
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">unzip rclone-v1.43.1-linux-amd64.zip
+root# chmod -R 755 rclone-v1.43.1-linux-amd64
+root# cp rclone-v1.43.1-linux-amd64/rclone /usr/bin/ 
+root# rm -rf </rich_text><rich_text>rclone-v1.43.1-linux-amd64 rclone-v1.43.1-linux-amd64.zip
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone config</rich_text><rich_text>
+n/s/q&gt;n
+name&gt; ftp
+Storage&gt; 9
+host &gt; test.test.com
+user &gt;test
+port &gt;21
+y/g &gt; y
+password&gt;123456
+y/e/d &gt; y
+e/n/d/r/c/s/q&gt;q
+root# rclone lsd myftp:HY-NAS/temp   #远程服务器HY-NAS目录下的temp目录
+root# </rich_text><rich_text background="#f7f7f7" foreground="#4d4d4c">rclone sync /home/tumblr/mytumblr/db/tumblr.db </rich_text><rich_text>myftp:HY-NAS/temp  #同步文件到远程ftp下
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone mkdir myftp</rich_text><rich_text>:HY-NAS/test  #远程创建文件夹
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone mount myftp:HY-NAS/temp  /tmp/</rich_text><rich_text>ftp  #挂在远程目录到本地
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone copy /home/tumblr/mytumblr/db/tumblr.db </rich_text><rich_text>myftp:HY-NAS  #上传到远程ftp
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone copy myftp:HY-NAS/tumblr.db /home/</rich_text><rich_text>  #下载远程到本地
+root# nohup rclone mount myftp:HY-NAS/temp /tmp/ftp &amp; #后台挂载
+root# screen -S rclone #开一个会话
+root# rclone mount myftp:HY-NAS/temp /tmp/ftp #后台挂载,ctrl+A+D断开当前会话
+</rich_text></node><node name="zeronet" prog_lang="custom-colors" readonly="False" tags="" unique_id="62"><rich_text>zeronet的数据库在data文件夹 采用的json和sqlite两种格式来保存的
 play这个站点的数据库是以下解释
 select * from title where name like 'Black Panther%'
 imdb_id:tt1825683  #imdb的电影id
