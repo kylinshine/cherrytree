@@ -9697,7 +9697,7 @@ root# cd home &amp; mkdir mega #建一个挂载的目录
 root# screen -S rclone #开一个会话
 root# rclone mount mega:/tumblr /home/mega #后台挂载,ctrl+A+D断开当前会话
 root# screen -S down #开一个会话
-root# wget -P /home/mega -i down.txt #用wget下载txt里的文件到mega,注意-P的大写,下载到挂载的目录即上传到了网盘
+root# wget -P /home/mega -c -i down.txt #用wget下载txt里的文件到mega,注意-P的大写,下载到挂载的目录即上传到了网盘
 
 
 
