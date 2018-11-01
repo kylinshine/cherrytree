@@ -13,21 +13,10 @@
 * python
 * java
 * sql
-* javascript
 
 ##操作系统
-* centos debian
+* centos
 * windows
-
-
-##有问题反馈
-在使用中有任何问题，欢迎反馈给我，可以用以下联系方式跟我交流
-
-* Email:kylinshine#163.com
-* QQ:78619808
-
-##感谢草依山
-提供了一个在线编辑MH文档的[网站](http://mahua.jser.me/)
 
 
 
@@ -37,6 +26,6 @@
   var myscript = {
     name  : "kylinshine",
     qq :"78619808"，
-    age：31
+    age：33
   }
 ```
