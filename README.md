@@ -16,6 +16,7 @@
 
 ##操作系统
 * centos
+* debian
 * windows
 
 
@@ -26,6 +27,6 @@
   var myscript = {
     name  : "kylinshine",
     qq :"78619808"，
-    age：33
+    age：34
   }
 ```
