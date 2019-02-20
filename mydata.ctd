@@ -6772,7 +6772,17 @@ mysqld remove
 mysqld -install
 net start mysql
 mysql -u root -p 输入密码
-进去后set password = password('root'); 修改密码即可</rich_text></node></node><node name="git" prog_lang="sh" readonly="False" tags="git" unique_id="12"><rich_text>git init    #初始化目录
+进去后set password = password('root'); 修改密码即可</rich_text></node><node name="pgsql" prog_lang="plain-text" readonly="False" tags="" unique_id="54"><rich_text>initdb.exe -D ../data -E UTF-8 --locale=chs -U postgres -W #初始化
+pg_ctl.exe -D &quot;D:\Program Files (x86)\pgsql\data&quot; -l logfile start #启动服务
+createdb -h localhost -p 5432 -U postgres tumblr #建立数据库
+pg_ctl.exe register -N PostgreSQL -D &quot;D:\Program Files (x86)\pgsql\data&quot; #注册为后台服务
+##########################postgresql.conf##########################
+listen_addresses = '*' #监听所有网络地址，为远程连接
+port = 5432 #端口
+max_connections = 500 #最大连接数
+##########################pg_hba.conf##########################
+host    all             all             0.0.0.0/0          md5
+</rich_text></node></node><node name="git" prog_lang="sh" readonly="False" tags="git" unique_id="12"><rich_text>git init    #初始化目录
 git add readme.txt   #把文件添加进去，实际上就是把文件修改添加到暂存区
 git commit -m &quot;wrote a readme file&quot; #提交更改，实际上就是把暂存区的所有内容提交到当前分支,-m 后面是说明备注
 git add file2.txt file3.txt  #一次可以添加多个文件
