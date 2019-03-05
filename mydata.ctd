@@ -1,14 +1,9 @@
-<?xml version="1.0" ?>
-<cherrytree>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="脚本" prog_lang="custom-colors" readonly="False" tags="" unique_id="46">
-		<rich_text>常用windows下脚本主要是bat和vbs脚本,因为我经常还原系统,带来桌面快捷方式遗失的情况
+<?xml version="1.0" ?><cherrytree><node name="脚本" prog_lang="custom-colors" readonly="False" tags="" unique_id="46"><rich_text>常用windows下脚本主要是bat和vbs脚本,因为我经常还原系统,带来桌面快捷方式遗失的情况
 初始化环境变量，使软件可以正常使用
 复制配置文件，包含密码或者软件配置
 初始化快捷方式,还原系统后可以正常使用
 notepad++编写脚本在windows下用ANSI编码
-</rich_text>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="win" prog_lang="sh" readonly="False" tags="" unique_id="48">
-			<rich_text>########################################################java初始化环境变量########################################################
+</rich_text><node name="win" prog_lang="sh" readonly="False" tags="" unique_id="48"><rich_text>########################################################java初始化环境变量########################################################
 Dim MyVar
 Set shell = CreateObject(&quot;Shell.Application&quot;)   
 Set selFolder = shell.BrowseForFolder(0, &quot;请选择JAVA_HOME目录(如:D:/jdk1.5.0_16):&quot;, 0, ssfDRIVES)   
@@ -218,18 +213,9 @@ wget --no-check-certificate -c -e &quot;https_proxy=http://127.0.0.1:1090&quot; 
 
 
 
-</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="linux" prog_lang="sh" readonly="False" tags="" unique_id="28">
-			<rich_text>
-</rich_text>
-		</node>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="Python" prog_lang="python" readonly="False" tags="Python" unique_id="1">
-		<rich_text>
-</rich_text>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="包管理" prog_lang="python" readonly="False" tags="" unique_id="19">
-			<rich_text>########################################################pip相关语法########################################################
+</rich_text></node><node name="linux" prog_lang="sh" readonly="False" tags="" unique_id="28"><rich_text>
+</rich_text></node></node><node name="Python" prog_lang="python" readonly="False" tags="Python" unique_id="1"><rich_text>
+</rich_text><node name="包管理" prog_lang="python" readonly="False" tags="" unique_id="19"><rich_text>########################################################pip相关语法########################################################
 安装完python 2.7之后,用pip安装常用模块，不常用的可以用virtualenv在虚拟环境中安装,默认安装完python2.7后先升级pip和setuptolls
 pip list --outdated #列出过期的第三方包
 pip install --upgrade pip setuptools wheel #一次升级多个
@@ -291,10 +277,7 @@ conda remove -n flowers --all #删除虚拟环境flowers
 conda search beautifulsoup4 #查询beautifulsoup4这个包
 
 
-</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="学习代码集合" prog_lang="python" readonly="False" tags="" unique_id="14">
-			<rich_text>##########################采用pyqt4+python 编写的下载链接转化链接的工具##########################
+</rich_text></node><node name="学习代码集合" prog_lang="python" readonly="False" tags="" unique_id="14"><rich_text>##########################采用pyqt4+python 编写的下载链接转化链接的工具##########################
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 #
@@ -799,10 +782,7 @@ if __name__ == &quot;__main__&quot;:
 
 
 
-</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="pycharm" prog_lang="python" readonly="False" tags="" unique_id="21">
-			<rich_text>pycharm模板存储在
+</rich_text></node><node name="pycharm" prog_lang="python" readonly="False" tags="" unique_id="21"><rich_text>pycharm模板存储在
 C:\Users\Administrator\.PyCharm40\config\fileTemplates\internal\Python Script.py #这是win7的存储位置
 ###############################################################################
 #!/usr/bin/python
@@ -844,10 +824,7 @@ pause &gt;nul
 
 
 
-</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="学习笔记" prog_lang="python" readonly="False" tags="" unique_id="11">
-			<rich_text>hashlib,md5模块：
+</rich_text></node><node name="学习笔记" prog_lang="python" readonly="False" tags="" unique_id="11"><rich_text>hashlib,md5模块：
     hashlib.md5('md5_str').hexdigest()      对指定字符串md5加密
     md5.md5('md5_str').hexdigest()          对指定字符串md5加密
 
@@ -899,9 +876,7 @@ shutil 模块：
 
 
 
-</rich_text>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="OS" prog_lang="python" readonly="False" tags="" unique_id="32">
-				<rich_text>os模块:
+</rich_text><node name="OS" prog_lang="python" readonly="False" tags="" unique_id="32"><rich_text>os模块:
     os.remove()         #删除文件
     os.unlink()         #删除文件
     os.rename()         #重命名文件
@@ -953,10 +928,7 @@ shutil 模块：
     os.path.samestat(stat1, stat2)  #判断stat tuple stat1和stat2是否指向同一个文件
     os.path.splitdrive(path)        #一般用在windows下，返回驱动器名和路径组成的元组
     os.path.walk(path, visit, arg)  #遍历path，给每个path执行一个函数详细见手册
-    os.path.supports_unicode_filenames()     #设置是否支持unicode路径名</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="SYS" prog_lang="python" readonly="False" tags="" unique_id="33">
-				<rich_text>sys模块：
+    os.path.supports_unicode_filenames()     #设置是否支持unicode路径名</rich_text></node><node name="SYS" prog_lang="python" readonly="False" tags="" unique_id="33"><rich_text>sys模块：
     sys.argv                命令行参数List，第一个元素是程序本身路径
     sys.path                返回模块的搜索路径，初始化时使用PYTHONPATH环境变量的值
     sys.modules.keys()      返回所有已经导入的模块列表
@@ -985,10 +957,7 @@ shutil 模块：
     sys.getwindowsversion()         获取Windows的版本
     sys.stdin.readline()            从标准输入读一行，sys.stdout.write(&quot;a&quot;) 屏幕输出a
     sys.setdefaultencoding(name)    用来设置当前默认的字符编码(详细使用参考文档)
-    sys.displayhook(value)          如果value非空，这个函数会把他输出到sys.stdout(详细使用参考文档)</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="datetime" prog_lang="python" readonly="False" tags="" unique_id="34">
-				<rich_text>datetime,date,time模块：
+    sys.displayhook(value)          如果value非空，这个函数会把他输出到sys.stdout(详细使用参考文档)</rich_text></node><node name="datetime" prog_lang="python" readonly="False" tags="" unique_id="34"><rich_text>datetime,date,time模块：
     datetime.date.today()           本地日期对象,(用str函数可得到它的字面表示(2014-03-24))
     datetime.date.isoformat(obj)    当前[年-月-日]字符串表示(2014-03-24)
     datetime.date.fromtimestamp()   返回一个日期对象，参数是时间戳,返回 [年-月-日]
@@ -1008,10 +977,7 @@ shutil 模块：
     time.mktime(timetupleobj)                   将datetime元组对象转为时间戳
     time.time()                     当前时间戳
     time.localtime
-    time.gmtime</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="string" prog_lang="python" readonly="False" tags="" unique_id="35">
-				<rich_text>string模块：
+    time.gmtime</rich_text></node><node name="string" prog_lang="python" readonly="False" tags="" unique_id="35"><rich_text>string模块：
     str.capitalize()            把字符串的第一个字符大写
     str.center(width)           返回一个原字符串居中，并使用空格填充到width长度的新字符串
     str.ljust(width)            返回一个原字符串左对齐，用空格填充到指定长度的新字符串
@@ -1049,10 +1015,7 @@ shutil 模块：
     str.rfind(str[,beg,end])    从右边开始查询子字符串
     str.rindex(str,[beg,end])   从右边开始查找子字符串位置
     str.rpartition(str)         类似partition函数，不过从右边开始查找
-    str.translate(str,del='')   按str给出的表转换string的字符，del是要过虑的字符</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="urllib" prog_lang="python" readonly="False" tags="" unique_id="36">
-				<rich_text>urllib模块：
+    str.translate(str,del='')   按str给出的表转换string的字符，del是要过虑的字符</rich_text></node><node name="urllib" prog_lang="python" readonly="False" tags="" unique_id="36"><rich_text>urllib模块：
     urllib.quote(string[,safe])             对字符串进行编码。参数safe指定了不需要编码的字符
     urllib.unquote(string)                  对字符串进行解码
     urllib.quote_plus(string[,safe])        与urllib.quote类似，但这个方法用'+'来替换' '，而quote用'%20'来代替' '
@@ -1072,20 +1035,14 @@ shutil 模块：
     urlrs.close()       跟文件对象使用一样
     urlrs.info()        返回一个httplib.HTTPMessage对象，表示远程服务器返回的头信息
     urlrs.getcode()     获取请求返回状态HTTP状态码
-    urlrs.geturl()      返回请求的URL</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="random" prog_lang="python" readonly="False" tags="" unique_id="37">
-				<rich_text>random模块：
+    urlrs.geturl()      返回请求的URL</rich_text></node><node name="random" prog_lang="python" readonly="False" tags="" unique_id="37"><rich_text>random模块：
     random.random()             产生0-1的随机浮点数
     random.uniform(a, b)        产生指定范围内的随机浮点数
     random.randint(a, b)        产生指定范围内的随机整数
     random.randrange([start], stop[, step]) 从一个指定步长的集合中产生随机数
     random.choice(sequence)     从序列中产生一个随机数
     random.shuffle(x[, random]) 将一个列表中的元素打乱
-    random.sample(sequence, k)  从序列中随机获取指定长度的片断</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="list tuple dict set" prog_lang="python" readonly="False" tags="" unique_id="38">
-				<rich_text>#使用list tuple dict set
+    random.sample(sequence, k)  从序列中随机获取指定长度的片断</rich_text></node><node name="list tuple dict set" prog_lang="python" readonly="False" tags="" unique_id="38"><rich_text>#使用list tuple dict set
 list
 #Python内置的一种数据类型是列表：list。list是一种有序的集合，可以随时添加和删除其中的元素。
 #classmates = ['Michael', 'Bob', 'Tracy'] #比如，列出班里所有同学的名字,就可以用一个list表示：
@@ -1173,10 +1130,7 @@ s1 = set([1, 2, 3])
 s2 = set([2, 3, 4])
 s1 &amp; s2 #set([2, 3])
 s1 | s2 #set([1, 2, 3, 4])
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="django" prog_lang="python" readonly="False" tags="" unique_id="6">
-				<rich_text>conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ #添加清华源
+</rich_text></node><node name="django" prog_lang="python" readonly="False" tags="" unique_id="6"><rich_text>conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ #添加清华源
 conda config --set show_channel_urls yes #显示URL
 conda env list #列举虚拟环境
 conda remove -n hero --all #删除虚拟环境hero并删除所有第三方包
@@ -1184,20 +1138,13 @@ conda create -n myenv pip django MySQL-python#创建虚拟环境myenv并按照pi
 activate myenv #激活虚拟环境
 myenv--&gt;&gt;conda install scrapy #在虚拟环境中安装第三方包scrapy
 myenv--&gt;&gt;deactivate myenv #离开虚拟环境myenv
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="scrapy" prog_lang="python" readonly="False" tags="" unique_id="13">
-				<rich_text>pip install -i https://pypi.tuna.tsinghua.edu.cn/simple scrapy #用清华源来安装scrapy
+</rich_text></node><node name="scrapy" prog_lang="python" readonly="False" tags="" unique_id="13"><rich_text>pip install -i https://pypi.tuna.tsinghua.edu.cn/simple scrapy #用清华源来安装scrapy
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ #添加清华源
 conda install scrapy #用anaconda版本python安装scrapy
 scrapy startproject tutorial #创建项目tutorial
 scrapy genspider -t basic domz dmoz.org #创建一个爬虫得到spiders/domz.py。
 
-</rich_text>
-			</node>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="demo" prog_lang="python" readonly="False" tags="" unique_id="22">
-			<rich_text>#!/usr/bin/python
+</rich_text></node></node><node name="demo" prog_lang="python" readonly="False" tags="" unique_id="22"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 #
 # Program Name:test.py
@@ -2067,10 +2014,7 @@ speaker.Speak(&quot;Hello, it works!&quot;)
 
 
 
-</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="代码注释" prog_lang="python" readonly="False" tags="" unique_id="23">
-			<rich_text>##############################################down.py##############################################
+</rich_text></node><node name="代码注释" prog_lang="python" readonly="False" tags="" unique_id="23"><rich_text>##############################################down.py##############################################
 import os,sys
 import urllib2
 from time import time,sleep
@@ -2493,13 +2437,8 @@ if __name__=='__main__':
     mainWindow = ProgressBar() #初始化类
     mainWindow.show() #显示框口
     sys.exit(app.exec_()) #进入消息循环
-</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="自己的程序" prog_lang="python" readonly="False" tags="" unique_id="39">
-			<rich_text>
-</rich_text>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="SqliteHelper" prog_lang="python" readonly="False" tags="" unique_id="27">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="自己的程序" prog_lang="python" readonly="False" tags="" unique_id="39"><rich_text>
+</rich_text><node name="SqliteHelper" prog_lang="python" readonly="False" tags="" unique_id="27"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm 2017
 # author: Kylin
@@ -2565,10 +2504,7 @@ if __name__ == &quot;__main__&quot;:
 
 
 
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="MysqlHelper" prog_lang="python" readonly="False" tags="" unique_id="42">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="MysqlHelper" prog_lang="python" readonly="False" tags="" unique_id="42"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Program Name:test.py
 # IDE:Pycharm2018
@@ -2661,10 +2597,7 @@ if __name__ == &quot;__main__&quot;:
 
 
 
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="SendMail" prog_lang="python" readonly="False" tags="" unique_id="40">
-				<rich_text>########################################################py2.7 sendmail########################################################
+</rich_text></node><node name="SendMail" prog_lang="python" readonly="False" tags="" unique_id="40"><rich_text>########################################################py2.7 sendmail########################################################
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm
@@ -2773,10 +2706,7 @@ if __name__ == '__main__':
     mail = Send_Mail('smtp.163.com', 'kylinshine@163.com', 'XXXXXXXX')
     mail.send(['78619808@qq.com'],u'2017年流向费用',u'附件是流向内容')
 
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="CompressZip" prog_lang="python" readonly="False" tags="" unique_id="41">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="CompressZip" prog_lang="python" readonly="False" tags="" unique_id="41"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm
 # author: Kylin
@@ -2826,10 +2756,7 @@ class Compress_Zip(object):
 
 
 if __name__ == '__main__':
-    zip = Compress_Zip([u'F:\新建文件夹'],r'f:\123\qq.zip',debug = True)</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="nod32_update" prog_lang="python" readonly="False" tags="" unique_id="43">
-				<rich_text>#!/usr/bin/python
+    zip = Compress_Zip([u'F:\新建文件夹'],r'f:\123\qq.zip',debug = True)</rich_text></node><node name="nod32_update" prog_lang="python" readonly="False" tags="" unique_id="43"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*
 import requests
 import re
@@ -3879,10 +3806,7 @@ if __name__ == '__main__':
         n = n + 1
 
 
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="Get163_Music" prog_lang="python" readonly="False" tags="" unique_id="44">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="Get163_Music" prog_lang="python" readonly="False" tags="" unique_id="44"><rich_text>#!/usr/bin/python
 #coding:utf-8
 
 import re
@@ -3953,10 +3877,7 @@ for value in mm:
     else:
         print &quot;%s is already downloaded. Finding next song...\n\n&quot; % songname
 print &quot;\n================================================================\n&quot;
-print &quot;Download finish!&quot;</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="HttpFetch" prog_lang="python" readonly="False" tags="" unique_id="7">
-				<rich_text>#!/usr/bin/python
+print &quot;Download finish!&quot;</rich_text></node><node name="HttpFetch" prog_lang="python" readonly="False" tags="" unique_id="7"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Program Name:tee.py
 # IDE:Pycharm
@@ -4052,10 +3973,7 @@ def httpfetch(url,reporthook=report, postData=None, report=True):
 if __name__ == '__main__':
     url = 'https://zhidao.baidu.com/question/570528117.html'
     data = httpfetch(url)
-    open('qq','w').write(data)</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="nod32_download" prog_lang="python" readonly="False" tags="" unique_id="25">
-				<rich_text>########################################################FolderUse.py########################################################
+    open('qq','w').write(data)</rich_text></node><node name="nod32_download" prog_lang="python" readonly="False" tags="" unique_id="25"><rich_text>########################################################FolderUse.py########################################################
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm 4.5
@@ -4405,10 +4323,7 @@ if __name__ == '__main__':
 
 
 
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="wwwyoujizzcom" prog_lang="python" readonly="False" tags="" unique_id="10">
-				<rich_text>########################################################DBhelper.py########################################################
+</rich_text></node><node name="wwwyoujizzcom" prog_lang="python" readonly="False" tags="" unique_id="10"><rich_text>########################################################DBhelper.py########################################################
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm 4.5
@@ -4833,10 +4748,7 @@ if __name__ == '__main__':
 
 
 
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="find_movie" prog_lang="python" readonly="False" tags="" unique_id="20">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="find_movie" prog_lang="python" readonly="False" tags="" unique_id="20"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Program Name:compress_movie.py
 # IDE:Pycharm
@@ -5088,10 +5000,7 @@ if __name__ == '__main__':
     for x in f:
         newfile = os.path.join('g:\\movie',os.path.basename(x))
         shutil.move(x,newfile)
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="ReblogTumblr" prog_lang="python" readonly="False" tags="" unique_id="52">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="ReblogTumblr" prog_lang="python" readonly="False" tags="" unique_id="52"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Program Name:test.py
 # IDE:Pycharm2017
@@ -5197,10 +5106,7 @@ if __name__==&quot;__main__&quot;:
 
 
 
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="qt" prog_lang="python" readonly="False" tags="" unique_id="55">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="qt" prog_lang="python" readonly="False" tags="" unique_id="55"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Program Name:test.py
 # IDE:Pycharm2017
@@ -5288,10 +5194,7 @@ if __name__=='__main__':
     app = QtWidgets.QApplication(sys.argv) #初始化一个app
     mainWindow = HelloPyQt() #初始化类
     mainWindow.show() #显示框口
-    sys.exit(app.exec_()) #进入消息循环</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="getSsr" prog_lang="python" readonly="False" tags="" unique_id="56">
-				<rich_text>#!/usr/bin/python
+    sys.exit(app.exec_()) #进入消息循环</rich_text></node><node name="getSsr" prog_lang="python" readonly="False" tags="" unique_id="56"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm 2017
 # author: Kylin
@@ -5370,10 +5273,7 @@ class GetSsr(object):
 if __name__ == '__main__':
     ssr = GetSsr('https://my.ishadowx.net/', './imgs/')
     ssr.parseallqrcode()
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="getJsqpro" prog_lang="python" readonly="False" tags="" unique_id="57">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="getJsqpro" prog_lang="python" readonly="False" tags="" unique_id="57"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm 2017
 # author: Kylin
@@ -5440,10 +5340,7 @@ class getJsqpro(object):
 
 if __name__ == '__main__':
     acc = getJsqpro('https://jsqpro.com/link/7G9kqlFEgOIp5dok?mu=0')
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="autoSsr" prog_lang="python" readonly="False" tags="" unique_id="58">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="autoSsr" prog_lang="python" readonly="False" tags="" unique_id="58"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm 2017
 # author: Kylin
@@ -5562,10 +5459,7 @@ class AutoGetSsr(object):
 
 if __name__ == &quot;__main__&quot;:
     a = AutoGetSsr('https://my.ishadowx.net/')
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="utils" prog_lang="python" readonly="False" tags="" unique_id="59">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="utils" prog_lang="python" readonly="False" tags="" unique_id="59"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Program Name:test.py
 # IDE:Pycharm2017
@@ -5923,10 +5817,7 @@ if __name__ == '__main__':
     n = f.GetFileSize()
     print (n)
 
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="SsrList" prog_lang="python" readonly="False" tags="" unique_id="60">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="SsrList" prog_lang="python" readonly="False" tags="" unique_id="60"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm 2017
 # author: Kylin
@@ -5982,10 +5873,7 @@ class AutoGetSsr(object):
 
 if __name__ == &quot;__main__&quot;:
     a = AutoGetSsr('https://my.ishadowx.net/')
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="ThreadDown" prog_lang="python" readonly="False" tags="" unique_id="63">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="ThreadDown" prog_lang="python" readonly="False" tags="" unique_id="63"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Program Name:test.py
 # IDE:Pycharm2017
@@ -6042,10 +5930,7 @@ class downloader:
 
 if __name__ == &quot;__main__&quot;:
     downloader().run()
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="demo" prog_lang="python" readonly="False" tags="" unique_id="64">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="demo" prog_lang="python" readonly="False" tags="" unique_id="64"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Program Name:test.py
 # IDE:Pycharm2018
@@ -6107,10 +5992,7 @@ if __name__ == '__main__':
 
 
 
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="SyncToMysql" prog_lang="python" readonly="False" tags="" unique_id="65">
-				<rich_text>#!/usr/bin/python
+</rich_text></node><node name="SyncToMysql" prog_lang="python" readonly="False" tags="" unique_id="65"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # Program Name:test.py
 # IDE:Pycharm2018
@@ -6179,26 +6061,12 @@ if __name__ == '__main__':
 
 
 
-</rich_text>
-			</node>
-		</node>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26">
-		<rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text>
-		<rich_text>: Notepad++
+</rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
-</rich_text>
-		<rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text>
-		<rich_text>
-</rich_text>
-		<rich_text background="#ffffff" foreground="#222222">视频播放：PotPlayer</rich_text>
-		<rich_text>
-</rich_text>
-		<rich_text background="#ffffff" foreground="#222222">网页浏览：Chrome</rich_text>
-		<rich_text>
-</rich_text>
-		<rich_text background="#ffffff" foreground="#222222">翻GFW：shadowsocks</rich_text>
-		<rich_text>
+</rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
+</rich_text><rich_text background="#ffffff" foreground="#222222">视频播放：PotPlayer</rich_text><rich_text>
+</rich_text><rich_text background="#ffffff" foreground="#222222">网页浏览：Chrome</rich_text><rich_text>
+</rich_text><rich_text background="#ffffff" foreground="#222222">翻GFW：shadowsocks</rich_text><rich_text>
 下载工具:迅雷 旋风
 数据库:sqlserver 2008 mysql
 即时通讯:qq
@@ -6207,69 +6075,30 @@ python IDE:JetBrains PyCharm
 压缩软件:winrar
 ghost一键恢复：老毛桃一键还原
 杀毒软件:eset nod32 推荐4.2版本
-java ide:intellij idea </rich_text>
-		<rich_text background="#ffffff" foreground="#222222">Eclipse </rich_text>
-		<rich_text>MyEclipse
-</rich_text>
-		<rich_text background="#ffffff" foreground="#222222">垃圾清理</rich_text>
-		<rich_text>:CCleaner
-办公软件:</rich_text>
-		<rich_text background="#ffffff" foreground="#222222">Office 2013</rich_text>
-		<rich_text>
-局域网通讯:</rich_text>
-		<rich_text background="#ffffff" foreground="#222222">IPMsg</rich_text>
-		<rich_text>
+java ide:intellij idea </rich_text><rich_text background="#ffffff" foreground="#222222">Eclipse </rich_text><rich_text>MyEclipse
+</rich_text><rich_text background="#ffffff" foreground="#222222">垃圾清理</rich_text><rich_text>:CCleaner
+办公软件:</rich_text><rich_text background="#ffffff" foreground="#222222">Office 2013</rich_text><rich_text>
+局域网通讯:</rich_text><rich_text background="#ffffff" foreground="#222222">IPMsg</rich_text><rich_text>
 笔记软件:CherryTree
-远程软件:Anydesk</rich_text>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="Linux" prog_lang="sh" readonly="False" tags="Linux" unique_id="8">
-		<rich_text>
-</rich_text>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="Centos" prog_lang="custom-colors" readonly="False" tags="Centos" unique_id="9">
-			<rich_text scale="h2">• </rich_text>
-			<rich_text scale="h2" weight="heavy">Centos7 学习之静态IP设置</rich_text>
-			<rich_text>
-(sudo) </rich_text>
-			<rich_text background="#ffffff" foreground="#000000">vi /etc/sysconfig/network-scripts/ifcfg-eth0  </rich_text>
-			<rich_text>  #后面的网卡名字可能有所变化，虚拟机vbox就是ifcfg-eng0s3
+远程软件:Anydesk</rich_text></node><node name="Linux" prog_lang="sh" readonly="False" tags="Linux" unique_id="8"><rich_text>
+</rich_text><node name="Centos" prog_lang="custom-colors" readonly="False" tags="Centos" unique_id="9"><rich_text scale="h2">• </rich_text><rich_text scale="h2" weight="heavy">Centos7 学习之静态IP设置</rich_text><rich_text>
+(sudo) </rich_text><rich_text background="#ffffff" foreground="#000000">vi /etc/sysconfig/network-scripts/ifcfg-eth0  </rich_text><rich_text>  #后面的网卡名字可能有所变化，虚拟机vbox就是ifcfg-eng0s3
 修改下来内容,vi操作i是insert
-</rich_text>
-			<rich_text foreground="#000000">BOOTPROTO=static #dhcp改为static   </rich_text>
-			<rich_text>
-</rich_text>
-			<rich_text foreground="#000000">ONBOOT=yes #开机启用本配置  </rich_text>
-			<rich_text>
-</rich_text>
-			<rich_text foreground="#000000">IPADDR=192.168.0.11 #静态IP  </rich_text>
-			<rich_text>
-</rich_text>
-			<rich_text foreground="#000000">GATEWAY=192.168.0.240 #默认网关  </rich_text>
-			<rich_text>
-</rich_text>
-			<rich_text foreground="#000000">NETMASK=255.255.255.0 #子网掩码  </rich_text>
-			<rich_text>
-</rich_text>
-			<rich_text foreground="#000000">DNS1=114.114.114.114 #DNS1 配置  </rich_text>
-			<rich_text>
-</rich_text>
-			<rich_text foreground="#000000">DNS2=8.8.8.8 #DNS2 配置  </rich_text>
-			<rich_text>
-</rich_text>
-			<rich_text background="#ffffff" foreground="#555555">重启下网络服务</rich_text>
-			<rich_text>
-</rich_text>
-			<rich_text background="#ffffff" foreground="#000000">service network restart </rich_text>
-			<rich_text>
+</rich_text><rich_text foreground="#000000">BOOTPROTO=static #dhcp改为static   </rich_text><rich_text>
+</rich_text><rich_text foreground="#000000">ONBOOT=yes #开机启用本配置  </rich_text><rich_text>
+</rich_text><rich_text foreground="#000000">IPADDR=192.168.0.11 #静态IP  </rich_text><rich_text>
+</rich_text><rich_text foreground="#000000">GATEWAY=192.168.0.240 #默认网关  </rich_text><rich_text>
+</rich_text><rich_text foreground="#000000">NETMASK=255.255.255.0 #子网掩码  </rich_text><rich_text>
+</rich_text><rich_text foreground="#000000">DNS1=114.114.114.114 #DNS1 配置  </rich_text><rich_text>
+</rich_text><rich_text foreground="#000000">DNS2=8.8.8.8 #DNS2 配置  </rich_text><rich_text>
+</rich_text><rich_text background="#ffffff" foreground="#555555">重启下网络服务</rich_text><rich_text>
+</rich_text><rich_text background="#ffffff" foreground="#000000">service network restart </rich_text><rich_text>
 检验网卡配置
-</rich_text>
-			<rich_text background="#ffffff" foreground="#000000">ip addr  </rich_text>
-			<rich_text>
+</rich_text><rich_text background="#ffffff" foreground="#000000">ip addr  </rich_text><rich_text>
 检验网络是否通畅
 ping www.baidu.com -c 4 #ping4次百度,参数-c 是count的意思
 
-</rich_text>
-			<rich_text foreground="#000000000000" scale="h1" weight="heavy">yum命令使用实例</rich_text>
-			<rich_text>
+</rich_text><rich_text foreground="#000000000000" scale="h1" weight="heavy">yum命令使用实例</rich_text><rich_text>
 yum clean all  #清理缓存
 yum makecache  #重新生成缓存
 yum -y update #更新系统
@@ -6282,9 +6111,7 @@ rpm -qa | grep kernel  #重启后再查看
 yum -y remove kernel-3.10.0-957.el7.x86_64   #卸载旧内核(重启后才能删除)
 yum -y install vsftpd #安装ftp服务
 
-</rich_text>
-			<rich_text scale="h1" weight="heavy">备份恢复centos系统</rich_text>
-			<rich_text>
+</rich_text><rich_text scale="h1" weight="heavy">备份恢复centos系统</rich_text><rich_text>
 mkdir /home/bak
 tar cvpzf /home/bak/centos7_20190214_install.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys  
 tar cvpjf /home/bak/install.tgz.bz2 / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys  #Bzip来压缩你的备份
@@ -6296,15 +6123,10 @@ mkdir lost+found
 mkdir mnt
 mkdir sys
 
-</rich_text>
-			<rich_text scale="h1" weight="heavy">passwd</rich_text>
-			<rich_text foreground="#000000000000" scale="h1" weight="heavy">命令使用实例</rich_text>
-			<rich_text>
+</rich_text><rich_text scale="h1" weight="heavy">passwd</rich_text><rich_text foreground="#000000000000" scale="h1" weight="heavy">命令使用实例</rich_text><rich_text>
 passwd root
 
-</rich_text>
-			<rich_text scale="h1" weight="heavy">centos下安装python3</rich_text>
-			<rich_text>
+</rich_text><rich_text scale="h1" weight="heavy">centos下安装python3</rich_text><rich_text>
 yum -y install wget #安装wget
 yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel gcc #安装依赖包
 yum -y install libffi-devel #python3.7需要libffi-deve
@@ -6323,51 +6145,68 @@ ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3 #建立pip3 软链接
 cd /home &amp;&amp; rm -rf Python3 #删除Python3目录
 tar cvpzf /home/bak/centos7_20190215_py3.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys  #备份下python3安装后的环境
 
-</rich_text>
-			<rich_text scale="h1" weight="heavy">python3建立虚拟环境</rich_text>
-			<rich_text>
+</rich_text><rich_text scale="h1" weight="heavy">python3建立虚拟环境</rich_text><rich_text>
 pip3 install virtualenv
-</rich_text>
-			<rich_text foreground="#0000ff">ln</rich_text>
-			<rich_text> -s /usr/local/python3/bin/virtualenv /usr/bin/</rich_text>
-			<rich_text foreground="#000000">virtualenv</rich_text>
-			<rich_text>  #建立软链接
+</rich_text><rich_text foreground="#0000ff">ln</rich_text><rich_text> -s /usr/local/python3/bin/virtualenv /usr/bin/</rich_text><rich_text foreground="#000000">virtualenv</rich_text><rich_text>  #建立软链接
 virtualenv ENV
 cd ENV
 source ./bin/activate
 pip install requests pymysql scrapy
 deactivate
-</rich_text>
-			<rich_text scale="h1" weight="heavy">centos下安装nginx和mysql</rich_text>
-			<rich_text>
-</rich_text>
-			<rich_text foreground="#000000">yum </rich_text>
-			<rich_text>-y install bzip2 #mysql要用到bzip2
-wget -c </rich_text>
-			<rich_text link="webs http://soft.vpser.net/lnmp/lnmp1.5.tar.gz">http://soft.vpser.net/lnmp/lnmp1.5.tar.gz</rich_text>
-			<rich_text> &amp;&amp; tar zxf lnmp1.5.tar.gz &amp;&amp; cd lnmp1.5 #用lnmp包编译安装nginx和mysql
+
+</rich_text><rich_text scale="h1" weight="heavy">centos安装PostgreSQL</rich_text><rich_text>
+yum install https://download.postgresql.org/pub/repos/yum/11/redhat/rhel-7-x86_64/pgdg-centos11-11-2.noarch.rpm
+yum install postgresql11 #客户端
+yum install postgresql11-server #服务端
+/usr/pgsql-11/bin/postgresql-11-setup initdb #</rich_text><rich_text background="#ffffff" foreground="#232323">Postgresql安装目录是/usr/pgsql-11,Postgresql的数据目录是/var/lib/pgsql/版本号/data</rich_text><rich_text>
+systemctl enable postgresql-11 #开机启动
+systemctl start postgresql-11 #启动服务
+</rich_text><rich_text background="#ffffff" foreground="#000000">su - postgres #切换用户
+psql</rich_text><rich_text>
+postgres=#&gt; ALTER USER postgres WITH PASSWORD '123456'; #更改密码
+</rich_text><rich_text background="#ffffff" foreground="#000000">vi /</rich_text><rich_text background="#ffffff" foreground="#a626a4">var</rich_text><rich_text background="#ffffff" foreground="#000000">/lib/pgsql/</rich_text><rich_text background="#ffffff" foreground="#986801">1</rich_text><rich_text background="#ffffff">1</rich_text><rich_text background="#ffffff" foreground="#000000">/</rich_text><rich_text background="#ffffff" foreground="#a626a4">data</rich_text><rich_text background="#ffffff" foreground="#000000">/pg_hba.conf</rich_text><rich_text> #修改远程可以登录验证密码为md5加密
+</rich_text><rich_text background="#ffffff" foreground="#000000">vi /</rich_text><rich_text background="#ffffff" foreground="#a626a4">var</rich_text><rich_text background="#ffffff" foreground="#000000">/lib/pgsql/</rich_text><rich_text background="#ffffff" foreground="#986801">1</rich_text><rich_text background="#ffffff">1</rich_text><rich_text background="#ffffff" foreground="#000000">/</rich_text><rich_text background="#ffffff" foreground="#a626a4">data</rich_text><rich_text background="#ffffff" foreground="#000000">/postgresql.conf</rich_text><rich_text> #修改配置和端口
+systemctl restart postgresql-11 #重启服务让配置生效
+firewall-cmd --permanent --zone=public --add-service=postgresql #修改防火墙策略,添加端口
+firewall-cmd --reload #重启加载下配置
+firewall-cmd --list-services  #查看防火墙策略
+create user</rich_text><rich_text background="#f5f2f0" foreground="#111111"> hero with password '123456';</rich_text><rich_text>
+create database tumblr owner hero;
+grant all privileges on database tumblr to hero;
+create user hero createdb login password '123456';
+grant all privileges on database tumblr to hero;
+drop database tumblr; #删除数据库
+</rich_text><rich_text background="#ffffff" foreground="#a626a4">drop</rich_text><rich_text background="#ffffff" foreground="#000000"> </rich_text><rich_text background="#ffffff" foreground="#a626a4">role</rich_text><rich_text background="#ffffff" foreground="#000000"> </rich_text><rich_text>hero; #删除用户之前先删除库
+\c tumblr
+create </rich_text><rich_text background="#f5f2f0" foreground="#111111"> table tumblrblog(name VARCHAR(20), title VARCHAR(100));</rich_text><rich_text>
+insert into tumblrblog values('test','test');
+
+\h：查看SQL命令的解释，比如\h select。
+\?：查看psql命令列表。
+\l：列出所有数据库。
+\c [database_name]：连接其他数据库。
+\d：列出当前数据库的所有表格。
+\d [table_name]：列出某一张表格的结构。
+\du：列出所有用户。
+\e：打开文本编辑器。
+\conninfo：列出当前数据库和连接的信
+
+
+</rich_text><rich_text scale="h1" weight="heavy">centos下安装nginx和mysql</rich_text><rich_text>
+</rich_text><rich_text foreground="#000000">yum </rich_text><rich_text>-y install bzip2 #mysql要用到bzip2
+wget -c </rich_text><rich_text link="webs http://soft.vpser.net/lnmp/lnmp1.5.tar.gz">http://soft.vpser.net/lnmp/lnmp1.5.tar.gz</rich_text><rich_text> &amp;&amp; tar zxf lnmp1.5.tar.gz &amp;&amp; cd lnmp1.5 #用lnmp包编译安装nginx和mysql
 ./install.sh nginx 
 ./install.sh db
 chkconfig --list  
 chkconfig --level 345 mysql on #可以自己更改
 netstat -na | grep 3306 #查看端口,需要安装net-tools
 
-</rich_text>
-			<rich_text scale="h1" weight="heavy">centos下查看服务启动列表</rich_text>
-			<rich_text>
-</rich_text>
-			<rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files</rich_text>
-			<rich_text>
-</rich_text>
-			<rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files | grep enable</rich_text>
-			<rich_text> #查询自动启动
-</rich_text>
-			<rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files | grep zabbix</rich_text>
-			<rich_text> #过滤查询服务名
+</rich_text><rich_text scale="h1" weight="heavy">centos下查看服务启动列表</rich_text><rich_text>
+</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files</rich_text><rich_text>
+</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files | grep enable</rich_text><rich_text> #查询自动启动
+</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files | grep zabbix</rich_text><rich_text> #过滤查询服务名
 
-</rich_text>
-			<rich_text scale="h1" weight="heavy">centos下mysql相关操作</rich_text>
-			<rich_text>
+</rich_text><rich_text scale="h1" weight="heavy">centos下mysql相关操作</rich_text><rich_text>
 mysql -uroot -p  #用密码登录
 use mysql ;#切换数据库
 update user set host = '%' where user = 'root'; #最好不要这样做,应该是建立一个数据库而重新建立一个普通用户
@@ -6382,14 +6221,8 @@ flush privileges;
 
 
 
-</rich_text>
-			<rich_text scale="h1" weight="heavy">centos下安装phantomjs</rich_text>
-			<rich_text>
-yum -y install wget install bzip2.x86_64 </rich_text>
-			<rich_text foreground="#000000">fontconfig</rich_text>
-			<rich_text> # 安装下载工具和解压工具bzip2,</rich_text>
-			<rich_text foreground="#000000">fontconfig</rich_text>
-			<rich_text>是phantomjs需求环境
+</rich_text><rich_text scale="h1" weight="heavy">centos下安装phantomjs</rich_text><rich_text>
+yum -y install wget install bzip2.x86_64 </rich_text><rich_text foreground="#000000">fontconfig</rich_text><rich_text> # 安装下载工具和解压工具bzip2,</rich_text><rich_text foreground="#000000">fontconfig</rich_text><rich_text>是phantomjs需求环境
 wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 # 下载PhantomJS,不成功的话windows下下载用sftp上传
 tar -xjf phantomjs-2.1.1-linux-i686.tar.bz2 #解压文件
 mv /home/hero/tmp/phantomjs-2.1.1-linux-x86_64 /usr/local/phantomjs # 剪切重命名
@@ -6399,18 +6232,12 @@ console.log('hello world!'); #写入测试内容
 phantom.exit(); #退出phantom
 phantomjs test.js #测试phantomjs 
 
-</rich_text>
-			<rich_text scale="h1" weight="heavy">centos下pyspider爬虫</rich_text>
-			<rich_text>
+</rich_text><rich_text scale="h1" weight="heavy">centos下pyspider爬虫</rich_text><rich_text>
 pyspider all #  启动所有pyspider组件 包括phantomjs，需要root权限
-</rich_text>
-			<rich_text background="#ffffff" foreground="#262626">nohup </rich_text>
-			<rich_text>pyspider all &amp; #后台启动pyspider关闭终端也可以运行
+</rich_text><rich_text background="#ffffff" foreground="#262626">nohup </rich_text><rich_text>pyspider all &amp; #后台启动pyspider关闭终端也可以运行
 
 
-</rich_text>
-			<rich_text scale="h1" weight="heavy">centos下防火墙添加端口</rich_text>
-			<rich_text>
+</rich_text><rich_text scale="h1" weight="heavy">centos下防火墙添加端口</rich_text><rich_text>
 firewall-cmd --permanent --zone=public --add-service=http  #添加http服务(对应端口80)
 firewall-cmd --permanent --zone=public --add-service=https #添加htts服务(对应端口443)
 firewall-cmd --permanent --zone=public --add-port=5000/tcp #添加指定端口5000
@@ -6426,9 +6253,7 @@ vi /etc/firewalld/zones/public.xml #这个是防火墙的配置文件
 
 
 
-</rich_text>
-			<rich_text scale="h1" weight="heavy">centos下dd备份系统</rich_text>
-			<rich_text>
+</rich_text><rich_text scale="h1" weight="heavy">centos下dd备份系统</rich_text><rich_text>
 1. 磁盘克隆
 也就是把整个硬盘复制一份。当然你首先需要在计算机上在接上一块新硬盘，并让系统识别。例如这块硬盘可能被识别为/dev/sdb,原有硬盘叫/dev/sda. 然后你可以在linux命令行上简单地执行：
 dd if=/dev/sda of=/dev/sdb
@@ -6457,10 +6282,7 @@ dd if=part1.img of=/dev/hda2
 最后，需要注意一点是，无论备份还是恢复，都需要保证 of 指向的文件或磁盘空间要大于 if 指向的内容，因为是按字节复制 如果没有足够的空间去存储内容，备份自然会失败。
 
 
-</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="bash" prog_lang="sh" readonly="False" tags="" unique_id="50">
-			<rich_text>#!/bin/bash
+</rich_text></node><node name="bash" prog_lang="sh" readonly="False" tags="" unique_id="50"><rich_text>#!/bin/bash
 
 #关闭防火墙
 Shut_down_iptables(){
@@ -6641,10 +6463,7 @@ clear;case &quot;${SSR_OPTIONS}&quot; in
 	*)
 	echo &quot;选项不在范围内,2s后将重新加载,请注意选择...&quot;;sleep 2
 	/usr/bin/ssr;;
-esac</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="群晖" prog_lang="custom-colors" readonly="False" tags="" unique_id="67">
-			<rich_text>在群晖上安装python3的三方包
+esac</rich_text></node><node name="群晖" prog_lang="custom-colors" readonly="False" tags="" unique_id="67"><rich_text>在群晖上安装python3的三方包
 在商店直接安装python3,安装完python3的具体位置在 /volume1/@appstore/py3k/usr/local/bin下
 然后切换root模式 sudo -i 输入密码进入root模式
 wget https://bootstrap.pypa.io/ez_setup.py  #下载easy_install,出现503错误就用网页打开复制,新建ez.py 粘贴保存 上传到群晖
@@ -6654,18 +6473,12 @@ python3 ez_setup.py install #安装easy_install
 /volume1/@appstore/py3k/usr/local/bin&gt; ./pip install requests pymysql 
 执行py3脚本
 nuhup python3 sync.py &amp;  #后台执行脚本
-</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="Frp" prog_lang="sh" readonly="False" tags="" unique_id="69">
-			<rich_text>root# cd /home 
+</rich_text></node><node name="Frp" prog_lang="sh" readonly="False" tags="" unique_id="69"><rich_text>root# cd /home 
 root# wget -c https://github.com/fatedier/frp/releases/download/v0.21.0/frp_0.21.0_linux_amd64.tar.gz
 root# tar xzvf frp_0.21.0_linux_amd64.tar.gz
 root# mv frp_0.21.0_linux_amd64 frp
 root# rm -rf frp_0.21.0_linux_amd64.tar.gz
-root# chmod -R 755 frp</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="Ubuntu" prog_lang="sh" readonly="False" tags="" unique_id="53">
-			<rich_text>
+root# chmod -R 755 frp</rich_text></node><node name="Ubuntu" prog_lang="sh" readonly="False" tags="" unique_id="53"><rich_text>
 Ubuntu下部署flask
 apt-get update #更新系统,Ubuntu上有python3
 apt-get install nginx python3-pip #安装nginx和pip
@@ -6720,14 +6533,8 @@ cd /home/ubuntu
 source ENV/bin/activate; #激活virtualenv环境
 cd /home/ubuntu/app; # 进入flask项目目录
 gunicorn -w 2 -b 127.0.0.1:9000 flaskApp:app; # 启动gunicorn服务
-</rich_text>
-		</node>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="Java" prog_lang="java" readonly="False" tags="java" unique_id="2">
-		<rich_text>
-</rich_text>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="环境变量" prog_lang="sh" readonly="False" tags="" unique_id="29">
-			<rich_text>###################################################设置java的jdk#################################################################
+</rich_text></node></node><node name="Java" prog_lang="java" readonly="False" tags="java" unique_id="2"><rich_text>
+</rich_text><node name="环境变量" prog_lang="sh" readonly="False" tags="" unique_id="29"><rich_text>###################################################设置java的jdk#################################################################
 Dim MyVar
 Set shell = CreateObject(&quot;Shell.Application&quot;)   
 Set selFolder = shell.BrowseForFolder(0, &quot;请选择JAVA_HOME目录(如:D:/jdk1.5.0_16):&quot;, 0, ssfDRIVES)   
@@ -6755,10 +6562,7 @@ wsh.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = &quot;%MAVEN_HOME%/
 MyVar = MsgBox (&quot;恭喜，完成设置！&quot;, , &quot;MSG&quot;)
 End If
 ###################################################################################################################################
-</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="Demo" prog_lang="java" readonly="False" tags="" unique_id="30">
-			<rich_text>###################################################hello world###################################################################
+</rich_text></node><node name="Demo" prog_lang="java" readonly="False" tags="" unique_id="30"><rich_text>###################################################hello world###################################################################
 public class Hello {
 
 	public static void main(String[] args) {
@@ -6768,10 +6572,7 @@ public class Hello {
 
 }
 ###################################################end###########################################################################
-</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="pom" prog_lang="java" readonly="False" tags="" unique_id="68">
-			<rich_text>###################################################maven的pom.xml的范例#################################################################
+</rich_text></node><node name="pom" prog_lang="java" readonly="False" tags="" unique_id="68"><rich_text>###################################################maven的pom.xml的范例#################################################################
 
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 
@@ -6836,17 +6637,9 @@ public class Hello {
             &lt;/plugin&gt;
         &lt;/plugins&gt;
     &lt;/build&gt;
-&lt;/project&gt;</rich_text>
-		</node>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="Database" prog_lang="plain-text" readonly="False" tags="database" unique_id="3">
-		<rich_text>
-</rich_text>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="sqlserver" prog_lang="sql" readonly="False" tags="sqlserver" unique_id="4">
-			<rich_text>
-</rich_text>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="动态语句" prog_lang="sql" readonly="False" tags="" unique_id="17">
-				<rich_text>动态sql语句基本语法 
+&lt;/project&gt;</rich_text></node></node><node name="Database" prog_lang="plain-text" readonly="False" tags="database" unique_id="3"><rich_text>
+</rich_text><node name="sqlserver" prog_lang="sql" readonly="False" tags="sqlserver" unique_id="4"><rich_text>
+</rich_text><node name="动态语句" prog_lang="sql" readonly="False" tags="" unique_id="17"><rich_text>动态sql语句基本语法 
 1 :普通SQL语句可以用Exec执行 
 eg:
 Select * from tableName 
@@ -6919,10 +6712,7 @@ sp_executesql：
 中间的参数就是@sqlstring 里边用到的参数（需要和外部的相对应的变量建立关联）
 最后你可以 select 输出的参数 来查询(select @count)
 
-</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="语法" prog_lang="sql" readonly="False" tags="" unique_id="18">
-				<rich_text>SELECT CONVERT(varchar(100), GETDATE(), 0)--05 16 2006 10:57AM
+</rich_text></node><node name="语法" prog_lang="sql" readonly="False" tags="" unique_id="18"><rich_text>SELECT CONVERT(varchar(100), GETDATE(), 0)--05 16 2006 10:57AM
 SELECT CONVERT(varchar(100), GETDATE(), 1)--05/16/06
 SELECT CONVERT(varchar(100), GETDATE(), 2)--06.05.16
 SELECT CONVERT(varchar(100), GETDATE(), 3)--16/05/06
@@ -6967,10 +6757,7 @@ select convert(char(8),dateadd(month,-1,getdate()),120)+'26'--返回上个月26�
 SELECT obj.Name 存储过程名, sc.TEXT 存储过程内容  FROM syscomments sc  
 INNER JOIN sysobjects obj ON sc.Id = obj.ID 
 WHERE sc.TEXT LIKE '%自己要查的内容%'      --查询所有存储过程中有哪个字段或者表，一定要用模糊查询
-select object_name(id),* from syscomments where text like '%自己要查的内容%'  --一样的效果查询存储过程</rich_text>
-			</node>
-			<node custom_icon_id="0" foreground="" is_bold="False" name="游标" prog_lang="sql" readonly="False" tags="" unique_id="24">
-				<rich_text>###########################################补时空出库验收记录###########################################
+select object_name(id),* from syscomments where text like '%自己要查的内容%'  --一样的效果查询存储过程</rich_text></node><node name="游标" prog_lang="sql" readonly="False" tags="" unique_id="24"><rich_text>###########################################补时空出库验收记录###########################################
 declare cursor1 cursor for select kaipiaodjbh from pf_ckhz where djbh like 'xsa%' and rq&gt;'2016-06-07' order by rq
 open cursor1
 declare @djbh char(14)
@@ -6987,11 +6774,7 @@ select @djbh,dj_sn,spid,pihao,sxrq,baozhiqi,shl,hshj,hsje,hw,xgdjbh,1 from pf_ck
 FETCH NEXT FROM cursor1 into @kaipiaodjbh
 end 
 close cursor1 
-deallocate cursor1</rich_text>
-			</node>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="mysql" prog_lang="sql" readonly="False" tags="mysql" unique_id="5">
-			<rich_text>下载mysql-5.7.9-winx64.zip 解压到 D:\Program Files (x86)\mysql位置
+deallocate cursor1</rich_text></node></node><node name="mysql" prog_lang="sql" readonly="False" tags="mysql" unique_id="5"><rich_text>下载mysql-5.7.9-winx64.zip 解压到 D:\Program Files (x86)\mysql位置
 下载连接：http://dev.mysql.com/downloads/mysql/
 设置环境变量 D:\Program Files (x86)\mysql\bin到环境变量path用脚本 
 ####################################################################################################################################################
@@ -7030,10 +6813,7 @@ mysqld remove
 mysqld -install
 net start mysql
 mysql -u root -p 输入密码
-进去后set password = password('root'); 修改密码即可</rich_text>
-		</node>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="pgsql" prog_lang="plain-text" readonly="False" tags="" unique_id="54">
-			<rich_text>initdb.exe -D ../data -E UTF-8 --locale=chs -U postgres -W #初始化
+进去后set password = password('root'); 修改密码即可</rich_text></node><node name="pgsql" prog_lang="plain-text" readonly="False" tags="" unique_id="54"><rich_text>initdb.exe -D ../data -E UTF-8 --locale=chs -U postgres -W #初始化
 pg_ctl.exe -D &quot;D:\Program Files (x86)\pgsql\data&quot; -l logfile start #启动服务
 createdb -h localhost -p 5432 -U postgres tumblr #建立数据库
 pg_ctl.exe register -N PostgreSQL -D &quot;D:\Program Files (x86)\pgsql\data&quot; #注册为后台服务
@@ -7043,11 +6823,7 @@ port = 5432 #端口
 max_connections = 500 #最大连接数
 ##########################pg_hba.conf##########################
 host    all             all             0.0.0.0/0          md5
-</rich_text>
-		</node>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="git" prog_lang="sh" readonly="False" tags="git" unique_id="12">
-		<rich_text>git init    #初始化目录
+</rich_text></node></node><node name="git" prog_lang="sh" readonly="False" tags="git" unique_id="12"><rich_text>git init    #初始化目录
 git add readme.txt   #把文件添加进去，实际上就是把文件修改添加到暂存区
 git commit -m &quot;wrote a readme file&quot; #提交更改，实际上就是把暂存区的所有内容提交到当前分支,-m 后面是说明备注
 git add file2.txt file3.txt  #一次可以添加多个文件
@@ -7081,10 +6857,7 @@ git pull origin master #拉取远程分支到本地，再更改再提交
 git add filename.txt #添加文件
 git commit -m &quot;wirite something&quot; #提交改变到本地
 git push origin master #push到远程
-</rich_text>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="学习日志" prog_lang="python" readonly="False" tags="" unique_id="16">
-		<rich_text>http://rainbird.blog.51cto.com/211214/225541/ #两台linux完美实现双机热备
+</rich_text></node><node name="学习日志" prog_lang="python" readonly="False" tags="" unique_id="16"><rich_text>http://rainbird.blog.51cto.com/211214/225541/ #两台linux完美实现双机热备
 https://www.douban.com/note/298777094/#在centos下实现mysql双机热备
 http://mahua.jser.me/ # 一个在线编辑markdown文档的编辑器
 http://blog.csdn.net/kaitiren/article/details/38513715 #markdown语法
@@ -7134,20 +6907,14 @@ http://ostagram.ru/queue_images?locale=en #一个DL画图的网站
 http://blog.csdn.net/zhangzheng0413/article/details/41728869 #线程join和守护理解
 http://www.cnblogs.com/qiyeboy/p/5693128.html #代理线程池的使用
 https://github.com/qiyeboy/IPProxyPool #代理池的代码
-http://blog.csdn.net/HanTangSongMing/article/details/24454453 #scrapy批量获取腾讯职位招聘</rich_text>
-		<node custom_icon_id="0" foreground="" is_bold="False" name="java学习日志" prog_lang="java" readonly="False" tags="" unique_id="45">
-			<rich_text>https://github.com/liufeng0103/bnade #一个java写的魔兽世界拍卖行相关数据的查询和分析
+http://blog.csdn.net/HanTangSongMing/article/details/24454453 #scrapy批量获取腾讯职位招聘</rich_text><node name="java学习日志" prog_lang="java" readonly="False" tags="" unique_id="45"><rich_text>https://github.com/liufeng0103/bnade #一个java写的魔兽世界拍卖行相关数据的查询和分析
 http://download.csdn.net/detail/maoxiang/2197531 #java写的多线程下载
 http://www.360doc.com/content/13/0224/00/7669533_267538568.shtml #JAVA定时执行任务(Tomcat 下的定时任务)
 http://blog.csdn.net/l1028386804/article/details/52727297 #Java之——实现每天定时执行任务
 http://download.csdn.net/detail/lbxx_64/7334323 #微信订阅号java源码
 http://www.98key.com/ #myeclipse注册码
 http://blog.csdn.net/qy20115549/article/details/52648631 #java多线程爬虫爬时光网
-</rich_text>
-		</node>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="计划" prog_lang="python" readonly="False" tags="" unique_id="15">
-		<rich_text>1 学习linux磁盘管理 vg
+</rich_text></node></node><node name="计划" prog_lang="python" readonly="False" tags="" unique_id="15"><rich_text>1 学习linux磁盘管理 vg
 2 数据分析分析销售图
 3 dht种子网络
 4 爬虫sfda
@@ -7156,18 +6923,9 @@ http://blog.csdn.net/qy20115549/article/details/52648631 #java多线程爬虫爬
 7 写一个自动更新nod32更新包的程序
 8 写一个自己电驴和磁力网站 java或者python
 9 学习java
-10 根据erp数据登录ftp删除不存在的药检</rich_text>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="nod32" prog_lang="custom-colors" readonly="False" tags="" unique_id="31">
-		<rich_text link="webs http://www.eset.hk/support/update_package/">http://www.eset.hk/support/update_package/</rich_text>
-		<rich_text background="#ffffff" foreground="#444444"> </rich_text>
-		<rich_text> #免cdkey离线更新包 可能不是最新的
-</rich_text>
-		<rich_text link="webs http://isnet.grifon.info/nod/">http://isnet.grifon.info/nod/</rich_text>
-		<rich_text> #google 搜索 title:index of /nod
-</rich_text>
-		<rich_text link="webs http://ftp.ivanovo.ac.ru/updates/eset/">http://ftp.ivanovo.ac.ru/updates/eset/</rich_text>
-		<rich_text> #同样一个发布离线更新包的网站
+10 根据erp数据登录ftp删除不存在的药检</rich_text></node><node name="nod32" prog_lang="custom-colors" readonly="False" tags="" unique_id="31"><rich_text link="webs http://www.eset.hk/support/update_package/">http://www.eset.hk/support/update_package/</rich_text><rich_text background="#ffffff" foreground="#444444"> </rich_text><rich_text> #免cdkey离线更新包 可能不是最新的
+</rich_text><rich_text link="webs http://isnet.grifon.info/nod/">http://isnet.grifon.info/nod/</rich_text><rich_text> #google 搜索 title:index of /nod
+</rich_text><rich_text link="webs http://ftp.ivanovo.ac.ru/updates/eset/">http://ftp.ivanovo.ac.ru/updates/eset/</rich_text><rich_text> #同样一个发布离线更新包的网站
 
 nod32注册表更改更新地址
 Windows Registry Editor Version 5.00
@@ -7177,14 +6935,9 @@ Windows Registry Editor Version 5.00
 &quot;Enable&quot;=dword:00000001
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\ESET\ESET Security\CurrentVersion\Plugins\01000400\Profiles\@My profile]
-&quot;SelectedServer&quot;=&quot;</rich_text>
-		<rich_text link="webs http://192.168.0.250:2221&quot;">http://192.168.0.250:2221&quot;</rich_text>
-		<rich_text>
+&quot;SelectedServer&quot;=&quot;</rich_text><rich_text link="webs http://192.168.0.250:2221&quot;">http://192.168.0.250:2221&quot;</rich_text><rich_text>
 &quot;MirrorFolder&quot;=&quot;C:\\ProgramData\\ESET\\ESET NOD32 Antivirus\\mirror&quot;
-</rich_text>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="tumblr blog" prog_lang="plain-text" readonly="False" tags="" unique_id="47">
-		<rich_text>eroticsets2016
+</rich_text></node><node name="tumblr blog" prog_lang="plain-text" readonly="False" tags="" unique_id="47"><rich_text>eroticsets2016
 burymytool
 favoritefemaleassholes
 spreading-beauties
@@ -8254,124 +8007,23 @@ osquieroatodas
 thomen-deactivated20171114
 gonemo2015
 rlaalwktl
-lsaia30678</rich_text>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="tumblr api" prog_lang="custom-colors" readonly="False" tags="" unique_id="49">
-		<rich_text>#检索博客的信息
-方法：https://</rich_text>
-		<rich_text background="#ffffff" foreground="#000000">api.tumblr.com/v2/blog/{blog-identifier}/info?api_key={key}</rich_text>
-		<rich_text>
+lsaia30678</rich_text></node><node name="tumblr api" prog_lang="custom-colors" readonly="False" tags="" unique_id="49"><rich_text>#检索博客的信息
+方法：https://</rich_text><rich_text background="#ffffff" foreground="#000000">api.tumblr.com/v2/blog/{blog-identifier}/info?api_key={key}</rich_text><rich_text>
 请求参数： 博客地址 api_key
 例子：https://api.tumblr.com/v2/blog/godbells.tumblr.com/info?api_key=9VhS4ytWYGNFnyYSItPKdZNxxlDkTh8hDI6IEBxCGmZCTuvrad
-</rich_text>
-		<rich_text justification="left"></rich_text>
-		<rich_text>
+</rich_text><rich_text justification="left"></rich_text><rich_text>
 
 #检索博客的头像
-方法：https://</rich_text>
-		<rich_text background="#ffffff" foreground="#000000">api.tumblr.com/v2/blog/{blog-identifier}/avatar[/size]</rich_text>
-		<rich_text>
+方法：https://</rich_text><rich_text background="#ffffff" foreground="#000000">api.tumblr.com/v2/blog/{blog-identifier}/avatar[/size]</rich_text><rich_text>
 请求参数：博客地址 头像大小
 例子：https://api.tumblr.com/v2/blog/david.tumblr.com/avatar/512
-</rich_text>
-		<rich_text justification="left"></rich_text>
-		<rich_text>
+</rich_text><rich_text justification="left"></rich_text><rich_text>
 #检索博客的喜欢
-方法：https://</rich_text>
-		<rich_text background="#ffffff" foreground="#000000">api.tumblr.com/v2/blog/{blog-identifier}/likes?api_key={key}</rich_text>
-		<rich_text>
+方法：https://</rich_text><rich_text background="#ffffff" foreground="#000000">api.tumblr.com/v2/blog/{blog-identifier}/likes?api_key={key}</rich_text><rich_text>
 请求参数：limit每次获得20个 offset偏移最大是1000 before某个时间之后的帖子 after某个时间之前的帖子
-例子：https://</rich_text>
-		<rich_text background="#ffffff" foreground="#000000">api.tumblr.com/v2/blog/godbells.tumblr.com/likes?api_key=</rich_text>
-		<rich_text>9VhS4ytWYGNFnyYSItPKdZNxxlDkTh8hDI6IEBxCGmZCTuvrad
-</rich_text>
-		<rich_text justification="left"></rich_text>
-		<rich_text>
-</rich_text>
-		<table char_offset="217" col_max="200" col_min="100">
-			<row>
-				<cell>title</cell>
-				<cell>字符串</cell>
-				<cell>博客的名字博客的显示标题</cell>
-			</row>
-			<row>
-				<cell>posts</cell>
-				<cell>数字</cell>
-				<cell>博客帖子总数</cell>
-			</row>
-			<row>
-				<cell>name</cell>
-				<cell>字符串</cell>
-				<cell>博客用户</cell>
-			</row>
-			<row>
-				<cell>updated</cell>
-				<cell>数字</cell>
-				<cell>最近一篇文章的时间，以秒为单位</cell>
-			</row>
-			<row>
-				<cell>description</cell>
-				<cell>字符串</cell>
-				<cell>博客的描述</cell>
-			</row>
-			<row>
-				<cell>ask</cell>
-				<cell>布尔</cell>
-				<cell>博客是否允许提问</cell>
-			</row>
-			<row>
-				<cell>ask_anon</cell>
-				<cell>布尔</cell>
-				<cell>博客是否允许匿名问题</cell>
-			</row>
-			<row>
-				<cell>likes</cell>
-				<cell>数字</cell>
-				<cell>喜欢帖子的数量</cell>
-			</row>
-			<row>
-				<cell>is_blocked_from_primary</cell>
-				<cell>布尔</cell>
-				<cell>博客是否已被主叫用户的主博客阻止</cell>
-			</row>
-			<row>
-				<cell>响应字段</cell>
-				<cell>类型</cell>
-				<cell>描述</cell>
-			</row>
-		</table>
-		<table char_offset="372" col_max="500" col_min="100">
-			<row>
-				<cell>avatar_ur</cell>
-				<cell>字符串</cell>
-				<cell>头像的地址,如果是html浏览器直接得到头像图片</cell>
-			</row>
-			<row>
-				<cell>响应字段</cell>
-				<cell>类型</cell>
-				<cell>描述</cell>
-			</row>
-		</table>
-		<table char_offset="639" col_max="500" col_min="100">
-			<row>
-				<cell>liked_posts</cell>
-				<cell>数组</cell>
-				<cell>用户喜欢的帖子信息</cell>
-			</row>
-			<row>
-				<cell>liked_count</cell>
-				<cell>数字</cell>
-				<cell>喜欢帖子的总数</cell>
-			</row>
-			<row>
-				<cell>响应字段</cell>
-				<cell>类型</cell>
-				<cell>描述</cell>
-			</row>
-		</table>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="待爬" prog_lang="custom-colors" readonly="False" tags="" unique_id="61">
-		<rich_text>hnchk #图片总数:434789, 视频总数:200
+例子：https://</rich_text><rich_text background="#ffffff" foreground="#000000">api.tumblr.com/v2/blog/godbells.tumblr.com/likes?api_key=</rich_text><rich_text>9VhS4ytWYGNFnyYSItPKdZNxxlDkTh8hDI6IEBxCGmZCTuvrad
+</rich_text><rich_text justification="left"></rich_text><rich_text>
+</rich_text><table char_offset="217" col_max="200" col_min="100"><row><cell>title</cell><cell>字符串</cell><cell>博客的名字博客的显示标题</cell></row><row><cell>posts</cell><cell>数字</cell><cell>博客帖子总数</cell></row><row><cell>name</cell><cell>字符串</cell><cell>博客用户</cell></row><row><cell>updated</cell><cell>数字</cell><cell>最近一篇文章的时间，以秒为单位</cell></row><row><cell>description</cell><cell>字符串</cell><cell>博客的描述</cell></row><row><cell>ask</cell><cell>布尔</cell><cell>博客是否允许提问</cell></row><row><cell>ask_anon</cell><cell>布尔</cell><cell>博客是否允许匿名问题</cell></row><row><cell>likes</cell><cell>数字</cell><cell>喜欢帖子的数量</cell></row><row><cell>is_blocked_from_primary</cell><cell>布尔</cell><cell>博客是否已被主叫用户的主博客阻止</cell></row><row><cell>响应字段</cell><cell>类型</cell><cell>描述</cell></row></table><table char_offset="372" col_max="500" col_min="100"><row><cell>avatar_ur</cell><cell>字符串</cell><cell>头像的地址,如果是html浏览器直接得到头像图片</cell></row><row><cell>响应字段</cell><cell>类型</cell><cell>描述</cell></row></table><table char_offset="639" col_max="500" col_min="100"><row><cell>liked_posts</cell><cell>数组</cell><cell>用户喜欢的帖子信息</cell></row><row><cell>liked_count</cell><cell>数字</cell><cell>喜欢帖子的总数</cell></row><row><cell>响应字段</cell><cell>类型</cell><cell>描述</cell></row></table></node><node name="待爬" prog_lang="custom-colors" readonly="False" tags="" unique_id="61"><rich_text>hnchk #图片总数:434789, 视频总数:200
 davidaedwards #图片总数:427044, 视频总数:1264
 teenfucksleep #视频总数:46952, 图片总数:193
 netflixandchill #图片总数:47789, 视频总数:1564
@@ -8392,10 +8044,7 @@ netflixandchill #图片总数:47789, 视频总数:1564
 
 
 
-</rich_text>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="pytumblr" prog_lang="sh" readonly="False" tags="" unique_id="51">
-		<rich_text>pip install pytumblr #安装pytumblr包以及相关依赖
+</rich_text></node><node name="pytumblr" prog_lang="sh" readonly="False" tags="" unique_id="51"><rich_text>pip install pytumblr #安装pytumblr包以及相关依赖
 更改原有包的requests中相关方法,加入代理 那么就可以使用本地ssr代理访问tumblr使用提供的api
 更改pytumblr包下面的request.py文件 加入代理
 __proxies = {
@@ -8646,22 +8295,15 @@ select distinct id,reblogkey,video from publish   #查询有没有重复
 
 
 
-</rich_text>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="rclone" prog_lang="custom-colors" readonly="False" tags="" unique_id="66">
-		<rich_text>centos 上用rclone挂在ftp google drive 、dropbox
+</rich_text></node><node name="rclone" prog_lang="custom-colors" readonly="False" tags="" unique_id="66"><rich_text>centos 上用rclone挂在ftp google drive 、dropbox
 root# mkdir download
 root# wget https://downloads.rclone.org/v1.43.1/rclone-v1.43.1-linux-amd64.zip
 root# yum install -y unzip fuse #fuse用来挂载使用的
-root# </rich_text>
-		<rich_text background="#f8f8f8" foreground="#000000">unzip rclone-v1.43.1-linux-amd64.zip
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">unzip rclone-v1.43.1-linux-amd64.zip
 root# chmod -R 755 rclone-v1.43.1-linux-amd64
 root# cp rclone-v1.43.1-linux-amd64/rclone /usr/bin/ 
-root# rm -rf </rich_text>
-		<rich_text>rclone-v1.43.1-linux-amd64 rclone-v1.43.1-linux-amd64.zip
-root# </rich_text>
-		<rich_text background="#f8f8f8" foreground="#000000">rclone config</rich_text>
-		<rich_text>
+root# rm -rf </rich_text><rich_text>rclone-v1.43.1-linux-amd64 rclone-v1.43.1-linux-amd64.zip
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone config</rich_text><rich_text>
 n/s/q&gt;n
 name&gt; ftp
 Storage&gt; 9
@@ -8673,28 +8315,16 @@ password&gt;123456
 y/e/d &gt; y
 e/n/d/r/c/s/q&gt;q
 root# rclone lsd myftp:HY-NAS/temp   #远程服务器HY-NAS目录下的temp目录
-root# </rich_text>
-		<rich_text background="#f7f7f7" foreground="#4d4d4c">rclone sync /home/tumblr/mytumblr/db/tumblr.db </rich_text>
-		<rich_text>myftp:HY-NAS/temp  #同步文件到远程ftp下
-root# </rich_text>
-		<rich_text background="#f8f8f8" foreground="#000000">rclone mkdir myftp</rich_text>
-		<rich_text>:HY-NAS/test  #远程创建文件夹
-root# </rich_text>
-		<rich_text background="#f8f8f8" foreground="#000000">rclone mount myftp:HY-NAS/temp  /tmp/</rich_text>
-		<rich_text>ftp  #挂在远程目录到本地
-root# </rich_text>
-		<rich_text background="#f8f8f8" foreground="#000000">rclone copy /home/tumblr/mytumblr/db/tumblr.db </rich_text>
-		<rich_text>myftp:HY-NAS  #上传到远程ftp
-root# </rich_text>
-		<rich_text background="#f8f8f8" foreground="#000000">rclone copy myftp:HY-NAS/tumblr.db /home/</rich_text>
-		<rich_text>  #下载远程到本地
+root# </rich_text><rich_text background="#f7f7f7" foreground="#4d4d4c">rclone sync /home/tumblr/mytumblr/db/tumblr.db </rich_text><rich_text>myftp:HY-NAS/temp  #同步文件到远程ftp下
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone mkdir myftp</rich_text><rich_text>:HY-NAS/test  #远程创建文件夹
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone mount myftp:HY-NAS/temp  /tmp/</rich_text><rich_text>ftp  #挂在远程目录到本地
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone copy /home/tumblr/mytumblr/db/tumblr.db </rich_text><rich_text>myftp:HY-NAS  #上传到远程ftp
+root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone copy myftp:HY-NAS/tumblr.db /home/</rich_text><rich_text>  #下载远程到本地
 root# nohup rclone mount myftp:HY-NAS/temp /tmp/ftp &amp; #后台挂载
 root# screen -S rclone #开一个会话
 root# rclone mount myftp:HY-NAS/temp /tmp/ftp #后台挂载,ctrl+A+D断开当前会话
 bwg下载tumblr到mega
-root#</rich_text>
-		<rich_text background="#f8f8f8" foreground="#000000">rclone config</rich_text>
-		<rich_text>
+root#</rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone config</rich_text><rich_text>
 n/s/q&gt;n
 name&gt;mega
 Storage&gt; 15
@@ -8714,16 +8344,11 @@ root# wget -P /home/mega -c -i down.txt #用wget下载txt里的文件到mega,注
 
 
 
-</rich_text>
-	</node>
-	<node custom_icon_id="0" foreground="" is_bold="False" name="zeronet" prog_lang="custom-colors" readonly="False" tags="" unique_id="62">
-		<rich_text>zeronet的数据库在data文件夹 采用的json和sqlite两种格式来保存的
+</rich_text></node><node name="zeronet" prog_lang="custom-colors" readonly="False" tags="" unique_id="62"><rich_text>zeronet的数据库在data文件夹 采用的json和sqlite两种格式来保存的
 play这个站点的数据库是以下解释
 select * from title where name like 'Black Panther%'
 imdb_id:tt1825683  #imdb的电影id
 name : Black Panther  #名字
 data: 2018|Action, Adventure, Sci-Fi|2h14m|7.7|xjDjIWPwcPU|822,3922,296 #年|导演|时长|评分|youtube链接|822图片id 3922不知道反正和图片有关296是图片高
 dl:720p:1.63GB:d6b8537a6d43718374625ae6fec65b3af91ad719|1080p:10.94GB:ae9ca24b383db173b4086127795d0de3031534a4|SD:0.99GB:751212cf4ac3e09f5de7b6ba90cef5bd1578f085 #清晰度|大小|磁力链接
-json_id:24 #json这个表24id对应的真实json是movies_22</rich_text>
-	</node>
-</cherrytree>
+json_id:24 #json这个表24id对应的真实json是movies_22</rich_text></node></cherrytree>
