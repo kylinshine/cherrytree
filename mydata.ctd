@@ -6464,7 +6464,20 @@ clear;case &quot;${SSR_OPTIONS}&quot; in
 	*)
 	echo &quot;选项不在范围内,2s后将重新加载,请注意选择...&quot;;sleep 2
 	/usr/bin/ssr;;
-esac</rich_text></node><node name="群晖" prog_lang="custom-colors" readonly="False" tags="" unique_id="67"><rich_text>在群晖上安装python3的三方包
+esac
+
+############################################screen后台运行脚本############################################
+#!/usr/bin/env bash
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+runningfile=&quot;/home/tumblr/mytumblr/spiders/running.txt&quot;
+if [[ ! -e ${runningfile} ]]; then
+		echo -e &quot;开始运行爬虫&quot;
+		screen -dmS mytumblr sh -c '/home/tumblr/mytumblr/spiders/crawl.sh; exec bash'
+fi
+##判断爬虫文件标识来运行爬虫,crawl.sh文件 要求要有执行权限 chmod +x crawl.sh
+##加入定时任务
+</rich_text></node><node name="群晖" prog_lang="custom-colors" readonly="False" tags="" unique_id="67"><rich_text>在群晖上安装python3的三方包
 在商店直接安装python3,安装完python3的具体位置在 /volume1/@appstore/py3k/usr/local/bin下
 然后切换root模式 sudo -i 输入密码进入root模式
 wget https://bootstrap.pypa.io/ez_setup.py  #下载easy_install,出现503错误就用网页打开复制,新建ez.py 粘贴保存 上传到群晖
