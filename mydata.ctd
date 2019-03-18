@@ -7049,7 +7049,6 @@ inlove-woman
 jkgirl
 ziwei-ziwei
 jietou-she
------------------------------------------------------------------------
 lzhd
 love91porn
 paoshen007
@@ -7130,7 +7129,6 @@ staneybia
 sexcn
 spidergif2
 atomickittyface
-/////////////////////////////////////////////////////
 lhb2759
 xchenglove
 camemu1
@@ -7862,7 +7860,6 @@ mofeily
 mrsimpleing
 nock-nock-nock
 qwer9501
-rea**
 ryannmiku
 scotthei
 seni014
@@ -7970,7 +7967,6 @@ xiaoxifu2016
 926453le
 spidergif2
 wjh923205664
-
 ipppdi-deactivated20161204
 alonso962
 yaonv
@@ -8173,6 +8169,20 @@ A = client.reblog('godbells',
                   reblog_key='nIiU8Jy1',
                   comment='&lt;/p&gt;还在为翻墙找不着梯子烦恼吗，还在为梯子速度不佳看视频卡顿烦恼吗，老哥梯子服务超过200人，速度快质量佳,买梯子就买老哥梯子！&lt;/font&gt;&lt;/font&gt;&lt;/p&gt;&lt;h2&gt;&lt;b&gt;&lt;a href=&quot;http://www.lgssr.org&quot;&gt;&lt;font style=&quot;vertical-align: inherit;&quot;&gt;点我注册&lt;/font&gt;&lt;/font&gt;')
 print(A)
+
+
+import pytumblr
+client = pytumblr.TumblrRestClient(
+  '9VhS4ytWYGNFnyYSItPKdZNxxlDkTh8hDI6IEBxCGmZCTuvrad',
+  'nWu7pm8HjNlpn0VPzNkcZKfLB15Y4VInUfrrBT5gpY5oj2q7Th',
+  'ktq1TWM4lPyTDaOL4xNtBwJXGfRTOQphsnhYC99X3rPIEczfmg',
+  'Z2xVTA9QVMFfSUqO6InhCNn0KmdxC3IHvHg2GpbCDKDo4D1Do6'
+)
+
+# Make the request
+a = client.likes(limit=20)
+print (a['liked_posts'][0]['blog_name'])
+
 
 数据库去重:
 select video from posts  #以video资源为分组对象,筛选出重复次数超过1的资源
