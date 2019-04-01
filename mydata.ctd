@@ -210,6 +210,9 @@ wget -nc http://ftp.ivanovo.ac.ru/updates/eset/offline_update_eav.zip
 ########################################################代理下载tumblr视频########################################################
 python gettumblr.py #这个脚本还没写
 wget --no-check-certificate -c -e &quot;https_proxy=http://127.0.0.1:1090&quot; -P E:\tumblr\1 -i 1.txt
+##########################################################7zip压缩文件夹##########################################################
+7z.exe a -t7z &quot;G:\WeSyncTest.7z&quot; &quot;G:\WeSync\*&quot; -r -mx=9 -m0=LZMA2 -ms=10m -mf=on -mhc=on -mmt=on -pkylinshine
+
 
 
 
@@ -6233,9 +6236,18 @@ console.log('hello world!'); #写入测试内容
 phantom.exit(); #退出phantom
 phantomjs test.js #测试phantomjs 
 
-</rich_text><rich_text scale="h1" weight="heavy">centos下pyspider爬虫</rich_text><rich_text>
-pyspider all #  启动所有pyspider组件 包括phantomjs，需要root权限
-</rich_text><rich_text background="#ffffff" foreground="#262626">nohup </rich_text><rich_text>pyspider all &amp; #后台启动pyspider关闭终端也可以运行
+</rich_text><rich_text scale="h1" weight="heavy">centos下部署scrapy爬虫</rich_text><rich_text>
+virtualenv ENV
+cd ENV
+source ./bin/activate
+pip install scrapy gerapy #scrapy是框架 gerapy是个带web框架 分布式scrapy框架，底层是scrapy-redis
+/home/Env/bin/gerapy init #初始化
+cd gerapy
+/home/Env/bin/gerapy migrate 
+/home/Env/bin/gerapy runserver 0.0.0.0:8000 #运行在本地8000端口，可以写个服务脚本 使其运行在后台
+firewall-cmd --permanent --zone=public --add-port=8000/tcp #防火墙添加8000端口
+firewall-cmd --reload　#重新加载防火墙生效
+
 
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下防火墙添加端口</rich_text><rich_text>
