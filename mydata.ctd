@@ -6100,6 +6100,7 @@ ITEM_PIPELINES = {
 
 FILES_STORE = 'E:\\sex'    #下载文件管道,为了通用性下载管道,一律采用文件管道继承于filepipeline
 LOG_ENABLED = False  #不打日志
+FILES_EXPIRES = 30 #30天不重复下载
 
 #############################items.py配置#############################
 class SexpicItem(scrapy.Item):
