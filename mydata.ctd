@@ -6414,6 +6414,16 @@ cd gerapy
 firewall-cmd --permanent --zone=public --add-port=8000/tcp #防火墙添加8000端口
 firewall-cmd --reload　#重新加载防火墙生效
 
+</rich_text><rich_text scale="h1" weight="heavy">centos下使用无界</rich_text><rich_text>
+http://www.wujieliulan.com/download.php  #下载linux无界客户端
+</rich_text><rich_text background="#ffffff" foreground="#24292e">chmod +x ul</rich_text><rich_text>
+screen -S wujie #用screen后台启动
+</rich_text><rich_text background="#ffffff" foreground="#24292e">./ul -L :</rich_text><rich_text>1100  #监听本地1100端口,可以在本地添加防火墙策略让后端其他使用
+screen -S wget
+wget --no-check-certificate -c -e &quot;https_proxy=http://127.0.0.1:1100&quot; https://66.media.tumblr.com/6d89dfac6070583f60ee07b9c2a31192/tumblr_pqklhhY4cW1y0rbc3o1_1280.jpg  #wget用代理下载测试,这里注意https_proxy和http_proxy 具体看后面的下载地址
+screen -S tumblr
+cd /home/TumblrDownload/TumblrDownload/spiders
+/home/ENV/bin/scrapy crawl down   #运行爬虫
 
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下防火墙添加端口</rich_text><rich_text>
