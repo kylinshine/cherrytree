@@ -6424,6 +6424,7 @@ wget --no-check-certificate -c -e &quot;https_proxy=http://127.0.0.1:1100&quot; 
 screen -S tumblr
 cd /home/TumblrDownload/TumblrDownload/spiders
 /home/ENV/bin/scrapy crawl down   #运行爬虫
+screen -r tumblr #连接上会话,如果不能连接但是会话状态为Attached，用screen -D -r tumblr踢出用户连接
 
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下防火墙添加端口</rich_text><rich_text>
