@@ -6477,10 +6477,8 @@ passwd root
 </rich_text>
 			<rich_text scale="h1" weight="heavy">centos下安装python3</rich_text>
 			<rich_text>
-yum -y install wget #安装wget
-yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel gcc #安装依赖包
-yum -y install libffi-devel #python3.7需要libffi-deve
-yum -y install postgresql-devel #python的psycopg2 需要安装这个包
+yum -y install wget screen#安装wget,screen
+yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel gcc libffi-devel postgresql-devel #安装依赖包,python3.7需要libffi-deve,python的psycopg2 需要安装这个包
 mkdir /usr/local/python3  #建立python3目录
 cd /home #切换到home目录
 wget https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tgz#下载python3.7
