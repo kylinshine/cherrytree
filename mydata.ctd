@@ -220,11 +220,11 @@ SET SVPATH=d:\
 SET MEIZ=meizitu
 SET zipPATH=&quot;D:\soft\7-Zip\7z&quot;
 SET MZTPATH=&quot;D:\meizitu-down\*&quot;
-FOR /F &quot;TOKENS=1,2,3 DELIMS=/ &quot; %%i IN ('DATE /T') DO SET d=%%i-%%j-%%k
+FOR /F &quot;TOKENS=1,2,3 DELIMS=/ &quot; %%i IN ('DATE /T') DO SET d=%%i%%j%%k
 FOR /F &quot;TOKENS=1,2,3 DELIMS=: &quot; %%i IN ('TIME /T') DO SET t=%%i%%j%%k
 SET MEIZPATH=%MEIZ%_%d%_%t%.backup
 SET PASSWD=kylinshine
-SET SIZE=4096m
+SET SIZE=2048m
 @ECHO OFF
 %zipPATH% a -t7z %SVPATH%%MEIZPATH%.7z %MZTPATH% -p%PASSWD% -v%SIZE% -r -mx=9 -m0=LZMA2 -ms=10m -mf=on -mhc=on -mmt=on
 echo Backup Compress Complete %SVPATH%%MEIZPATH%.7z
