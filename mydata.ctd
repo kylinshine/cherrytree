@@ -6429,6 +6429,7 @@ screen -S tumblr
 cd /home/TumblrDownload/TumblrDownload/spiders
 /home/ENV/bin/scrapy crawl down   #运行爬虫
 screen -r tumblr #连接上会话,如果不能连接但是会话状态为Attached，用screen -D -r tumblr踢出用户连接
+screen -S edm_10000 -X quit #退出screen会话
 kill -9 5312 #5312是pid
 screen -wipe #清除dead 会话
 
