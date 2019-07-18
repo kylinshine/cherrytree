@@ -6456,6 +6456,56 @@ firewall-cmd --zone=public --list-ports #查看pulic区域开放的端口
 vi /etc/firewalld/zones/public.xml #这个是防火墙的配置文件
 
 
+</rich_text><rich_text scale="h1" weight="heavy">centos下查看历史命令</rich_text><rich_text>
+history #查看历史命令
+history 5 #只查看最近5条命令
+
+</rich_text><rich_text scale="h1" weight="heavy">centos上用rclone挂在ftp google drive 、dropbox</rich_text><rich_text>
+mkdir download #建立文件夹
+wget https://downloads.rclone.org/v1.48.0/rclone-v1.48.0-linux-amd64.zip #下载rclone,没有wget的话yum -install wget
+yum install -y unzip fuse #fuse用来挂载使用的,unzip是解压zip包的
+unzip rclone-v1.43.1-linux-amd64.zip #解压
+chmod -R 755 rclone-v1.43.1-linux-amd64 #改权限
+cp rclone-v1.43.1-linux-amd64/rclone /usr/bin/ #拷贝到目录,可以省去改环境变量
+rm -rf rclone-v1.48.0linux-amd64 rclone-v1.48.0-linux-amd64.zip #删除下载包和解压包
+rclone config #配置
+n/s/q&gt;n  #建立新的
+name&gt; ftp  #名字是ftp
+Storage&gt; 9  #9是ftp服务,还有google drive服务等等
+host &gt; test.test.com
+user &gt;test
+port &gt;21
+y/g &gt; y
+password&gt;123456
+y/e/d &gt; y
+e/n/d/r/c/s/q&gt;q
+rclone lsd myftp:HY-NAS/temp   #远程服务器HY-NAS目录下的temp目录
+rclone sync /home/tumblr/mytumblr/db/tumblr.db myftp:HY-NAS/temp  #同步文件到远程ftp下和拷贝不一样
+rclone mkdir myftp:HY-NAS/test  #远程创建文件夹
+rclone mount myftp:HY-NAS/temp  /tmp/ftp  #挂在远程目录到本地
+rclone copy /home/tumblr/mytumblr/db/tumblr.db myftp:HY-NAS  #上传到远程ftp
+rclone copy myftp:HY-NAS/tumblr.db /home/  #下载远程到本地
+nohup rclone mount myftp:HY-NAS/temp /tmp/ftp &amp; #后台挂载,一般用screen开个会话
+screen -S rclone #开一个会话
+rclone mount myftp:HY-NAS/temp /tmp/ftp #后台挂载,ctrl+A+D断开当前会话
+
+</rich_text><rich_text scale="h1" weight="heavy">centos用rclone挂载mega到本地当本地使用</rich_text><rich_text>
+</rich_text><rich_text background="#f8f8f8" foreground="#000000">clone config</rich_text><rich_text>
+n/s/q&gt;n
+name&gt;mega
+Storage&gt; 15
+user &gt;test
+password&gt;123456
+y/e/d &gt; y
+e/n/d/r/c/s/q&gt;q
+rclone lsd mega:   #读取目录,注意mega后面的有个冒号
+cd home &amp; mkdir mega #建一个挂载的目录
+screen -S rclone #开一个会话
+rclone mount mega:/tumblr /home/mega #后台挂载,ctrl+A+D断开当前会话
+screen -S down #开一个会话
+wget -P /home/mega -c -i down.txt #用wget下载txt里的文件到mega,注意-P的大写,下载到挂载的目录即上传到了网盘
+
+
 
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下dd备份系统</rich_text><rich_text>
@@ -8517,55 +8567,6 @@ select distinct id,reblogkey,video from publish   #查询有没有重复
 
 
 
-
-
-
-
-
-
-</rich_text></node><node name="rclone" prog_lang="custom-colors" readonly="False" tags="" unique_id="66"><rich_text>centos 上用rclone挂在ftp google drive 、dropbox
-root# mkdir download
-root# wget https://downloads.rclone.org/v1.43.1/rclone-v1.43.1-linux-amd64.zip
-root# yum install -y unzip fuse #fuse用来挂载使用的
-root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">unzip rclone-v1.43.1-linux-amd64.zip
-root# chmod -R 755 rclone-v1.43.1-linux-amd64
-root# cp rclone-v1.43.1-linux-amd64/rclone /usr/bin/ 
-root# rm -rf </rich_text><rich_text>rclone-v1.43.1-linux-amd64 rclone-v1.43.1-linux-amd64.zip
-root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone config</rich_text><rich_text>
-n/s/q&gt;n
-name&gt; ftp
-Storage&gt; 9
-host &gt; test.test.com
-user &gt;test
-port &gt;21
-y/g &gt; y
-password&gt;123456
-y/e/d &gt; y
-e/n/d/r/c/s/q&gt;q
-root# rclone lsd myftp:HY-NAS/temp   #远程服务器HY-NAS目录下的temp目录
-root# </rich_text><rich_text background="#f7f7f7" foreground="#4d4d4c">rclone sync /home/tumblr/mytumblr/db/tumblr.db </rich_text><rich_text>myftp:HY-NAS/temp  #同步文件到远程ftp下
-root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone mkdir myftp</rich_text><rich_text>:HY-NAS/test  #远程创建文件夹
-root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone mount myftp:HY-NAS/temp  /tmp/</rich_text><rich_text>ftp  #挂在远程目录到本地
-root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone copy /home/tumblr/mytumblr/db/tumblr.db </rich_text><rich_text>myftp:HY-NAS  #上传到远程ftp
-root# </rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone copy myftp:HY-NAS/tumblr.db /home/</rich_text><rich_text>  #下载远程到本地
-root# nohup rclone mount myftp:HY-NAS/temp /tmp/ftp &amp; #后台挂载
-root# screen -S rclone #开一个会话
-root# rclone mount myftp:HY-NAS/temp /tmp/ftp #后台挂载,ctrl+A+D断开当前会话
-bwg下载tumblr到mega
-root#</rich_text><rich_text background="#f8f8f8" foreground="#000000">rclone config</rich_text><rich_text>
-n/s/q&gt;n
-name&gt;mega
-Storage&gt; 15
-user &gt;test
-password&gt;123456
-y/e/d &gt; y
-e/n/d/r/c/s/q&gt;q
-root# rclone lsd mega:   #读取目录,注意mega后面的有个冒号
-root# cd home &amp; mkdir mega #建一个挂载的目录
-root# screen -S rclone #开一个会话
-root# rclone mount mega:/tumblr /home/mega #后台挂载,ctrl+A+D断开当前会话
-root# screen -S down #开一个会话
-root# wget -P /home/mega -c -i down.txt #用wget下载txt里的文件到mega,注意-P的大写,下载到挂载的目录即上传到了网盘
 
 
 
