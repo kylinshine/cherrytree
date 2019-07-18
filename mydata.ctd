@@ -6485,6 +6485,7 @@ rclone mkdir myftp:HY-NAS/test  #远程创建文件夹
 rclone mount myftp:HY-NAS/temp  /tmp/ftp  #挂在远程目录到本地
 rclone copy /home/tumblr/mytumblr/db/tumblr.db myftp:HY-NAS  #上传到远程ftp
 rclone copy myftp:HY-NAS/tumblr.db /home/  #下载远程到本地
+rclone copy /home/tumblr-down/ nas:/NAS/checkPhoto/5 #拷贝本地到远程NAS
 nohup rclone mount myftp:HY-NAS/temp /tmp/ftp &amp; #后台挂载,一般用screen开个会话
 screen -S rclone #开一个会话
 rclone mount myftp:HY-NAS/temp /tmp/ftp #后台挂载,ctrl+A+D断开当前会话
