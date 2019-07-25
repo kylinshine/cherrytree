@@ -6387,9 +6387,29 @@ chkconfig --list  
 chkconfig --level 345 mysql on #可以自己更改
 netstat -na | grep 3306 #查看端口,需要安装net-tools
 
+</rich_text><rich_text scale="h1" weight="heavy">centos下安装nginx官方源</rich_text><rich_text>
+vi /etc/yum.repos.d/nginx.repo #文章地址https://www.nginx.com/resources/wiki/start/topics/tutorials/install/,追加 nginx 的 yum 仓库
+###############################################
+[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/centos/$releasever/$basearch/
+gpgcheck=0
+enabled=1
+###############################################
+yum list | grep nginx  
+yum -y install nginx
+firewall-cmd --permanent --zone=public --add-service=http #防火墙添加80端口,如果是443则多添加一条https
+firewall-cmd --reload　#记得重新加载防火墙配置
+</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files</rich_text><rich_text> | grep nginx
+systemctl enable nginx.service
+systemctl daemon-reload
+systemctl start nginx.service
+
+
+
 </rich_text><rich_text scale="h1" weight="heavy">centos下查看服务启动列表</rich_text><rich_text>
 </rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files</rich_text><rich_text>
-</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files | grep enable</rich_text><rich_text> #查询自动启动
+</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files | grep enable</rich_text><rich_text>d #查询自动启动
 </rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files | grep zabbix</rich_text><rich_text> #过滤查询服务名
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下mysql相关操作</rich_text><rich_text>
