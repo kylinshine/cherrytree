@@ -6785,6 +6785,7 @@ cp myflask.service /etc/systemd/system/myflask.service #将自定义的服务单
 systemctl enable myflask.service #设置自动启动
 systemctl daemon-reload #加载可执行单元
 systemctl start myflask.service #启动自定义服务
+systemctl status myflask.service #查看启动状态
 
 ######################### default 配置#########################
 
