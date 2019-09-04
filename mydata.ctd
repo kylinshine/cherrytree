@@ -6461,7 +6461,13 @@ cd /home/tumblr/mytumblr/spiders
 chmod +x crawltumblr.sh tumblr.sh #赋予执行的权限
 crontab -l #查看计划任务
 crontab -e #添加计划任务
+crontab -r #删除计划任务
 */30 * * * * /home/tumblr/mytumblr/spiders/crawltumblr.sh #每30分钟执行一次脚本
+10 6 * * * COMMAND  #6点10分执行一次命令
+0 */2 * * * COMMAND  #每2个小时执行一次命令
+0 23-7/2,8 * * * COMMAND  #晚上11点到早上7点每2小时执行一次，8点执行一次
+0 11 4 * mon-wed COMMAND #每个月的4号和每个礼拜的礼拜一到礼拜三的早上11点
+0 4 1 jan * COMMAND  #1月份一号早上4点
 
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下防火墙添加端口</rich_text><rich_text>
