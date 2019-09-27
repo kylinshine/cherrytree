@@ -230,10 +230,10 @@ SET SIZE=2048m
 echo Backup Compress Complete %SVPATH%%MEIZPATH%.7z
 pause
 ##################################################执行python脚本下载任务下载完成压缩,压缩后上传NAS,删除压缩文件##################################################
-python run.py
 @ECHO OFF
 @setlocal enableextensions
 @cd /d &quot;%~dp0&quot;
+python run.py
 SET SVPATH=d:\meizitu-7z\
 SET NASURL=NAS:/NAS/meizitu
 SET MEIZ=meizitu
