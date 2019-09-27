@@ -229,7 +229,29 @@ SET SIZE=2048m
 %zipPATH% a -t7z %SVPATH%%MEIZPATH%.7z %MZTPATH% -p%PASSWD% -v%SIZE% -r -mx=9 -m0=LZMA2 -ms=10m -mf=on -mhc=on -mmt=on
 echo Backup Compress Complete %SVPATH%%MEIZPATH%.7z
 pause
-
+##################################################执行python脚本下载任务下载完成压缩,压缩后上传NAS,删除压缩文件##################################################
+python run.py
+@ECHO OFF
+@setlocal enableextensions
+@cd /d &quot;%~dp0&quot;
+SET SVPATH=d:\meizitu-7z\
+SET NASURL=NAS:/NAS/meizitu
+SET MEIZ=meizitu
+SET zipPATH=&quot;D:\soft\7-Zip\7z&quot;
+SET MZTPATH=&quot;D:\meizitu-down\*&quot;
+SET DELPATH=&quot;d:\meizitu-7z\*.*&quot;
+FOR /F &quot;TOKENS=1,2,3 DELIMS=/ &quot; %%i IN ('DATE /T') DO SET d=%%i%%j%%k
+FOR /F &quot;TOKENS=1,2,3 DELIMS=: &quot; %%i IN ('TIME /T') DO SET t=%%i%%j%%k
+SET MEIZPATH=%MEIZ%_%d%_%t%.backup
+SET PASSWD=kylinshine
+SET SIZE=3072m
+%zipPATH% a -t7z %SVPATH%%MEIZPATH%.7z %MZTPATH% -p%PASSWD% -v%SIZE% -r -mx=9 -m0=LZMA2 -ms=10m -mf=on -mhc=on -mmt=on
+echo Backup Compress Complete %SVPATH%%MEIZPATH%.7z
+rclone sync %SVPATH% %NASURL%
+echo Upload to NAS Complete
+del /s /q %DELPATH%
+echo Delete Complete
+pause
 
 
 
