@@ -6318,6 +6318,7 @@ uname -a    #查看当前内核,再重启后删除当年内核
 rpm -qa | grep kernel  #重启后再查看
 yum -y remove kernel-3.10.0-957.el7.x86_64   #卸载旧内核(重启后才能删除)
 yum -y install vsftpd #安装ftp服务
+cat /etc/redhat-release #查看cetnos版本
 
 </rich_text><rich_text scale="h1" weight="heavy">备份恢复centos系统</rich_text><rich_text>
 mkdir /home/bak
@@ -6586,6 +6587,113 @@ dd if=disk1.img of=/dev/sda
 dd if=part1.img of=/dev/hda2
 把保存在part1.img中的映像恢复到第一块硬盘的第二个分区
 最后，需要注意一点是，无论备份还是恢复，都需要保证 of 指向的文件或磁盘空间要大于 if 指向的内容，因为是按字节复制 如果没有足够的空间去存储内容，备份自然会失败。
+
+
+</rich_text></node><node name="debian" prog_lang="custom-colors" readonly="False" tags="" unique_id="71"><rich_text scale="h1" weight="heavy">更新系统装必要依赖软件</rich_text><rich_text>
+apt-get -y update;apt-get install -y wget curl screen python3-pip libpq-dev vim
+</rich_text><rich_text scale="h1" weight="heavy">python3建立虚拟环境</rich_text><rich_text>
+cd ENV #创建虚拟环境目录
+source ./bin/activate #激活虚拟环境
+pip install requests scrapy psycopg2 #虚拟环境中安装需要的包,psycopg2需要依赖libpq-dev
+deactivate #退出虚拟环境
+</rich_text><rich_text scale="h1" weight="heavy">安装nginx</rich_text><rich_text>
+apt-get install nginx
+
+
+#######################################我的debian脚本#######################################
+#!/bin/bash
+mybash_ver=&quot;1.0.1&quot;
+Green_font_prefix=&quot;\033[32m&quot;
+Red_font_prefix=&quot;\033[31m&quot; 
+Green_background_prefix=&quot;\033[42;37m&quot; 
+Red_background_prefix=&quot;\033[41;37m&quot;
+Font_color_suffix=&quot;\033[0m&quot;
+
+#初始化 通过
+init(){
+   apt-get -y update;apt-get install -y wget curl screen python3-pip vim
+}
+
+GET_SERVER_IP(){
+	if [ -f /root/.ip.txt ];then
+		echo '存在ip文件，即将删除'
+	    rm -rf /root/.ip.txt
+	fi
+		curl -s 'https://myip.ipip.net' &gt; /root/.ip.txt
+		Number_of_file_characters=`cat .ip.txt | wc -L`
+		if [ ${Number_of_file_characters} -gt '100' ];then
+			curl -s 'http://ip.cn' &gt; /root/.ip.txt
+		fi
+	SERVER_IP_INFO=`sed -n '1p' /root/.ip.txt`
+}
+
+CHANGE_SSH_PORT(){
+	clear;echo &quot;改变ssh端口:&quot;
+	read -p &quot;(1/3)旧端口:&quot; Old_Port
+	read -p &quot;(2/3)新端口:&quot; New_Port
+	read -p &quot;(3/3)Mukey:&quot; Mukey
+	if [[ ${Old_Port} = '' ]];then
+		Front_end_address='</rich_text><rich_text link="webs http://www.lgssr.org';echo">http://www.lgssr.org';echo</rich_text><rich_text> &quot;未设置该项,默认前端地址值为:</rich_text><rich_text link="webs http://www.lgssr.org&quot;">http://www.lgssr.org&quot;</rich_text><rich_text>
+	fi
+	if [[ ${Node_ID} = '' ]];then
+		Node_ID='3';echo &quot;未设置该项,默认节点ID值为:3&quot;
+	fi
+	if [[ ${Mukey} = '' ]];then
+		Mukey='lgssr@kylinshine';echo &quot;未设置该项,默认Mukey值为:lgssr@kylinshine&quot;
+	fi
+	echo;echo &quot;Great！即将开始安装...&quot;;echo;sleep 2.5
+}
+
+init
+GET_SERVER_IP
+clear
+echo -e &quot;  ${Green_font_prefix}史艳文大战藏镜人 debian一键脚本 ${Red_font_prefix}v${mybash_ver}
+  ${Green_font_prefix}$SERVER_IP_INFO
+${Font_color_suffix}————————————
+  ${Green_font_prefix}1.${Font_color_suffix} 安装 ShadowsocksR
+  ${Green_font_prefix}2.${Font_color_suffix} 更新 ShadowsocksR
+  ${Green_font_prefix}3.${Font_color_suffix} 卸载 ShadowsocksR
+  ${Green_font_prefix}4.${Font_color_suffix} 安装 libsodium(chacha20)
+————————————
+  ${Green_font_prefix}5.${Font_color_suffix} 查看 账号信息
+  ${Green_font_prefix}6.${Font_color_suffix} 显示 连接信息
+  ${Green_font_prefix}7.${Font_color_suffix} 设置 用户配置
+  ${Green_font_prefix}8.${Font_color_suffix} 手动 修改配置
+  ${Green_font_prefix}9.${Font_color_suffix} 切换 端口模式
+————————————
+ ${Green_font_prefix}10.${Font_color_suffix} 启动 ShadowsocksR
+ ${Green_font_prefix}11.${Font_color_suffix} 停止 ShadowsocksR
+ ${Green_font_prefix}12.${Font_color_suffix} 重启 ShadowsocksR
+ ${Green_font_prefix}13.${Font_color_suffix} 查看 ShadowsocksR 日志
+————————————
+ ${Green_font_prefix}14.${Font_color_suffix} 其他功能
+ ${Green_font_prefix}15.${Font_color_suffix} 升级脚本
+&quot;
+ 
+read -p &quot;PLEASE SELECT OPTIONS:&quot; SSR_OPTIONS
+
+clear;case &quot;${SSR_OPTIONS}&quot; in
+	1)
+	echo &quot;你选择了1...&quot;;;
+	2)
+	echo &quot;你选择了2...&quot;;;
+	3)
+	echo &quot;你选择了3...&quot;;;
+	4)
+	echo &quot;你选择了4...&quot;;;
+	5)
+	echo &quot;你选择了5...&quot;;;
+	a)
+	echo &quot;你选择了a...&quot;;;
+	b)
+	echo &quot;你选择了b...&quot;;;
+	c)
+	echo &quot;你选择了c...&quot;;;
+	*)
+	echo &quot;你什么也没选&quot;;sleep 3
+	exit;;
+esac
+#######################################我的debian脚本#######################################
 
 
 </rich_text></node><node name="bash" prog_lang="sh" readonly="False" tags="" unique_id="50"><rich_text>#!/bin/bash
