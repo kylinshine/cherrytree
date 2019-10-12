@@ -6603,26 +6603,54 @@ apt-get install nginx
 #######################################我的debian脚本#######################################
 #!/bin/bash
 mybash_ver=&quot;1.0.1&quot;
-Green_font_prefix=&quot;\033[32m&quot;
-Red_font_prefix=&quot;\033[31m&quot; 
-Green_background_prefix=&quot;\033[42;37m&quot; 
-Red_background_prefix=&quot;\033[41;37m&quot;
-Font_color_suffix=&quot;\033[0m&quot;
+Dfault_Passwd=&quot;kylinshine#41717670&quot;
+Frp_Folder=&quot;/usr/local/frp&quot;
 
-#初始化 通过
+Color_Text()
+{
+  echo -e &quot; \e[0;$2m$1\e[0m&quot;
+}
+
+Echo_Red()
+{
+  echo $(Color_Text &quot;$1&quot; &quot;31&quot;)
+}
+
+Echo_Green()
+{
+  echo $(Color_Text &quot;$1&quot; &quot;32&quot;)
+}
+
+Echo_Yellow()
+{
+  echo $(Color_Text &quot;$1&quot; &quot;33&quot;)
+}
+
+Echo_Blue()
+{
+  echo $(Color_Text &quot;$1&quot; &quot;34&quot;)
+}
+
+Echo_Sky()
+{
+  echo $(Color_Text &quot;$1&quot; &quot;36&quot;)
+}
 init(){
-   apt-get -y update;apt-get install -y wget curl screen python3-pip vim
+
+   Echo_Sky &quot;正在准备更新和初始化linux环境...&quot;
+   apt-get -y update &amp;&amp; apt-get -y upgrade &amp;&amp; apt-get install -y wget curl screen python3-pip vim git
+   Echo_Green &quot;更新和初始化linux环境完成...&quot;
 }
 
 GET_SERVER_IP(){
 	if [ -f /root/.ip.txt ];then
-		echo '存在ip文件，即将删除'
+		Echo_Blue '存在ip文件，即将删除'
 	    rm -rf /root/.ip.txt
 	fi
-		curl -s 'https://myip.ipip.net' &gt; /root/.ip.txt
+		curl -s '</rich_text><rich_text link="webs https://myip.ipip.net'">https://myip.ipip.net'</rich_text><rich_text> &gt; /root/.ip.txt
 		Number_of_file_characters=`cat .ip.txt | wc -L`
 		if [ ${Number_of_file_characters} -gt '100' ];then
-			curl -s 'http://ip.cn' &gt; /root/.ip.txt
+			curl -s '</rich_text><rich_text link="webs http://ip.cn'">http://ip.cn'</rich_text><rich_text> &gt; /root/.ip.txt
 		fi
 	SERVER_IP_INFO=`sed -n '1p' /root/.ip.txt`
 	rm -rf /root/.ip.txt
@@ -6631,79 +6659,150 @@ GET_SERVER_IP(){
 CHANGE_SSH_PORT(){
 	clear
 	Old_port=`sed -n '/^#\?Port/p' /etc/ssh/sshd_config`
-	echo &quot;旧端口是:$Old_port&quot;
+	Echo_Green &quot;旧端口是:$Old_port&quot;
 	read -p &quot;新端口:&quot; New_Port
 	if [[ ${New_Port} = '' ]];then
 		
 		sed -i '/^#\?Port/d' /etc/ssh/sshd_config
+		New_Port=22
 	else
 		sed -i '/^#\?Port/d' /etc/ssh/sshd_config
 		sed -i '$a\Port '&quot;${New_Port}&quot;'' /etc/ssh/sshd_config
 	fi
 	systemctl restart sshd.service
-	echo &quot;修改ssh端口成功,新端口是$New_Port&quot;
+	Echo_Green &quot;修改ssh端口成功,新端口是$New_Port&quot;
 }
 
 CHANGE_PASSWD(){
 	clear
-	read -p &quot;输入你要改的密码:&quot; New_passwd
+	read -p &quot;输入你要改的密码(为空则为默认密码):&quot; New_passwd
 	if [[ ${New_passwd} = '' ]];then
-		echo “密码不能为空”
-		exit
+		 echo root:$Dfault_Passwd|chpasswd
+		 Echo_Sky &quot;修改密码成功,新的密码是$Dfault_Passwd&quot;
+		 
 	else
 		echo root:$New_passwd|chpasswd
+		Echo_Sky &quot;修改密码成功,新的密码是$New_passwd&quot;
 
 	fi
-	echo &quot;修改密码成功,新的密码是$New_passwd&quot;
 }
+
+Create_Python3_ENV(){
+	clear
+	if [ -d &quot;/root/ENV&quot; ]; then
+	rm -rf /root/ENV
+	fi
+	apt-get install -y python3-pip libpq-dev;pip3 install virtualenv;cd /root;virtualenv ENV
+	cd ENV;source ./bin/activate
+	pip install requests scrapy psycopg2
+	deactivate
+	Echo_Green &quot;python3虚拟环境创建完毕&quot;	
+}
+
+Install_Frp(){
+	clear
+	cd /root
+	Frp_ver=$(wget -qO- &quot;</rich_text><rich_text link="webs https://github.com/fatedier/frp/tags&quot;|">https://github.com/fatedier/frp/tags&quot;|</rich_text><rich_text> grep &quot;/fatedier/frp/releases/tag/v&quot;| head -n 1| awk -F &quot;/tag/v&quot; '{print $2}'| sed 's/\&quot;&gt;//')
+	if [[ -z ${Frp_ver} ]]; then
+		Echo_Red &quot;Frp最新版本获取失败，请手动获取最新版本号[ </rich_text><rich_text link="webs https://github.com/fatedier/frp/releases]&quot;">https://github.com/fatedier/frp/releases]&quot;</rich_text><rich_text>
+		stty erase '^H' &amp;&amp; read -p &quot;请输入版本号 [ 格式如 0.29.0 ] :&quot; Frp_ver
+		[[ -z &quot;${Frp_ver}&quot; ]] &amp;&amp; echo &quot;取消...&quot; &amp;&amp; exit 1
+	else
+		Echo_Sky &quot;检测到Frp最新版本为 [ ${Frp_ver} ]&quot;
+	fi
+	Frp_tar=&quot;frp_${Frp_ver}_linux_amd64.tar.gz&quot;
+	Frp_name=&quot;frp_${Frp_ver}_linux_amd64&quot;
+	if [ -d &quot;${Frp_Folder}&quot; ]; then
+		Echo_Red &quot;存在Frp,执行删除操作..&quot;
+	    rm -rf &quot;${Frp_Folder}&quot;
+	fi
+	if [ -f &quot;/root/${Frp_tar}&quot; ];then
+		Echo_Red &quot;存在压缩包文件,执行删除操作..&quot;
+	    rm -rf &quot;/root/${Frp_tar}&quot;
+	fi
+	
+	if [ -d &quot;/root/${Frp_name}&quot; ]; then
+		Echo_Red &quot;存在Frp解压目录，执行删除操作..&quot;
+	    rm -rf &quot;/root/${Frp_name}&quot;
+	fi
+	wget -N --no-check-certificate &quot;</rich_text><rich_text link="webs https://github.com/fatedier/frp/releases/download/v0.29.0/frp_${Frp_ver}_linux_amd64.tar.gz&quot;">https://github.com/fatedier/frp/releases/download/v0.29.0/frp_${Frp_ver}_linux_amd64.tar.gz&quot;</rich_text><rich_text>
+	[[ ! -e &quot;${Frp_tar}&quot; ]] &amp;&amp; Echo_Red &quot; Frp压缩包下载失败 !&quot; &amp;&amp; exit 1
+	tar xzvf &quot;${Frp_tar}&quot;
+	mv &quot;./${Frp_name}&quot; &quot;${Frp_Folder}&quot;
+	rm -rf &quot;/root/${Frp_tar}&quot; 
+	Echo_Green &quot;删除${Frp_name} ${Frp_tar} 成功&quot;
+	chmod -R 755 &quot;${Frp_Folder}/frps&quot; &amp;&amp; Echo_Sky &quot;下载成功,下来开始配置文件..&quot;
+	read -p &quot;token:&quot; frp_token
+	sed -i '$a\token = '&quot;${frp_token}&quot;'' &quot;${Frp_Folder}/frps.ini&quot; &amp;&amp; Echo_Sky &quot;写入配置文件完成..&quot;
+	sed -i '10c ExecStart=/usr/local/frp/frps -c /usr/local/frp/frps.ini' &quot;${Frp_Folder}/systemd/frps.service&quot;
+	#sed -i 's/\/usr\/bin\/frps -c \/etc\/frp\/frps.ini/\/usr\/local\/frp\/frps -c \/usr\/local\/frp\/frps.ini/g' frps.service
+	sed -i '6,7d' &quot;${Frp_Folder}/systemd/frps.service&quot;
+	cp &quot;${Frp_Folder}/systemd/frps.service&quot; &quot;/etc/systemd/system/frps.service&quot;
+	systemctl enable frps.service &amp;&amp;  systemctl daemon-reload  &amp;&amp;  systemctl start frps.service
+	
+
+	
+}
+
+check_sys(){
+	if [[ -f /etc/redhat-release ]]; then
+		release=&quot;centos&quot;
+	elif cat /etc/issue | grep -q -E -i &quot;debian&quot;; then
+		release=&quot;debian&quot;
+	elif cat /etc/issue | grep -q -E -i &quot;ubuntu&quot;; then
+		release=&quot;ubuntu&quot;
+	elif cat /etc/issue | grep -q -E -i &quot;centos|red hat|redhat&quot;; then
+		release=&quot;centos&quot;
+	elif cat /proc/version | grep -q -E -i &quot;debian&quot;; then
+		release=&quot;debian&quot;
+	elif cat /proc/version | grep -q -E -i &quot;ubuntu&quot;; then
+		release=&quot;ubuntu&quot;
+	elif cat /proc/version | grep -q -E -i &quot;centos|red hat|redhat&quot;; then
+		release=&quot;centos&quot;
+    fi
+	bit=`uname -m`
+}
+
 
 init
 GET_SERVER_IP
 clear
-echo -e &quot;  ${Green_font_prefix}史艳文大战藏镜人 debian一键脚本 ${Red_font_prefix}v${mybash_ver}
-  ${Green_font_prefix}$SERVER_IP_INFO
-${Font_color_suffix}————————————
-  ${Green_font_prefix}1.${Font_color_suffix} 修改 SSH端口
-  ${Green_font_prefix}2.${Font_color_suffix} 修改 Root密码
-  ${Green_font_prefix}3.${Font_color_suffix} 卸载 ShadowsocksR
-  ${Green_font_prefix}4.${Font_color_suffix} 安装 libsodium(chacha20)
-————————————
-  ${Green_font_prefix}5.${Font_color_suffix} 查看 账号信息
-  ${Green_font_prefix}6.${Font_color_suffix} 显示 连接信息
-  ${Green_font_prefix}7.${Font_color_suffix} 设置 用户配置
-  ${Green_font_prefix}8.${Font_color_suffix} 手动 修改配置
-  ${Green_font_prefix}9.${Font_color_suffix} 切换 端口模式
-————————————
- ${Green_font_prefix}10.${Font_color_suffix} 启动 ShadowsocksR
- ${Green_font_prefix}11.${Font_color_suffix} 停止 ShadowsocksR
- ${Green_font_prefix}12.${Font_color_suffix} 重启 ShadowsocksR
- ${Green_font_prefix}13.${Font_color_suffix} 查看 ShadowsocksR 日志
-————————————
- ${Green_font_prefix}14.${Font_color_suffix} 其他功能
- ${Green_font_prefix}15.${Font_color_suffix} 升级脚本
-&quot;
+Echo_Green &quot;史艳文大战藏镜人 debian一键脚本 v$mybash_ver&quot;
+Echo_Green &quot;$SERVER_IP_INFO &quot;
+echo &quot;————————————&quot;
+echo &quot;  1. 修改 SSH端口&quot;
+echo &quot;  2. 修改 Root密码&quot;
+echo &quot;  3. 安装 python3虚拟环境&quot;
+echo &quot;  4. 安装 frp服务&quot;
+echo &quot;————————————&quot;
+echo &quot;  5. 查看 账号信息&quot;
+echo &quot;  6. 显示 连接信息&quot;
+echo &quot;  7. 设置 用户配置&quot;
+echo &quot;  8. 手动 修改配置&quot;
+echo &quot;  9. 切换 端口模式&quot;
+echo &quot;————————————&quot;
+echo &quot;  10. 启动 ShadowsocksR&quot;
+echo &quot;  11. 停止 ShadowsocksR&quot;
+echo &quot;  12. 重启 ShadowsocksR&quot;
+echo &quot;  13. 查看 ShadowsocksR 日志&quot;
+echo &quot;————————————&quot;
+echo &quot;  14. 其他功能&quot;
+echo &quot;  15. 升级脚本&quot;
+echo &quot;————————————&quot;
+echo &quot;  16. 退出&quot;
+echo &quot;————————————&quot;
  
 read -p &quot;PLEASE SELECT OPTIONS:&quot; SSR_OPTIONS
 
 clear;case &quot;${SSR_OPTIONS}&quot; in
 	1)
-	CHANGE_SSH_PORT
-	;;
+	CHANGE_SSH_PORT;;
 	2)
-	CHANGE_PASSWD
-	;;
+	CHANGE_PASSWD;;
 	3)
-	echo &quot;你选择了3...&quot;;;
+	Create_Python3_ENV;;
 	4)
-	echo &quot;你选择了4...&quot;;;
-	5)
-	echo &quot;你选择了5...&quot;;;
-	a)
-	echo &quot;你选择了a...&quot;;;
-	b)
-	echo &quot;你选择了b...&quot;;;
-	c)
-	echo &quot;你选择了c...&quot;;;
+	Install_Frp;;
 	*)
 	echo &quot;你什么也没选&quot;;sleep 3
 	exit;;
@@ -7038,6 +7137,9 @@ Install_Frp(){
 	rm -rf &quot;/root/${Frp_tar}&quot; 
 	Echo_Green &quot;删除${Frp_name} ${Frp_tar} 成功&quot;
 	chmod -R 755 &quot;${Frp_Folder}/frps&quot; &amp;&amp; Echo_Sky &quot;下载成功,下来开始配置文件..&quot;
+	read -p &quot;token:&quot; frp_token
+	sed -i '$a\token = '&quot;${frp_token}&quot;'' &quot;${Frp_Folder}/frps.ini&quot;
+	
 	
 }
 
