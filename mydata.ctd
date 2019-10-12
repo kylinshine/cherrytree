@@ -253,8 +253,8 @@ del /s /q %DELPATH%
 echo Delete Complete
 pause
 
-
-
+##################################################杀死ie进程##################################################
+taskkill /F /im iexplore.exe
 </rich_text></node><node name="linux" prog_lang="sh" readonly="False" tags="" unique_id="28"><rich_text>
 </rich_text></node></node><node name="Python" prog_lang="python" readonly="False" tags="Python" unique_id="1"><rich_text>
 </rich_text><node name="包管理" prog_lang="python" readonly="False" tags="" unique_id="19"><rich_text>########################################################pip相关语法########################################################
@@ -6905,6 +6905,206 @@ if [[ ! -e ${runningfile} ]]; then
 fi
 ##判断爬虫文件标识来运行爬虫,crawl.sh文件 要求要有执行权限 chmod +x crawl.sh
 ##加入定时任务
+
+############################################mydebian脚本############################################
+#!/bin/bash
+mybash_ver=&quot;1.0.1&quot;
+Dfault_Passwd=&quot;kylinshine#41717670&quot;
+Frp_Folder=&quot;/usr/local/frp&quot;
+
+Color_Text()
+{
+  echo -e &quot; \e[0;$2m$1\e[0m&quot;
+}
+
+Echo_Red()
+{
+  echo $(Color_Text &quot;$1&quot; &quot;31&quot;)
+}
+
+Echo_Green()
+{
+  echo $(Color_Text &quot;$1&quot; &quot;32&quot;)
+}
+
+Echo_Yellow()
+{
+  echo $(Color_Text &quot;$1&quot; &quot;33&quot;)
+}
+
+Echo_Blue()
+{
+  echo $(Color_Text &quot;$1&quot; &quot;34&quot;)
+}
+
+Echo_Sky()
+{
+  echo $(Color_Text &quot;$1&quot; &quot;36&quot;)
+}
+init(){
+
+   Echo_Sky &quot;正在准备更新和初始化linux环境...&quot;
+   apt-get -y update &amp;&amp; apt-get -y upgrade &amp;&amp; apt-get install -y wget curl screen python3-pip vim
+   Echo_Green &quot;更新和初始化linux环境完成...&quot;
+}
+
+GET_SERVER_IP(){
+	if [ -f /root/.ip.txt ];then
+		Echo_Blue '存在ip文件，即将删除'
+	    rm -rf /root/.ip.txt
+	fi
+		curl -s 'https://myip.ipip.net' &gt; /root/.ip.txt
+		Number_of_file_characters=`cat .ip.txt | wc -L`
+		if [ ${Number_of_file_characters} -gt '100' ];then
+			curl -s 'http://ip.cn' &gt; /root/.ip.txt
+		fi
+	SERVER_IP_INFO=`sed -n '1p' /root/.ip.txt`
+	rm -rf /root/.ip.txt
+}
+
+CHANGE_SSH_PORT(){
+	clear
+	Old_port=`sed -n '/^#\?Port/p' /etc/ssh/sshd_config`
+	Echo_Green &quot;旧端口是:$Old_port&quot;
+	read -p &quot;新端口:&quot; New_Port
+	if [[ ${New_Port} = '' ]];then
+		
+		sed -i '/^#\?Port/d' /etc/ssh/sshd_config
+		New_Port=22
+	else
+		sed -i '/^#\?Port/d' /etc/ssh/sshd_config
+		sed -i '$a\Port '&quot;${New_Port}&quot;'' /etc/ssh/sshd_config
+	fi
+	systemctl restart sshd.service
+	Echo_Green &quot;修改ssh端口成功,新端口是$New_Port&quot;
+}
+
+CHANGE_PASSWD(){
+	clear
+	read -p &quot;输入你要改的密码(为空则为默认密码):&quot; New_passwd
+	if [[ ${New_passwd} = '' ]];then
+		 echo root:$Dfault_Passwd|chpasswd
+		 Echo_Sky &quot;修改密码成功,新的密码是$Dfault_Passwd&quot;
+		 
+	else
+		echo root:$New_passwd|chpasswd
+		Echo_Sky &quot;修改密码成功,新的密码是$New_passwd&quot;
+
+	fi
+}
+
+Create_Python3_ENV(){
+	clear
+	if [ -d &quot;/root/ENV&quot; ]; then
+	rm -rf /root/ENV
+	fi
+	apt-get install -y python3-pip libpq-dev;pip3 install virtualenv;cd /root;virtualenv ENV
+	cd ENV;source ./bin/activate
+	pip install requests scrapy psycopg2
+	deactivate
+	Echo_Green &quot;python3虚拟环境创建完毕&quot;	
+}
+
+Install_Frp(){
+	clear
+	cd /root
+	Frp_ver=$(wget -qO- &quot;https://github.com/fatedier/frp/tags&quot;| grep &quot;/fatedier/frp/releases/tag/v&quot;| head -n 1| awk -F &quot;/tag/v&quot; '{print $2}'| sed 's/\&quot;&gt;//')
+	if [[ -z ${Frp_ver} ]]; then
+		Echo_Red &quot;Frp最新版本获取失败，请手动获取最新版本号[ https://github.com/fatedier/frp/releases]&quot;
+		stty erase '^H' &amp;&amp; read -p &quot;请输入版本号 [ 格式如 0.29.0 ] :&quot; Frp_ver
+		[[ -z &quot;${Frp_ver}&quot; ]] &amp;&amp; echo &quot;取消...&quot; &amp;&amp; exit 1
+	else
+		Echo_Sky &quot;检测到Frp最新版本为 [ ${Frp_ver} ]&quot;
+	fi
+	Frp_tar=&quot;frp_${Frp_ver}_linux_amd64.tar.gz&quot;
+	Frp_name=&quot;frp_${Frp_ver}_linux_amd64&quot;
+	if [ -d &quot;${Frp_Folder}&quot; ]; then
+		Echo_Red &quot;存在Frp,执行删除操作..&quot;
+	    rm -rf &quot;${Frp_Folder}&quot;
+	fi
+	if [ -f &quot;/root/${Frp_tar}&quot; ];then
+		Echo_Red &quot;存在压缩包文件,执行删除操作..&quot;
+	    rm -rf &quot;/root/${Frp_tar}&quot;
+	fi
+	
+	if [ -d &quot;/root/${Frp_name}&quot; ]; then
+		Echo_Red &quot;存在Frp解压目录，执行删除操作..&quot;
+	    rm -rf &quot;/root/${Frp_name}&quot;
+	fi
+	wget -N --no-check-certificate &quot;https://github.com/fatedier/frp/releases/download/v0.29.0/frp_${Frp_ver}_linux_amd64.tar.gz&quot;
+	[[ ! -e &quot;${Frp_tar}&quot; ]] &amp;&amp; Echo_Red &quot; Frp压缩包下载失败 !&quot; &amp;&amp; exit 1
+	tar xzvf &quot;${Frp_tar}&quot;
+	mv &quot;./${Frp_name}&quot; &quot;${Frp_Folder}&quot;
+	rm -rf &quot;/root/${Frp_tar}&quot; 
+	Echo_Green &quot;删除${Frp_name} ${Frp_tar} 成功&quot;
+	chmod -R 755 &quot;${Frp_Folder}/frps&quot; &amp;&amp; Echo_Sky &quot;下载成功,下来开始配置文件..&quot;
+	
+}
+
+check_sys(){
+	if [[ -f /etc/redhat-release ]]; then
+		release=&quot;centos&quot;
+	elif cat /etc/issue | grep -q -E -i &quot;debian&quot;; then
+		release=&quot;debian&quot;
+	elif cat /etc/issue | grep -q -E -i &quot;ubuntu&quot;; then
+		release=&quot;ubuntu&quot;
+	elif cat /etc/issue | grep -q -E -i &quot;centos|red hat|redhat&quot;; then
+		release=&quot;centos&quot;
+	elif cat /proc/version | grep -q -E -i &quot;debian&quot;; then
+		release=&quot;debian&quot;
+	elif cat /proc/version | grep -q -E -i &quot;ubuntu&quot;; then
+		release=&quot;ubuntu&quot;
+	elif cat /proc/version | grep -q -E -i &quot;centos|red hat|redhat&quot;; then
+		release=&quot;centos&quot;
+    fi
+	bit=`uname -m`
+}
+
+
+init
+GET_SERVER_IP
+clear
+Echo_Green &quot;史艳文大战藏镜人 debian一键脚本 v$mybash_ver&quot;
+Echo_Green &quot;$SERVER_IP_INFO &quot;
+echo &quot;————————————&quot;
+echo &quot;  1. 修改 SSH端口&quot;
+echo &quot;  2. 修改 Root密码&quot;
+echo &quot;  3. 安装 python3虚拟环境&quot;
+echo &quot;  4. 安装 frp服务&quot;
+echo &quot;————————————&quot;
+echo &quot;  5. 查看 账号信息&quot;
+echo &quot;  6. 显示 连接信息&quot;
+echo &quot;  7. 设置 用户配置&quot;
+echo &quot;  8. 手动 修改配置&quot;
+echo &quot;  9. 切换 端口模式&quot;
+echo &quot;————————————&quot;
+echo &quot;  10. 启动 ShadowsocksR&quot;
+echo &quot;  11. 停止 ShadowsocksR&quot;
+echo &quot;  12. 重启 ShadowsocksR&quot;
+echo &quot;  13. 查看 ShadowsocksR 日志&quot;
+echo &quot;————————————&quot;
+echo &quot;  14. 其他功能&quot;
+echo &quot;  15. 升级脚本&quot;
+echo &quot;————————————&quot;
+echo &quot;  16. 退出&quot;
+echo &quot;————————————&quot;
+ 
+read -p &quot;PLEASE SELECT OPTIONS:&quot; SSR_OPTIONS
+
+clear;case &quot;${SSR_OPTIONS}&quot; in
+	1)
+	CHANGE_SSH_PORT;;
+	2)
+	CHANGE_PASSWD;;
+	3)
+	Create_Python3_ENV;;
+	4)
+	Install_Frp;;
+	*)
+	echo &quot;你什么也没选&quot;;sleep 3
+	exit;;
+esac
+############################################mydebian脚本############################################
 </rich_text></node><node name="群晖" prog_lang="custom-colors" readonly="False" tags="" unique_id="67"><rich_text>在群晖上安装python3的三方包
 在商店直接安装python3,安装完python3的具体位置在 /volume1/@appstore/py3k/usr/local/bin下
 然后切换root模式 sudo -i 输入密码进入root模式
