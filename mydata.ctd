@@ -6431,9 +6431,25 @@ systemctl start nginx.service
 
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下查看服务启动列表</rich_text><rich_text>
-</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files</rich_text><rich_text>
-</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files | grep enable</rich_text><rich_text>d #查询自动启动
-</rich_text><rich_text background="#eeeeee" foreground="#000000">systemctl list-unit-files | grep zabbix</rich_text><rich_text> #过滤查询服务名
+systemctl list-unit-files  #列出正在运行的 Unit
+systemctl list-unit-files | grep enabled  #查询自动启动
+systemctl list-unit-files | grep zabbix  #过滤查询服务名
+systemctl list-units --all  #列出所有Unit，包括没有找到配置文件的或者启动失败的
+systemctl list-units --all --state=inactive  #列出所有没有运行的 Unit
+systemctl list-units --failed  #列出所有加载失败的 Unit
+systemctl list-units --type=service  #列出所有正在运行的、类型为 service 的 Unit
+systemctl status  #显示系统状态
+sysystemctl status bluetooth.service  #显示单个 Unit 的状态
+systemctl enable clamd@scan.service #设置自启动
+systemctl start apache.service  #立即启动一个服务
+systemctl stop apache.service  #立即停止一个服务
+systemctl restart apache.service #重启一个服务
+systemctl kill apache.service # 杀死一个服务的所有子进程
+systemctl reload apache.service # 重新加载一个服务的配置文件
+systemctl daemon-reload # 重载所有修改过的配置文件
+systemctl show httpd.service # 显示某个 Unit 的所有底层参数
+systemctl show -p CPUShares httpd.service # 显示某个 Unit 的指定属性的值
+systemctl set-property httpd.service CPUShares=500 #设置某个 Unit 的指定属性
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下mysql相关操作</rich_text><rich_text>
 mysql -uroot -p  #用密码登录
@@ -6602,9 +6618,10 @@ apt-get install nginx
 
 #######################################我的debian脚本#######################################
 #!/bin/bash
-mybash_ver=&quot;1.0.1&quot;
+mybash_ver=&quot;1.0.2&quot;
 Dfault_Passwd=&quot;kylinshine#41717670&quot;
 Frp_Folder=&quot;/usr/local/frp&quot;
+Frp_Dfault_token=&quot;A9D075A7A5A133412629CA88F27FFE58&quot;
 
 Color_Text()
 {
@@ -6638,7 +6655,7 @@ Echo_Sky()
 init(){
 
    Echo_Sky &quot;正在准备更新和初始化linux环境...&quot;
-   apt-get -y update &amp;&amp; apt-get -y upgrade &amp;&amp; apt-get install -y wget curl screen python3-pip vim git
+   apt-get -y update &amp;&amp; apt-get -y upgrade &amp;&amp; apt-get install -y wget curl screen python3-pip vim git unzip
    Echo_Green &quot;更新和初始化linux环境完成...&quot;
 }
 
@@ -6725,22 +6742,69 @@ Install_Frp(){
 		Echo_Red &quot;存在Frp解压目录，执行删除操作..&quot;
 	    rm -rf &quot;/root/${Frp_name}&quot;
 	fi
-	wget -N --no-check-certificate &quot;</rich_text><rich_text link="webs https://github.com/fatedier/frp/releases/download/v0.29.0/frp_${Frp_ver}_linux_amd64.tar.gz&quot;">https://github.com/fatedier/frp/releases/download/v0.29.0/frp_${Frp_ver}_linux_amd64.tar.gz&quot;</rich_text><rich_text>
+	wget -N --no-check-certificate &quot;</rich_text><rich_text link="webs https://github.com/fatedier/frp/releases/download/v${Frp_ver}/frp_${Frp_ver}_linux_amd64.tar.gz&quot;">https://github.com/fatedier/frp/releases/download/v${Frp_ver}/frp_${Frp_ver}_linux_amd64.tar.gz&quot;</rich_text><rich_text>
 	[[ ! -e &quot;${Frp_tar}&quot; ]] &amp;&amp; Echo_Red &quot; Frp压缩包下载失败 !&quot; &amp;&amp; exit 1
 	tar xzvf &quot;${Frp_tar}&quot;
 	mv &quot;./${Frp_name}&quot; &quot;${Frp_Folder}&quot;
 	rm -rf &quot;/root/${Frp_tar}&quot; 
-	Echo_Green &quot;删除${Frp_name} ${Frp_tar} 成功&quot;
-	chmod -R 755 &quot;${Frp_Folder}/frps&quot; &amp;&amp; Echo_Sky &quot;下载成功,下来开始配置文件..&quot;
-	read -p &quot;token:&quot; frp_token
+	Echo_Green &quot;删除 ${Frp_tar} 成功&quot;
+	chmod -R 755 &quot;${Frp_Folder}/frps&quot; &amp;&amp; Echo_Sky &quot;安装成功,下来开始配置文件..&quot;
+	read -p &quot;token(为空则为默认token):&quot; frp_token
+	if [[ ${frp_token} = '' ]];then
+	frp_token=$Frp_Dfault_token
+	fi
 	sed -i '$a\token = '&quot;${frp_token}&quot;'' &quot;${Frp_Folder}/frps.ini&quot; &amp;&amp; Echo_Sky &quot;写入配置文件完成..&quot;
 	sed -i '10c ExecStart=/usr/local/frp/frps -c /usr/local/frp/frps.ini' &quot;${Frp_Folder}/systemd/frps.service&quot;
 	#sed -i 's/\/usr\/bin\/frps -c \/etc\/frp\/frps.ini/\/usr\/local\/frp\/frps -c \/usr\/local\/frp\/frps.ini/g' frps.service
 	sed -i '6,7d' &quot;${Frp_Folder}/systemd/frps.service&quot;
 	cp &quot;${Frp_Folder}/systemd/frps.service&quot; &quot;/etc/systemd/system/frps.service&quot;
 	systemctl enable frps.service &amp;&amp;  systemctl daemon-reload  &amp;&amp;  systemctl start frps.service
-	
+	Echo_Sky &quot;写入自启动frps服务完成..&quot;		
+}
 
+Install_Rclone(){
+	clear
+	cd /root
+	Rclone_ver=$(wget -qO- &quot;</rich_text><rich_text link="webs https://github.com/rclone/rclone/tags&quot;|">https://github.com/rclone/rclone/tags&quot;|</rich_text><rich_text> grep &quot;/rclone/rclone/releases/tag/v&quot;| head -n 1| awk -F &quot;/tag/&quot; '{print $2}'| sed 's/\&quot;&gt;//')
+	if [[ -z ${Rclone_ver} ]]; then
+		Echo_Red &quot;Frp最新版本获取失败，请手动获取最新版本号[ </rich_text><rich_text link="webs https://github.com/rclone/rclone/releases/]&quot;">https://github.com/rclone/rclone/releases/]&quot;</rich_text><rich_text>
+		stty erase '^H' &amp;&amp; read -p &quot;请输入版本号 [ 格式如 v1.49.5 ] :&quot; Rclone_ver
+		[[ -z &quot;${Rclone_ver}&quot; ]] &amp;&amp; echo &quot;取消...&quot; &amp;&amp; exit 1
+	else
+		Echo_Sky &quot;检测到Rclone最新版本为 [ ${Rclone_ver} ]&quot;
+	fi
+	Rclone_zip=&quot;rclone-${Rclone_ver}-linux-amd64.zip&quot;
+	Rclone_name=&quot;rclone-${Rclone_ver}-linux-amd64&quot;
+	if [ -f &quot;/usr/bin/rclone&quot; ]; then
+		Echo_Red &quot;存在Rclone,执行删除操作..&quot;
+	    rm -rf &quot;/usr/bin/rclone&quot;
+	fi
+	if [ -f &quot;/root/${Rclone_zip}&quot; ];then
+		Echo_Red &quot;存在压缩包文件,执行删除操作..&quot;
+	    rm -rf &quot;/root/${Rclone_zip}&quot;
+	fi
+	
+	if [ -d &quot;/root/${Rclone_name}&quot; ]; then
+		Echo_Red &quot;存在Rclone解压目录，执行删除操作..&quot;
+	    rm -rf &quot;/root/${Rclone_name}&quot;
+	fi
+	wget -N --no-check-certificate &quot;</rich_text><rich_text link="webs https://github.com/rclone/rclone/releases/download/${Rclone_ver}/rclone-${Rclone_ver}-linux-amd64.zip&quot;">https://github.com/rclone/rclone/releases/download/${Rclone_ver}/rclone-${Rclone_ver}-linux-amd64.zip&quot;</rich_text><rich_text>
+	[[ ! -e &quot;${Rclone_zip}&quot; ]] &amp;&amp; Echo_Red &quot; Rclone压缩包下载失败 !&quot; &amp;&amp; exit 1
+	unzip &quot;${Rclone_zip}&quot;
+	cp &quot;/root/${Rclone_name}/rclone&quot; &quot;/usr/bin/&quot;
+	rm -rf &quot;/root/${Rclone_name}&quot; &quot;/root/${Rclone_zip}&quot; 
+	Echo_Green &quot;删除${Rclone_name} ${Rclone_zip} 成功&quot;
+	chmod -R 755 &quot;/usr/bin/rclone&quot; &amp;&amp; Echo_Sky &quot;安装Rclone成功..&quot;	
+}
+
+Install_Nginx){
+	clear
+	cd /root
+	apt-get install -y nginx
+	rm -rf /etc/nginx/sites-enabled/* &amp;&amp; rm -rf /etc/nginx/sites-available/*
+	
+	
+	
 	
 }
 
@@ -6763,22 +6827,24 @@ check_sys(){
 	bit=`uname -m`
 }
 
-
+check_sys
 init
 GET_SERVER_IP
 clear
 Echo_Green &quot;史艳文大战藏镜人 debian一键脚本 v$mybash_ver&quot;
+Echo_Green &quot;当先系统为 [${release}] [${bit}] &quot;
 Echo_Green &quot;$SERVER_IP_INFO &quot;
 echo &quot;————————————&quot;
 echo &quot;  1. 修改 SSH端口&quot;
 echo &quot;  2. 修改 Root密码&quot;
 echo &quot;  3. 安装 python3虚拟环境&quot;
 echo &quot;  4. 安装 frp服务&quot;
+echo &quot;  5. 安装 Rclone&quot;
+echo &quot;  6. 安装 宝塔面板&quot;
 echo &quot;————————————&quot;
-echo &quot;  5. 查看 账号信息&quot;
-echo &quot;  6. 显示 连接信息&quot;
-echo &quot;  7. 设置 用户配置&quot;
-echo &quot;  8. 手动 修改配置&quot;
+echo &quot;  6. 查看 账号信息&quot;
+echo &quot;  7. 显示 连接信息&quot;
+echo &quot;  8. 设置 用户配置&quot;
 echo &quot;  9. 切换 端口模式&quot;
 echo &quot;————————————&quot;
 echo &quot;  10. 启动 ShadowsocksR&quot;
@@ -6803,6 +6869,12 @@ clear;case &quot;${SSR_OPTIONS}&quot; in
 	Create_Python3_ENV;;
 	4)
 	Install_Frp;;
+	5)
+	Install_Rclone;;
+	6)
+	Install_BT;;
+	16)
+	exit;;
 	*)
 	echo &quot;你什么也没选&quot;;sleep 3
 	exit;;
