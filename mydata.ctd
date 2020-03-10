@@ -6553,6 +6553,8 @@ rclone mount myftp:HY-NAS/temp  /tmp/ftp  #挂在远程目录到本地
 rclone copy /home/tumblr/mytumblr/db/tumblr.db myftp:HY-NAS  #上传到远程ftp
 rclone copy myftp:HY-NAS/tumblr.db /home/  #下载远程到本地
 rclone copy /home/tumblr-down/ nas:/NAS/checkPhoto/5 #拷贝本地到远程NAS
+rclone copy --checksum --verbose --transfers 4 --checkers 8 --contimeout 60s --timeout 300s --retries 3 --low-level-retries 10 --stats 1s /home/tumblr-down nas:/NAS/checkPhoto/65 
+#--checksum是检查md5,--verbose显示日志,--transfers 并行传输,--checkers 检查md5,--contimeout 继续超时 --timeout 超时 --retries 重试 --low-level-retries 低错误重试次数 --stats  日志刷新时间
 nohup rclone mount myftp:HY-NAS/temp /tmp/ftp &amp; #后台挂载,一般用screen开个会话
 screen -S rclone #开一个会话
 rclone mount myftp:HY-NAS/temp /tmp/ftp #后台挂载,ctrl+A+D断开当前会话
@@ -7589,6 +7591,28 @@ insert into GSP_CKYS_MX(djbh,dj_sn,spid,pihao,sxrq,baozhiqi,shl,hshj,hsje,hw,xgd
 select @djbh,dj_sn,spid,pihao,sxrq,baozhiqi,shl,hshj,hsje,hw,xgdjbh,1 from pf_ckmx where xgdjbh=@kaipiaodjbh
 
 FETCH NEXT FROM cursor1 into @kaipiaodjbh
+end 
+close cursor1 
+deallocate cursor1
+
+###########################################查询过期药品写入记录###########################################
+declare cursor1 cursor for 
+select spid,hw,pihao,baozhiqi,shl,sxrq from sphwph where shl&gt;0 and sxrq&lt;=(convert(char(7),dateadd(month,3,getdate()),120))and sxrq&lt;&gt;'' and Bkxshl&lt;&gt;shl
+open cursor1
+declare @spid char(11)
+declare @hw char(11)
+declare @pihao varchar(20)
+declare @baozhiqi varchar(20)
+declare @shl int
+declare @sxrq char(10)
+declare @djbh char(14)
+FETCH NEXT FROM cursor1 into @spid,@hw,@pihao,@baozhiqi,@shl,@sxrq
+while @@FETCH_STATUS=0
+begin
+exec SOF_getmaxdjbh @fdbs='AAA',@biaoshi='KYT',@addflag=3,@maxbh=@djbh output,@mkbh='A1'
+insert into GSP_YPTS(djbh,dj_sn,djlx,djbs,rq,ontime,kaiprq,tingslx,ting_bs,spid,hw,pihao,baozhiqi,shl,recnum,duiydj_cn,bm,username,bendian,beizhu) values(@djbh,1,638,'KTY',convert(char(11),getdate(),21),CONVERT(varchar(8),GETDATE(),24),CONVERT(char(11),getdate(),21),0,0,@spid,@hw,@pihao,@baozhiqi,@shl,0,0,'质量部','管理员','AAA','系统判断')
+update sphwph set Bkxshl=@shl where spid=@spid and hw=@hw and pihao=@pihao and sxrq=@sxrq and shl=@shl 
+FETCH NEXT FROM cursor1 into @spid,@hw,@pihao,@baozhiqi,@shl,@sxrq
 end 
 close cursor1 
 deallocate cursor1</rich_text></node></node><node name="mysql" prog_lang="sql" readonly="False" tags="mysql" unique_id="5"><rich_text>下载mysql-5.7.9-winx64.zip 解压到 D:\Program Files (x86)\mysql位置
