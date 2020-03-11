@@ -6523,7 +6523,8 @@ passwd root
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下安装python3</rich_text><rich_text>
 yum -y install wget screen#安装wget,screen
-yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel gcc libffi-devel postgresql-devel #安装依赖包,python3.7需要libffi-deve,python的psycopg2 需要安装这个包
+yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel gcc libffi-devel postgresql-devel 
+#安装依赖包,python3.7需要libffi-deve,python的psycopg2 需要安装这个包
 mkdir /usr/local/python3  #建立python3目录
 cd /home #切换到home目录
 wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz#下载python3.7
@@ -6761,6 +6762,8 @@ rclone mount mega:/tumblr /home/mega #后台挂载,ctrl+A+D断开当前会话
 screen -S down #开一个会话
 wget -P /home/mega -c -i down.txt #用wget下载txt里的文件到mega,注意-P的大写,下载到挂载的目录即上传到了网盘
 
+</rich_text><rich_text scale="h1" weight="heavy">centos下统计目录包含子目录的文件</rich_text><rich_text>
+ls -lR|grep &quot;^-&quot;|wc -l
 
 
 
