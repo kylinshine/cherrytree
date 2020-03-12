@@ -6485,8 +6485,8 @@ java ide:intellij idea </rich_text><rich_text background="#ffffff" foreground="#
 </rich_text><rich_text foreground="#000000">NETMASK=255.255.255.0 #子网掩码  </rich_text><rich_text>
 </rich_text><rich_text foreground="#000000">DNS1=114.114.114.114 #DNS1 配置  </rich_text><rich_text>
 </rich_text><rich_text foreground="#000000">DNS2=8.8.8.8 #DNS2 配置  </rich_text><rich_text>
-</rich_text><rich_text background="#ffffff" foreground="#555555">重启下网络服务</rich_text><rich_text>
-</rich_text><rich_text background="#ffffff" foreground="#000000">service network restart </rich_text><rich_text>
+</rich_text><rich_text background="#ffffff" foreground="#000000">service network restart </rich_text><rich_text>#centos7 之前的重启网络
+systemctl restart NetworkManager.service #这是centos8的重启网络
 检验网卡配置
 </rich_text><rich_text background="#ffffff" foreground="#000000">ip addr  </rich_text><rich_text>
 检验网络是否通畅
@@ -6498,19 +6498,20 @@ yum makecache  #重新生成缓存
 yum -y update #更新系统
 yum -y install epel-release #安装并启用EPEL源
 yum -y install wget  #安装wget
-yum -y install screen #安装screen
+yum -y install screen #安装screen时,要安装启用EPEL源
+</rich_text><rich_text foreground="#000000">yum </rich_text><rich_text foreground="#666600">-</rich_text><rich_text>y install tar</rich_text><rich_text> bzip2#centos8没有tar,bzip2
 yum clean all &amp;&amp; yum makecache  &amp;&amp; yum -y update &amp;&amp; yum -y install wget screen #依次更新系统和安装wget screen
 uname -a    #查看当前内核,再重启后删除当年内核
 rpm -qa | grep kernel  #重启后再查看
-yum -y remove kernel-3.10.0-957.el7.x86_64   #卸载旧内核(重启后才能删除)
+yum -y remove kernel-3.10.0-957.el7.x86_64  kernel-core-4.18.0-147.el8.x86_64 #卸载旧内核和核心(重启后才能删除)
 yum -y install vsftpd #安装ftp服务
 cat /etc/redhat-release #查看cetnos版本
 
 </rich_text><rich_text scale="h1" weight="heavy">备份恢复centos系统</rich_text><rich_text>
-mkdir /home/bak
-tar cvpzf /home/bak/centos7_20190214_install.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys  
-tar cvpjf /home/bak/install.tgz.bz2 / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys  #Bzip来压缩你的备份
-tar cvpzf /home/bak/centos7_20190214_install.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys
+mkdir /home/system
+tar cvpzf /home/system/centos7_20190214_install.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys  
+tar cvpjf /home/system/install.tgz.bz2 / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys  #Bzip来压缩你的备份
+tar cvpzf /home/system/centos7_20190214_install.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys
 tar xvpfz centos7_20190214_install.tgz -C /
 restorecon -Rv / #不执行这个无法登陆系统
 mkdir proc
@@ -6522,6 +6523,7 @@ mkdir sys
 passwd root
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下安装python3</rich_text><rich_text>
+yum -y install python36 #安装官方python3.6
 yum -y install wget screen#安装wget,screen
 yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel gcc libffi-devel postgresql-devel 
 #安装依赖包,python3.7需要libffi-deve,python的psycopg2 需要安装这个包
