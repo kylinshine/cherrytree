@@ -6499,20 +6499,20 @@ yum -y update #更新系统
 yum -y install epel-release #安装并启用EPEL源
 yum -y install wget  #安装wget
 yum -y install screen #安装screen时,要安装启用EPEL源
-</rich_text><rich_text foreground="#000000">yum </rich_text><rich_text foreground="#666600">-</rich_text><rich_text>y install tar</rich_text><rich_text> bzip2#centos8没有tar,bzip2
+</rich_text><rich_text foreground="#000000">yum </rich_text><rich_text foreground="#666600">-</rich_text><rich_text>y install tar bzip2#centos8没有tar,bzip2
 yum clean all &amp;&amp; yum makecache  &amp;&amp; yum -y update &amp;&amp; yum -y install wget screen #依次更新系统和安装wget screen
 uname -a    #查看当前内核,再重启后删除当年内核
 rpm -qa | grep kernel  #重启后再查看
 yum -y remove kernel-3.10.0-957.el7.x86_64  kernel-core-4.18.0-147.el8.x86_64 #卸载旧内核和核心(重启后才能删除)
 yum -y install vsftpd #安装ftp服务
 cat /etc/redhat-release #查看cetnos版本
+dnf clean all &amp;&amp; dnf makecache  &amp;&amp; dnf -y update &amp;&amp; dnf -y install epel-release tar bzip2 wget curl screen python36 screen  #centos8中采用了dnf命令
 
 </rich_text><rich_text scale="h1" weight="heavy">备份恢复centos系统</rich_text><rich_text>
 mkdir /home/system
 tar cvpzf /home/system/centos7_20190214_install.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys  
-tar cvpjf /home/system/install.tgz.bz2 / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys  #Bzip来压缩你的备份
-tar cvpzf /home/system/centos7_20190214_install.tgz / --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys
-tar xvpfz centos7_20190214_install.tgz -C /
+tar cvpPfj /home/system/centos8-install.tar.bz2 --exclude=/proc --exclude=/lost+found --exclude=/home --exclude=/mnt --exclude=/sys / #centos8 tar缺少参数大写P会报错
+tar xvpfj /home/system/centos8-install.tar.bz2 -C / #bz2用参数j
 restorecon -Rv / #不执行这个无法登陆系统
 mkdir proc
 mkdir lost+found
@@ -6548,8 +6548,8 @@ ln -s /usr/local/python3/bin/virtualenv /usr/bin/virtualenv  #建立软链接
 virtualenv ENV
 cd ENV
 source ./bin/activate
-pip install -i https://pypi.tuna.tsinghua.edu.cn/simple scrapy  #国内用清华源，由于网络原因官方源有时不稳定
-pip install requests scrapy django flask psycopg2 #psycopg2安装之前要安装postgresql-devel  
+pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple scrapy requests scrapy django flask   #国内用清华源，由于网络原因官方源有时不稳定
+pip install requests scrapy django flask psycopg2 #psycopg2安装之前要安装postgresql-devel,python3-devel
 deactivate
 
 </rich_text><rich_text scale="h1" weight="heavy">centos安装PostgreSQL</rich_text><rich_text>
