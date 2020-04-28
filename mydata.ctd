@@ -6276,6 +6276,7 @@ class SexSpider(scrapy.Spider):
 # email: kylinshine@163.com
 # QQ: 78619808
 # Created by Kylin on 2018/6/9
+# DButil v1版本
 import sqlite3
 import psycopg2
 import pymysql
@@ -6419,7 +6420,7 @@ class MysqlHelper(DBDriver):  # 继承DBDriver 重写构造函数
 
 
 if __name__ == &quot;__main__&quot;:
-    pgdb = PGHelper('hongyun-xa.vicp.io', 'postgres', '78619808', 'tumblr')
+    pgdb = PGHelper('****', 'postgres', '****', 'tumblr')
     blogs = pgdb.DBSelectParam(&quot; select name from tumblrblog ORDER BY random()  limit %s &quot;, (1000,))
     pgdb.close()
     print(blogs)
@@ -6455,7 +6456,248 @@ if __name__ == &quot;__main__&quot;:
     Params10 = ('王五',)
     rows10 = Test.DBSelectParamFetchMany(sqlscript10, Params10, 20)
     print(rows10)
-    Test.close()</rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
+    Test.close()
+    
+    
+    
+    
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# With Pycharm 2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin on 2018/6/9
+# DButil v2版本 增加存储过程的方法 增加了对mssql的支持
+import sqlite3
+import psycopg2 #pip install psycopg2 pymysql pyodbc pymssql更好用一点 但是当前版本有bug而且项目已经终止
+import pymysql
+import pyodbc
+
+
+class DBDriver(object):  # DBDriver的封装类,可以继承覆写构造函数,或者把直接传入conn
+
+    def __init__(self, driverConn):
+        try:
+            self.conn = driverConn
+            self.cur = self.conn.cursor()
+        except Exception as err:
+            print('Connect db Error: ' + str(err))
+
+    def DBExecute(self, sqlscript):  # sqlscript是sql语句
+        try:
+            self.cur.execute(sqlscript)  # 执行sql语句
+            self.conn.commit()
+        except Exception as err:
+            self.conn.rollback()
+            print('Execute sqlscript Error: ' + str(err))
+
+    def DBExecuteParam(self, sqlscript, params):  # params是一个元祖
+        try:
+            self.cur.execute(sqlscript, params)  # 执行sql语句
+            self.conn.commit()
+        except Exception as err:
+            self.conn.rollback()
+            print('ExecuteParam sqlscript Error: ' + str(err))
+
+    def DBSelect(self, sqlscript):
+        try:
+            self.cur.execute(sqlscript)  # 执行sql语句
+            return self.cur.fetchall()
+        except Exception as err:
+            print('Select table Error: ' + str(err))
+
+    def DBSelectParam(self, sqlscript, params):
+        try:
+            self.cur.execute(sqlscript, params)  # 执行sql语句
+            return self.cur.fetchall()
+        except Exception as err:
+            print('SelectParam table Error: ' + str(err))
+
+    def DBExecuteMany(self, sqlscript, params):
+        try:
+            self.cur.executemany(sqlscript, params)
+            self.conn.commit()
+        except Exception as err:
+            self.conn.rollback()
+            print('ExecuteMany sqlscript Error: ' + str(err))
+
+    def DBSelectFetchOne(self, sqlscript):  # 每次返回一个结果
+        try:
+            self.cur.execute(sqlscript)  # 执行sql语句
+            return self.cur.fetchone()
+        except Exception as err:
+            print('SelectFetchOne table Error: ' + str(err))
+
+    def DBSelectFetchMany(self, sqlscript, size):  # size是每次返回的个数
+        try:
+            self.cur.execute(sqlscript)  # 执行sql语句
+            return self.cur.fetchmany(int(size))  # size是int型
+        except Exception as err:
+            print('DBSelectFetchMany table Error: ' + str(err))
+
+    def DBSelectParamFetchOne(self, sqlscript, params):  # 每次返回一个结果
+        try:
+            self.cur.execute(sqlscript, params)  # 执行sql语句
+            return self.cur.fetchone()
+        except Exception as err:
+            print('SelectParamFetchOne table Error: ' + str(err))
+
+    def DBSelectParamFetchMany(self, sqlscript, params, size):  # size是每次返回的个数
+        try:
+            self.cur.execute(sqlscript, params)  # 执行sql语句
+            return self.cur.fetchmany(int(size))  # size是int型
+        except Exception as err:
+            print('SelectParamFetchOne table Error: ' + str(err))
+
+    def DBSelectParamDataExist(self, sqlscript, params):  # 根据语句返回数据是否存在
+        try:
+            self.cur.execute(sqlscript, params)  # 执行sql语句
+            if self.cur.fetchone():
+                return True
+            else:
+                return False
+        except Exception as err:
+            print('DBSelectParamDataExist table Error: ' + str(err))
+
+    def DBSelectDataExist(self, sqlscript):  # 每次返回一个结果
+        try:
+            self.cur.execute(sqlscript)  # 执行sql语句
+            if self.cur.fetchone():
+                return True
+            else:
+                return False
+        except Exception as err:
+            print('DBSelectDataExist table Error: ' + str(err))
+
+    def DBExecProc(self, sqlscript):
+        try:
+            rows=self.cur.execute(sqlscript).fetchall()  # 执行sql语句
+            self.cur.commit()
+            return rows
+        except Exception as err:
+            print('Exec Proc Error: ' + str(err))
+
+    def DBExecProcParam(self, sqlscript,Params):
+        try:
+            rows=self.cur.execute(sqlscript,Params).fetchall()  # 执行sql语句
+            self.cur.commit()
+            return rows
+        except Exception as err:
+            print('Exec Proc Error: ' + str(err))
+
+
+
+
+    def close(self):
+        self.cur.close()
+        self.conn.close()
+
+
+class SqliteHelper(DBDriver):  # 继承DBDriver 重写构造函数
+    def __init__(self, dbFile):
+        try:
+            conn = sqlite3.connect(dbFile)
+            super().__init__(conn)
+        except Exception as err:
+            print('Connect sqliteDB Error: ' + str(err))
+
+
+class PGHelper(DBDriver):  # 继承DBDriver 重写构造函数
+    def __init__(self, host, user, passwd, db, port=&quot;5432&quot;):
+        try:
+            conn = psycopg2.connect(host=host,
+                                    database=db,
+                                    user=user,
+                                    password=passwd,
+                                    port=port
+                                    )
+            super().__init__(conn)
+        except Exception as err:
+            print('Connect Pgsql Error: ' + str(err))
+
+
+class MysqlHelper(DBDriver):  # 继承DBDriver 重写构造函数
+    def __init__(self, host, user, passwd, db, port=&quot;3306&quot;):
+        try:
+            conn = pymysql.connect(host=host,
+                                   database=db,
+                                   user=user,
+                                   password=passwd,
+                                   port=port
+                                   )
+            super().__init__(conn)
+        except Exception as err:
+            print('Connect Mysql Error: ' + str(err))
+
+class MssqlHelper(DBDriver):  # 继承DBDriver 重写构造函数
+    def __init__(self, host, user, passwd, db):
+        try:
+            conn =  pyodbc.connect('DRIVER={SQL Server};SERVER=' + host + ';DATABASE=' + db + ';UID=' + user + ';PWD=' + passwd)
+            super().__init__(conn)
+        except Exception as err:
+            print('Connect Mssql Error: ' + str(err))
+
+
+
+
+if __name__ == &quot;__main__&quot;:
+    pgdb = PGHelper('****', 'postgres', '****', 'tumblr')
+    blogs = pgdb.DBSelectParam(&quot; select name from tumblrblog ORDER BY random()  limit %s &quot;, (1000,))
+    pgdb.close()
+    print(blogs)
+    Test = SqliteHelper('test.db3')
+    sqlscript1 = &quot;create table test(id integer primary key,Name varchar(128))&quot;
+    Test.DBExecute(sqlscript1)
+    sqlscript2 = &quot; insert into test values (1,'张三') &quot;
+    Test.DBExecute(sqlscript2)
+    sqlscript3 = &quot; insert into test values (?,?) &quot;
+    Params3 = (2, '李四')
+    Test.DBExecuteParam(sqlscript3, Params3)
+    sqlscript4 = &quot; insert into test values (?,?) &quot;
+    Params4 = [(i, '王五') for i in range(3, 1000)]
+    Test.DBExecuteMany(sqlscript4, Params4)
+    sqlscript5 = &quot; select * from test &quot;
+    rows5 = Test.DBSelect(sqlscript5)
+    print(rows5)
+    sqlscript6 = &quot; select * from test where name=? &quot;
+    Params6 = ('李四',)
+    rows6 = Test.DBSelectParam(sqlscript6, Params6)
+    print(rows6)
+    sqlscript7 = &quot; select * from test where name='王五' &quot;
+    rows7 = Test.DBSelectFetchOne(sqlscript7)
+    print(rows7)
+    sqlscript8 = &quot; select * from test where name='王五' &quot;
+    rows8 = Test.DBSelectFetchMany(sqlscript8, 10)
+    print(rows8)
+    sqlscript9 = &quot; select * from test where name=? &quot;
+    Params9 = ('李四',)
+    rows9 = Test.DBSelectParamFetchOne(sqlscript9, Params9)
+    print(rows9)
+    sqlscript10 = &quot; select * from test where name=? &quot;
+    Params10 = ('王五',)
+    rows10 = Test.DBSelectParamFetchMany(sqlscript10, Params10, 20)
+    print(rows10)
+    Test.close()
+    mssql = MssqlHelper('192.168.1.2','sa','****','ksoa_hyqx')
+    rows = mssql.DBSelect('select * from spkfk')
+    for row in rows:
+        print(row)
+
+    proc= mssql.DBExecProcParam(&quot; SET NOCOUNT ON;exec SOF_getmaxdjbh @fdbs=?,@biaoshi=?,@addflag=?,@mkbh=? &quot; ,('AAA','TUI',1,'A1'))
+    print(proc)
+
+
+
+
+
+
+
+
+
+
+
+</rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
 </rich_text><rich_text background="#ffffff" foreground="#222222">视频播放：PotPlayer</rich_text><rich_text>
