@@ -6697,7 +6697,150 @@ if __name__ == &quot;__main__&quot;:
 
 
 
-</rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
+</rich_text></node><node name="FindFiles" prog_lang="python" readonly="False" tags="" unique_id="73"><rich_text>import os
+import hashlib
+from DButil import SqliteHelper
+
+
+class FindFiles(object):  # 查找文件相关模块
+
+    def __init__(self, path=[], fileType='photo', delFile=-1):  # 查找文件的位置是个列表,默认查找是图片
+        self.path = path  # 需要查询的路径列表
+        self.delFile = delFile  #-1是显示,0是改名，1是删除
+        self.createSqlScript = '''
+                                    CREATE TABLE &quot;files&quot; (
+        	                        &quot;FilePath&quot;	TEXT,
+        	                        &quot;FileMd5&quot;	varchar(32) DEFAULT NULL,
+        	                        PRIMARY KEY(&quot;FilePath&quot;) ); 
+        	                    '''
+        self.fileIsExistSql = ' select * from files where Filemd5 = ? '
+        self.fileInfoSql = ' insert into files values (?,?) '
+        self.sqliteDB = SqliteHelper(':memory:')  # 建立内存数据库
+        self.sqliteDB.DBExecute(self.createSqlScript)  # 执行建表语句
+        if fileType == 'video':
+            self.fileSizeMin = 1024 * 1024 * 3  # 3M
+            self.fileSizeMax = 1024 * 1024 * 1024 * 20  # 20g
+            self.fileType = ['.mp4', '.rmvb', '.rm', '.mpg', '.avi', '.mpg', '.mkv', '.vob', '.3gp', '.flv', '.ts']
+        if fileType == 'photo':
+            self.fileSizeMin = 1024  # 1k
+            self.fileSizeMax = 1024 * 1024 * 500  # 500M
+            self.fileType = ['.gif', '.bmp', '.jpg', '.jpeg', '.jgp', '.png']
+        if fileType == 'zip':
+            self.fileSizeMin = 1024*10  # 10k
+            self.fileSizeMax = 1024 * 1024 * 1024 * 50  # 50g
+            self.fileType = ['.zip', '.gz', '.rar', '.bz2', '.tar', '.7z']
+        if fileType == 'all':
+            self.fileType = 'all'
+
+    def setFileSize(self, minSize=0, maxSize=1024 * 1024 * 1024 * 10):
+        self.fileSizeMin = int(minSize)
+        self.fileSizeMax = int(maxSize)
+
+    def setFileType(self, fileType):
+        self.fileType = fileType
+
+    def GetFileMd5(self, filePath):
+        hashObj = hashlib.md5()
+        if os.path.isfile(filePath):
+            with open(filePath, 'rb') as f:
+                while True:
+                    data = f.read(1024)
+                    if not data:
+                        break
+                    hashObj.update(data)
+        hashCode = hashObj.hexdigest()
+        fileMd5 = str(hashCode).upper()
+        return fileMd5
+
+    def GetFileInfo(self, type=0):  #
+        try:
+            for path in self.path:
+                if os.path.isdir(path):
+                    for root, dirs, names in os.walk(path):
+                        for name in names:
+                            if self.fileType == 'all':
+                                fileName = os.path.join(root, name)
+                                fileSize = os.path.getsize(fileName)
+                            else:
+                                if os.path.splitext(name)[1].lower() in self.fileType:
+                                    if self.fileSizeMin &lt;= os.path.getsize(os.path.join(root,name)) &lt;= self.fileSizeMax:
+                                        fileName = os.path.join(root, name)
+                                        fileSize = os.path.getsize(fileName)
+                                else:    #扩展名不在过滤里面 之间跳出循环
+                                    continue
+                            if 0 == int(type):
+                                yield (name, fileName, fileSize)  # 这里返回一个生成器,遍历生成器得到需要数据
+                            if 1 == int(type):
+                                fileMd5 = self.GetFileMd5(fileName)
+                                yield (name, fileName, fileSize, fileMd5)
+                            if 2 == int(type):
+                                fileMd5 = self.GetFileMd5(fileName)
+                                parentDir = os.path.split(root)[1]  # 获取父文件夹名称
+                                yield (parentDir, name, fileName, fileSize, fileMd5)
+        except Exception as err:
+            print('Fileinfo Error: ' + str(err))
+
+    def WriteFileinfo(self, filePath, fileMd5):
+        fileIsExist = self.sqliteDB.DBSelectParamDataExist(self.fileIsExistSql, (fileMd5,))  # 文件是否在表里
+        if fileIsExist:
+            if self.delFile==1:
+                os.remove(filePath)
+                print('文件 {}重复 md5为{},删除完毕'.format(filePath, fileMd5))
+            elif self.delFile==0:
+                newFilePath = filePath + '.same'
+                os.rename(filePath, newFilePath)
+                print('文件 {}重复 md5为{},已改名为{}'.format(filePath, fileMd5,newFilePath))
+            else:
+                print('文件 {}重复 md5为{}'.format(filePath, fileMd5))
+        else:
+            self.sqliteDB.DBExecuteParam(self.fileInfoSql, (filePath, fileMd5))
+            print('文件 {} md5为{},写入成功'.format(filePath, fileMd5))
+
+    def FileInfo(self):
+        files = self.GetFileInfo(1)
+        for name, fileName, fileSize, fileMd5 in files:
+            self.WriteFileinfo(fileName, fileMd5)
+        self.sqliteDB.close()
+
+
+if __name__ == &quot;__main__&quot;:
+    Files = FindFiles(['D:\\mega'], 'photo',1)
+    Files.FileInfo()
+    
+    
+    
+</rich_text></node><node name="DelDir" prog_lang="python" readonly="False" tags="" unique_id="74"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# With Pycharm 2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin on 2018/6/9
+import os
+
+class DelDir(object):
+    def __init__(self,dirs=[]):
+        if dirs:
+            for dir in dirs:
+                self.deleteDir(dir)
+
+
+    def deleteDir(self,dir):
+            if os.path.isdir(dir):
+                for d in os.listdir(dir):
+                    self.deleteDir(os.path.join(dir, d))
+                if not os.listdir(dir):
+                    print('目录{}是一个空目录'.format(dir))
+                    try:
+                        os.rmdir(dir)
+                        print('删除目录{}成功'.format(dir))
+                    except Exception as err:
+                        print (&quot;删除目录失败&quot; + str(err))
+
+
+
+if __name__ == &quot;__main__&quot;:
+    Files = DelDir(['H:/1'])</rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
 </rich_text><rich_text background="#ffffff" foreground="#222222">视频播放：PotPlayer</rich_text><rich_text>
