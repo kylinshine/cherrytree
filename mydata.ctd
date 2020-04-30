@@ -6748,7 +6748,8 @@ rpm -qa | grep kernel  #重启后再查看
 yum -y remove kernel-3.10.0-957.el7.x86_64  kernel-core-4.18.0-147.el8.x86_64 #卸载旧内核和核心(重启后才能删除)
 yum -y install vsftpd #安装ftp服务
 cat /etc/redhat-release #查看cetnos版本
-dnf clean all &amp;&amp; dnf makecache  &amp;&amp; dnf -y update &amp;&amp; dnf -y install epel-release tar bzip2 wget curl screen python36 screen  #centos8中采用了dnf命令
+dnf clean all &amp;&amp; dnf makecache  &amp;&amp; dnf -y update &amp;&amp; dnf -y install epel-release tar bzip2 wget curl python36 #centos8中采用了dnf命令,在没装三方源screen无法安装
+dnf -y install screen  &amp;&amp;  dnf clean all #安装screen并清理
 
 </rich_text><rich_text scale="h1" weight="heavy">备份恢复centos系统</rich_text><rich_text>
 mkdir /home/system
@@ -6790,8 +6791,8 @@ ln -s /usr/local/python3/bin/virtualenv /usr/bin/virtualenv  #建立软链接
 virtualenv ENV
 cd ENV
 source ./bin/activate
-pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple scrapy requests scrapy django flask   #国内用清华源，由于网络原因官方源有时不稳定
-pip install requests scrapy django flask psycopg2 #psycopg2安装之前要安装postgresql-devel,python3-devel
+pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple scrapy requests scrapy django flask pymysql   #国内用清华源，由于网络原因官方源有时不稳定
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple requests scrapy django flask psycopg2 #psycopg2安装之前要安装postgresql-devel,python3-devel,gcc
 deactivate
 
 </rich_text><rich_text scale="h1" weight="heavy">centos安装PostgreSQL</rich_text><rich_text>
@@ -6960,12 +6961,12 @@ history 5 #只查看最近5条命令
 
 </rich_text><rich_text scale="h1" weight="heavy">centos上用rclone挂在ftp google drive 、dropbox</rich_text><rich_text>
 mkdir download #建立文件夹
-wget https://downloads.rclone.org/v1.48.0/rclone-v1.48.0-linux-amd64.zip #下载rclone,没有wget的话yum -install wget
+wget https://downloads.rclone.org/v1.51.0/rclone-v1.51.0-linux-amd64.zip #下载rclone,没有wget的话yum -install wget
 yum install -y unzip fuse #fuse用来挂载使用的,unzip是解压zip包的
-unzip rclone-v1.43.1-linux-amd64.zip #解压
-chmod -R 755 rclone-v1.43.1-linux-amd64 #改权限
-cp rclone-v1.43.1-linux-amd64/rclone /usr/bin/ #拷贝到目录,可以省去改环境变量
-rm -rf rclone-v1.48.0linux-amd64 rclone-v1.48.0-linux-amd64.zip #删除下载包和解压包
+unzip rclone-v1.51.0-linux-amd64.zip #解压
+chmod -R 755 rclone-v1.51.0-linux-amd64 #改权限
+cp rclone-v1.51.0-linux-amd64/rclone /usr/bin/ #拷贝到目录,可以省去改环境变量
+rm -rf rclone-v1.51.0-linux-amd64 rclone-v1.51.0-linux-amd64.zip #删除下载包和解压包
 rclone config #配置
 n/s/q&gt;n  #建立新的
 name&gt; ftp  #名字是ftp
