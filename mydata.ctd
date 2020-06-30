@@ -200,8 +200,9 @@ oShellLink.Save
 
 
 AnacondaPath =&quot;D:\Program Files (x86)\Anaconda3\&quot; '添加python环境变量'
+AnacondaLibrary= &quot;D:\Program Files (x86)\Anaconda3\Library\bin&quot; '添加python的Library,要不然pip出问题'
 AnacondaScripts=&quot;D:\Program Files (x86)\Anaconda3\Scripts\&quot;
-WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = AnacondaPath + &quot;;&quot; + AnacondaScripts +&quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = AnacondaPath + &quot;;&quot; + AnacondaLibrary + &quot;;&quot; + AnacondaScripts +&quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
 ########################################################下载nod32更新包########################################################
 if exist &quot;D:\nginx\html&quot; del /s /q &quot;D:\nginx\html\*.*&quot;   
 if exist offline_update_eav.zip del /s /q offline_update_eav.zip
@@ -255,6 +256,64 @@ pause
 
 ##################################################杀死ie进程##################################################
 taskkill /F /im iexplore.exe
+##################################################循环多次运行某命令##################################################
+@echo off
+for /l %%i in (1,1,300) do (
+scrapy crawl tumblr
+)
+pause
+##################################################备份pgsql##################################################
+@ECHO OFF
+@setlocal enableextensions
+@cd /d &quot;%~dp0&quot;
+SET PGPATH=D:\&quot;Program Files&quot;\postgresql\bin\pg_dump
+SET SVPATH=E:\pgsql-db\
+SET PRJDB=tumblr
+SET zipPATH=D:\&quot;Program Files&quot;\7-Zip\7z
+FOR /F &quot;TOKENS=1,2,3 DELIMS=/ &quot; %%i IN ('DATE /T') DO SET d=%%i%%j%%k
+FOR /F &quot;TOKENS=1,2,3 DELIMS=: &quot; %%i IN ('TIME /T') DO SET t=%%i%%j%%k
+SET DBDUMP=%PRJDB%_%d%_%t%.backup
+%PGPATH% -h localhost -p 5432 -U postgres %PRJDB% &gt; %SVPATH%%DBDUMP%
+echo Backup Taken Complete %SVPATH%%DBDUMP%
+%zipPATH% a -t7z %SVPATH%%DBDUMP%.7z %SVPATH%%DBDUMP% -r -mx=9 -m0=LZMA2 -ms=10m -mf=on -mhc=on -mmt=on
+echo Backup Compress Complete %SVPATH%%DBDUMP%.7z
+del /q %SVPATH%%DBDUMP%
+echo Delete Backup Complete %SVPATH%%DBDUMP%
+pause
+##################################################运行python脚本 然后压缩上传NAS##################################################
+@ECHO OFF
+@setlocal enableextensions
+@cd /d &quot;%~dp0&quot;
+python run.py
+SET SVPATH=d:\meizitu-7z\
+SET NASURL=NAS:/NAS/meizitu
+SET MEIZ=meizitu
+SET zipPATH=&quot;D:\soft\7-Zip\7z&quot;
+SET MZTPATH=&quot;D:\meizitu-down\*&quot;
+SET DELPATH=&quot;d:\meizitu-7z\*.*&quot;
+FOR /F &quot;TOKENS=1,2,3 DELIMS=/ &quot; %%i IN ('DATE /T') DO SET d=%%i%%j%%k
+FOR /F &quot;TOKENS=1,2,3 DELIMS=: &quot; %%i IN ('TIME /T') DO SET t=%%i%%j%%k
+SET MEIZPATH=%MEIZ%_%d%_%t%.backup
+SET PASSWD=kylinshine
+SET SIZE=3072m
+%zipPATH% a -t7z %SVPATH%%MEIZPATH%.7z %MZTPATH% -p%PASSWD% -v%SIZE% -r -mx=9 -m0=LZMA2 -ms=10m -mf=on -mhc=on -mmt=on
+echo Backup Compress Complete %SVPATH%%MEIZPATH%.7z
+rclone sync --checksum --verbose --transfers 4 --checkers 8 --contimeout 60s --timeout 300s --retries 3 --low-level-retries 10 --stats 1s %SVPATH% %NASURL%
+echo Upload to NAS Complete
+del /s /q %DELPATH%
+echo Delete Complete
+pause
+##################################################运行python脚本然后上传NAS##################################################
+
+@ECHO OFF
+@setlocal enableextensions
+@cd /d &quot;%~dp0&quot;
+python run.py
+SET SVPATH=D:\meizitu-down\
+SET NASURL=NAS:/NAS/meizitu
+rclone sync --checksum --verbose --transfers 4 --checkers 8 --contimeout 60s --timeout 300s --retries 3 --low-level-retries 10 --stats 1s %SVPATH% %NASURL%
+echo Upload to NAS Complete
+pause
 </rich_text></node><node name="linux" prog_lang="sh" readonly="False" tags="" unique_id="28"><rich_text>
 </rich_text></node></node><node name="Python" prog_lang="python" readonly="False" tags="Python" unique_id="1"><rich_text>
 </rich_text><node name="包管理" prog_lang="python" readonly="False" tags="" unique_id="19"><rich_text>########################################################pip相关语法########################################################
@@ -8355,7 +8414,10 @@ Windows Registry Editor Version 5.00
 [HKEY_LOCAL_MACHINE\SOFTWARE\ESET\ESET Security\CurrentVersion\Plugins\01000400\Profiles\@My profile]
 &quot;SelectedServer&quot;=&quot;</rich_text><rich_text link="webs http://192.168.0.250:2221&quot;">http://192.168.0.250:2221&quot;</rich_text><rich_text>
 &quot;MirrorFolder&quot;=&quot;C:\\ProgramData\\ESET\\ESET NOD32 Antivirus\\mirror&quot;
-</rich_text></node><node name="tumblr blog" prog_lang="plain-text" readonly="False" tags="" unique_id="47"><rich_text>palaceofhentai
+</rich_text></node><node name="tumblr blog" prog_lang="plain-text" readonly="False" tags="" unique_id="47"><rich_text>fsamperio2
+johanncell
+yua-mikami
+palaceofhentai
 whiterabbitspirit19
 eroticsets2016
 burymytool
