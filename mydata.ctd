@@ -2539,166 +2539,7 @@ if __name__=='__main__':
     mainWindow.show() #显示框口
     sys.exit(app.exec_()) #进入消息循环
 </rich_text></node><node name="自己的程序" prog_lang="python" readonly="False" tags="" unique_id="39"><rich_text>
-</rich_text><node name="SqliteHelper" prog_lang="python" readonly="False" tags="" unique_id="27"><rich_text>#!/usr/bin/python
-# -*- coding: UTF-8 -*-
-# With Pycharm 2017
-# author: Kylin
-# email: kylinshine@163.com
-# QQ: 78619808
-# Created by Kylin on 2018/6/9
-import sqlite3
-'''
-封装sqlite3,创建表增删改用DbExecute,查询DbQuery,可以直接传语句，也可以用?占位,后面传入元组
-DbExecute和DbQuery 区别是commit提交
-'''
-
-class DBDriver:
-
-    def __init__(self, dbfile):
-        try:
-            self.conn = sqlite3.connect(dbfile)
-            self.cur = self.conn.cursor()
-        except Exception as err:
-            print('Connect db Error: ' + str(err))
-
-    def DbExecute(self, sql,*params):  #*params是一个元组
-        try:
-            self.cur.execute(sql,*params)  # 执行sql语句
-            self.conn.commit()
-        except Exception as err:
-            print('Execute sql scraipt Error: '+ str(err) )
-
-    def DbQuery(self, sql,*params):
-        try:
-            self.cur.execute(sql,*params)  # 执行sql语句
-            return self.cur.fetchall()
-        except Exception as err:
-            print('Select table Error: ' + str(err))
-
-    def close(self):
-        self.cur.close()
-        self.conn.close()
-
-
-if __name__ == &quot;__main__&quot;:
-    Test = DBDriver('train.db')
-    tbSql1 = &quot;create table tumblr(id integer primary key,tumblrName varchar(128),total varchar(128))&quot;
-    Test.DbExecute(tbSql1)
-    tbsql2 = &quot;insert into tumblr values (1,'godbells','1000') &quot;
-    Test.DbExecute(tbsql2)
-    tbsql3= &quot;insert into tumblr values (?,?,?) &quot;
-    tbsql3p= (2,'godbells','2000')
-    Test.DbExecute(tbsql3,tbsql3p)
-    tbsql4 = &quot; select * from tumblr where id=1 &quot;
-    a = Test.DbQuery(tbsql4)
-    print (a)
-    tbsql5 = &quot; select * from tumblr where id= ?&quot;
-    tbsql5p = (2,)
-    b = Test.DbQuery(tbsql5,tbsql5p)
-    print (b)
-    tbsql6 = &quot; select * from tumblr&quot;
-    c = Test.DbQuery(tbsql6)
-    print (c)
-
-
-
-
-
-
-</rich_text></node><node name="MysqlHelper" prog_lang="python" readonly="False" tags="" unique_id="42"><rich_text>#!/usr/bin/python
-# -*- coding: UTF-8 -*-
-# Program Name:test.py
-# IDE:Pycharm2018
-# author: Kylin
-# email: kylinshine@163.com
-# QQ: 78619808
-# Created by Kylin at 2018/9/4
-import pymysql
-
-'''
-mysql的占位符和sqlite不一样，sqlite是?,mysql是%s
-DbExec方法是带回滚的执行
-'''
-
-class DBHelper():
-
-    def __init__(self,host,user,passwd,db,port=3306):
-        self.host = host
-        self.port = port
-        self.user = user
-        self.passwd = passwd
-        self.db = db
-        self.charset = &quot;utf8&quot;
-        try:
-            self.conn = pymysql.connect(host=self.host,
-                                        db=self.db,
-                                        user=self.user,
-                                        passwd=self.passwd,
-                                        port=self.port,
-                                        charset=self.charset,
-                                        connect_timeout=60)
-            self.cur = self.conn.cursor()
-        except:
-            print('connect error!')
-
-    def DbExecute(self, sql,*params):  #*params是一个元组
-        try:
-            self.cur.execute(sql,*params)  # 执行sql语句
-            self.conn.commit()
-        except Exception as err:
-            print('Execute sql scraipt Error: '+ str(err) )
-
-    def DbQuery(self, sql, *params):
-        try:
-            self.cur.execute(sql, *params)  # 执行sql语句
-            return self.cur.fetchall()
-        except Exception as err:
-            print('Select table Error: ' + str(err) )
-
-    def DbExec(self, sql,*params): #这个是带回滚的
-        try:
-            self.cur.execute(sql,*params)  # 执行失败,回滚数据
-            self.conn.commit()
-        except Exception as err:
-            self.conn.rollback()
-            print('Execute sql scraipt Error,data rollback : '+ str(err) )
-
-
-    def close(self):
-        self.cur.close()
-        self.conn.close()
-
-
-
-
-
-
-
-
-
-
-if __name__ == &quot;__main__&quot;:
-    mysqldb = DBHelper('127.0.0.1','root','78619808','test')
-    sql = &quot; select * from crawlblog limit %s &quot;
-    params =(5,)
-    c = mysqldb.DbQuery(sql,params)
-    print(c)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</rich_text></node><node name="SendMail" prog_lang="python" readonly="False" tags="" unique_id="40"><rich_text>########################################################py2.7 sendmail########################################################
+</rich_text><node name="SendMail" prog_lang="python" readonly="False" tags="" unique_id="40"><rich_text>########################################################py2.7 sendmail########################################################
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm
@@ -5918,6 +5759,16 @@ if __name__ == '__main__':
     n = f.GetFileSize()
     print (n)
 
+
+import time   
+def comparedate(self,sdate, edate):  # 比较2个日期,判断时间大小,返回真或者假
+        s_date = time.mktime(time.strptime(sdate, '%Y-%m-%d'))
+        e_date = time.mktime(time.strptime(edate, '%Y-%m-%d'))
+        if s_date - e_date &gt; 0:
+            return True
+        else:
+            return False
+
 </rich_text></node><node name="SsrList" prog_lang="python" readonly="False" tags="" unique_id="60"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm 2017
@@ -6436,6 +6287,7 @@ class DBDriver(object):  # DBDriver的封装类,可以继承覆写构造函数,�
         except Exception as err:
             print('DBSelectDataExist table Error: ' + str(err))
 
+
     def close(self):
         self.cur.close()
         self.conn.close()
@@ -6479,8 +6331,8 @@ class MysqlHelper(DBDriver):  # 继承DBDriver 重写构造函数
 
 
 if __name__ == &quot;__main__&quot;:
-    pgdb = PGHelper('****', 'postgres', '****', 'tumblr')
-    blogs = pgdb.DBSelectParam(&quot; select name from tumblrblog ORDER BY random()  limit %s &quot;, (1000,))
+    pgdb = PGHelper('hongyun-xa.vicp.io', 'postgres', '78619808', 'tumblr')
+    blogs = pgdb.DBSelectParam(&quot; select name from tumblrblog ORDER BY random()  limit %s &quot;, (100,))
     pgdb.close()
     print(blogs)
     Test = SqliteHelper('test.db3')
@@ -6515,6 +6367,8 @@ if __name__ == &quot;__main__&quot;:
     Params10 = ('王五',)
     rows10 = Test.DBSelectParamFetchMany(sqlscript10, Params10, 20)
     print(rows10)
+    rows11 = Test.DBSelect(&quot; select * from test &quot;)
+    print(rows11)
     Test.close()
     
     
