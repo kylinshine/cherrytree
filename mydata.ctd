@@ -9781,8 +9781,7 @@ wsh.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = goPath +&quot;;&quo
 MyVar = MsgBox (&quot;恭喜，完成设置！&quot;, , &quot;MSG&quot;)
 End If
 ############################################setenv.bat############################################
-#设置gopath和代理 并用go mod管理项目
-go env -w GO111MODULE=on
+#设置gopath(这里的gopath放在go的安装目录下)和设置代理(防止github被墙无法下载第三方包) 设置用go mod管理项目
 go env -w GOPROXY=https://goproxy.cn,direct
 go env -w GOPATH=&quot;D:\Program Files (x86)\Go\gopath&quot;
 pause
@@ -9798,4 +9797,19 @@ dim wsh
 Set wsh = WScript.CreateObject(&quot;WScript.Shell&quot;)
 wsh.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = gccPath +&quot;;&quot; +wsh.Environment(&quot;system&quot;).Item(&quot;path&quot;)
 MyVar = MsgBox (&quot;恭喜，完成设置！&quot;, , &quot;MSG&quot;)
-End If</rich_text></node></node></cherrytree>
+End If
+############################################setenv.vbs############################################
+set WshShell=WScript.CreateObject(&quot;WScript.Shell&quot;)  
+AnacondaPath=&quot;D:\Program Files (x86)\Anaconda3\&quot; '添加python环境变量'
+AnacondaScripts=&quot;D:\Program Files (x86)\Anaconda3\Scripts\&quot;
+AnacondaLibrary= &quot;D:\Program Files (x86)\Anaconda3\Library\bin\&quot;
+WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = AnacondaPath + &quot;;&quot; + AnacondaScripts +&quot;;&quot; + AnacondaLibrary + &quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+goPath=&quot;D:\Program Files (x86)\Go\bin\&quot; '添加golang环境变量'
+gcc=&quot;D:\Program Files (x86)\mingw64\bin\&quot; '添加mingw64环境变量'
+WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = gcc + &quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+gitPath=&quot;D:\Program Files (x86)\Git\bin\&quot; '添加git环境变量'
+WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = gitPath + &quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+cmdtools=&quot;D:\Program Files (x86)\cmdtools\&quot; '添加wget rclone nc等cmd命令环境变量'
+WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = cmdtools + &quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+
+</rich_text></node></node></cherrytree>
