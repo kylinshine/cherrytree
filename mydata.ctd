@@ -9767,4 +9767,35 @@ imdb_id:tt1825683  #imdb的电影id
 name : Black Panther  #名字
 data: 2018|Action, Adventure, Sci-Fi|2h14m|7.7|xjDjIWPwcPU|822,3922,296 #年|导演|时长|评分|youtube链接|822图片id 3922不知道反正和图片有关296是图片高
 dl:720p:1.63GB:d6b8537a6d43718374625ae6fec65b3af91ad719|1080p:10.94GB:ae9ca24b383db173b4086127795d0de3031534a4|SD:0.99GB:751212cf4ac3e09f5de7b6ba90cef5bd1578f085 #清晰度|大小|磁力链接
-json_id:24 #json这个表24id对应的真实json是movies_22</rich_text></node></cherrytree>
+json_id:24 #json这个表24id对应的真实json是movies_22</rich_text></node><node name="golang" prog_lang="custom-colors" readonly="False" tags="" unique_id="27"><rich_text></rich_text><node name="环境变量" prog_lang="sh" readonly="False" tags="" unique_id="42"><rich_text>############################################setgolang.vbs############################################
+#设置golang到path
+Dim MyVar
+Set shell = CreateObject(&quot;Shell.Application&quot;)
+Set selFolder = shell.BrowseForFolder(0, &quot;选择go的bin目录&quot;, 0, ssfDRIVES)
+Set selFolderItem = selFolder.Self
+goPath = selFolderItem.Path
+If (goPath  &lt;&gt;&quot;&quot;) Then
+dim wsh
+Set wsh = WScript.CreateObject(&quot;WScript.Shell&quot;)
+wsh.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = goPath +&quot;;&quot; +wsh.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+MyVar = MsgBox (&quot;恭喜，完成设置！&quot;, , &quot;MSG&quot;)
+End If
+############################################setenv.bat############################################
+#设置gopath和代理 并用go mod管理项目
+go env -w GO111MODULE=on
+go env -w GOPROXY=https://goproxy.cn,direct
+go env -w GOPATH=&quot;D:\Program Files (x86)\Go\gopath&quot;
+pause
+############################################setgcc.vbs############################################
+#设置gcc的环境变量,比如golang使用sqlite3时候需要gcc
+Dim MyVar
+Set shell = CreateObject(&quot;Shell.Application&quot;)
+Set selFolder = shell.BrowseForFolder(0, &quot;选择mingw64的bin目录&quot;, 0, ssfDRIVES)
+Set selFolderItem = selFolder.Self
+gccPath = selFolderItem.Path
+If (gccPath  &lt;&gt;&quot;&quot;) Then
+dim wsh
+Set wsh = WScript.CreateObject(&quot;WScript.Shell&quot;)
+wsh.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = gccPath +&quot;;&quot; +wsh.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+MyVar = MsgBox (&quot;恭喜，完成设置！&quot;, , &quot;MSG&quot;)
+End If</rich_text></node></node></cherrytree>
