@@ -6599,6 +6599,197 @@ if __name__ == &quot;__main__&quot;:
 
     proc= mssql.DBExecProcParam(&quot; SET NOCOUNT ON;exec SOF_getmaxdjbh @fdbs=?,@biaoshi=?,@addflag=?,@mkbh=? &quot; ,('AAA','TUI',1,'A1'))
     print(proc)
+    
+    
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# With Pycharm 2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# last edit 2020/12/7
+# DButil v3版本 对mssql进行支持了，采用了pymssql库,但是对支持中文有问题
+import sqlite3
+import psycopg2 #pip install psycopg2 pymysql pyodbc pymssql更好用一点 但是当前版本有bug而且项目已经终止
+import pymysql
+import pymssql
+
+
+class DBDriver(object):  # DBDriver的封装类,可以继承覆写构造函数,或者把直接传入conn
+
+    def __init__(self, driverConn):
+        try:
+            self.conn = driverConn
+            self.cur = self.conn.cursor()
+        except Exception as err:
+            print('Connect db Error: ' + str(err))
+
+    def DBExecute(self, sqlscript):  # sqlscript是sql语句
+        try:
+            self.cur.execute(sqlscript)  # 执行sql语句
+            self.conn.commit()
+        except Exception as err:
+            self.conn.rollback()
+            print('Execute sqlscript Error: ' + str(err))
+
+    def DBExecuteParam(self, sqlscript, params):  # params是一个元祖
+        try:
+            self.cur.execute(sqlscript, params)  # 执行sql语句
+            self.conn.commit()
+        except Exception as err:
+            self.conn.rollback()
+            print('ExecuteParam sqlscript Error: ' + str(err))
+
+    def DBSelect(self, sqlscript):
+        try:
+            self.cur.execute(sqlscript)  # 执行sql语句
+            return self.cur.fetchall()
+        except Exception as err:
+            print('Select table Error: ' + str(err))
+
+    def DBSelectParam(self, sqlscript, params):
+        try:
+            self.cur.execute(sqlscript, params)  # 执行sql语句
+            return self.cur.fetchall()
+        except Exception as err:
+            print('SelectParam table Error: ' + str(err))
+
+    def DBExecuteMany(self, sqlscript, params):
+        try:
+            self.cur.executemany(sqlscript, params)
+            self.conn.commit()
+        except Exception as err:
+            self.conn.rollback()
+            print('ExecuteMany sqlscript Error: ' + str(err))
+
+    def DBSelectFetchOne(self, sqlscript):  # 每次返回一个结果
+        try:
+            self.cur.execute(sqlscript)  # 执行sql语句
+            return self.cur.fetchone()
+        except Exception as err:
+            print('SelectFetchOne table Error: ' + str(err))
+
+    def DBSelectFetchMany(self, sqlscript, size):  # size是每次返回的个数
+        try:
+            self.cur.execute(sqlscript)  # 执行sql语句
+            return self.cur.fetchmany(int(size))  # size是int型
+        except Exception as err:
+            print('DBSelectFetchMany table Error: ' + str(err))
+
+    def DBSelectParamFetchOne(self, sqlscript, params):  # 每次返回一个结果
+        try:
+            self.cur.execute(sqlscript, params)  # 执行sql语句
+            return self.cur.fetchone()
+        except Exception as err:
+            print('SelectParamFetchOne table Error: ' + str(err))
+
+    def DBSelectParamFetchMany(self, sqlscript, params, size):  # size是每次返回的个数
+        try:
+            self.cur.execute(sqlscript, params)  # 执行sql语句
+            return self.cur.fetchmany(int(size))  # size是int型
+        except Exception as err:
+            print('SelectParamFetchOne table Error: ' + str(err))
+
+    def DBSelectParamDataExist(self, sqlscript, params):  # 根据语句返回数据是否存在
+        try:
+            self.cur.execute(sqlscript, params)  # 执行sql语句
+            if self.cur.fetchone():
+                return True
+            else:
+                return False
+        except Exception as err:
+            print('DBSelectParamDataExist table Error: ' + str(err))
+
+    def DBSelectDataExist(self, sqlscript):  # 每次返回一个结果
+        try:
+            self.cur.execute(sqlscript)  # 执行sql语句
+            if self.cur.fetchone():
+                return True
+            else:
+                return False
+        except Exception as err:
+            print('DBSelectDataExist table Error: ' + str(err))
+
+    def DBExecProc(self, sqlscript):
+        try:
+            rows=self.cur.execute(sqlscript).fetchall()  # 执行sql语句
+            self.cur.commit()
+            return rows
+        except Exception as err:
+            print('Exec Proc Error: ' + str(err))
+
+    def DBExecProcParam(self, sqlscript,Params):
+        try:
+            rows=self.cur.execute(sqlscript,Params).fetchall()  # 执行sql语句
+            self.cur.commit()
+            return rows
+        except Exception as err:
+            print('Exec Proc Error: ' + str(err))
+
+
+
+
+    def close(self):
+        self.cur.close()
+        self.conn.close()
+
+
+class SqliteHelper(DBDriver):  # 继承DBDriver 重写构造函数
+    def __init__(self, dbFile):
+        try:
+            conn = sqlite3.connect(dbFile)
+            super().__init__(conn)
+        except Exception as err:
+            print('Connect sqliteDB Error: ' + str(err))
+
+
+class PGHelper(DBDriver):  # 继承DBDriver 重写构造函数
+    def __init__(self, host, user, passwd, db, port=&quot;5432&quot;):
+        try:
+            conn = psycopg2.connect(host=host,
+                                    database=db,
+                                    user=user,
+                                    password=passwd,
+                                    port=port
+                                    )
+            super().__init__(conn)
+        except Exception as err:
+            print('Connect Pgsql Error: ' + str(err))
+
+
+class MysqlHelper(DBDriver):  # 继承DBDriver 重写构造函数
+    def __init__(self, host, user, passwd, db, port=&quot;3306&quot;):
+        try:
+            conn = pymysql.connect(host=host,
+                                   database=db,
+                                   user=user,
+                                   password=passwd,
+                                   port=port
+                                   )
+            super().__init__(conn)
+        except Exception as err:
+            print('Connect Mysql Error: ' + str(err))
+
+class MssqlHelper(DBDriver):  # 继承DBDriver 重写构造函数
+    def __init__(self, host, user, passwd, db):
+        try:
+            conn = pymssql.connect(host, user, passwd, db,charset = 'utf8')
+            super().__init__(conn)
+        except Exception as err:
+            print('Connect Mssql Error: ' + str(err))
+
+
+
+
+if __name__ == &quot;__main__&quot;:
+    mssqlDB = MssqlHelper('127.0.0.1','***','***','***')
+    serverpath = 'E:/Images'
+    copypath = 'E:/copy'
+    datas = mssqlDB.DBSelect(&quot;select b.spid,folderpath,extend,imageid,b.pihao from ImageDoc a,sphwph b where a.detailid=b.spid and a.fzxx1=b.pihao and type_id='IMT00000000' and b.shl&gt;0&quot;)
+    for spid,folderpath,extend,imageid,pihao in datas:
+        imagepath = &quot;{}/{}/{}{}&quot;.format(serverpath,folderpath,imageid,extend)
+        copytopath = &quot;{}/{}/{}_{}{}&quot;.format(copypath, spid, imageid,pihao,extend)
+        print (imagepath,copytopath)
 
 
 
@@ -6753,7 +6944,87 @@ class DelDir(object):
 
 
 if __name__ == &quot;__main__&quot;:
-    Files = DelDir(['H:/1'])</rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
+    Files = DelDir(['H:/1'])</rich_text></node><node name="yjbg" prog_lang="python" readonly="False" tags="" unique_id="75"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:yjbg.py
+# IDE:Pycharm
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# last edit 2020/12/7
+import DButil
+import os,shutil
+class yjbg(object):
+    def __init__(self,host, user, passwd, db,srcpath,destyjpath,destfppath,yjpath,fppath):
+        self.mssqlDB = DButil.MssqlHelper(host, user, passwd, db)
+        self.srcpath = srcpath
+        self.destyjpath = destyjpath
+        self.destfppath = destfppath
+        self.yjpath= yjpath
+        self.fppath = fppath
+        if not os.path.exists(self.srcpath):
+            os._exit(-1)
+
+    def copyyj(self,sqlscript): #拷贝药检图片
+        datas = self.mssqlDB.DBSelect(sqlscript)
+
+        for spid, folderpath, extend, imageid, pihao,baozhiqi,sxrq in datas:
+            imagepath = &quot;{}/{}/{}{}&quot;.format(self.srcpath, folderpath, imageid, extend)
+            copypath = &quot;{}/{}/{}_{}{}&quot;.format(self.destyjpath, spid, imageid, pihao, extend)
+            yjpath = &quot;{}/{}/{}_{}{}&quot;.format(self.yjpath, spid, imageid, pihao, extend)
+            if os.path.exists(imagepath):
+                try:
+                    shutil.copy(imagepath, copypath)
+                except:
+                    os.makedirs(os.path.dirname(copypath))
+                    shutil.copy(imagepath, copypath)
+                print('复制{}到{}成功'.format(imagepath,copypath))
+                with open('yj-sucess.txt', 'a+') as f:
+                    insersql = &quot; insert into t_quality_report(spid,pihao,picPath,baozhiqi,sxrq,creater,create_date,bendian) values (\'{}\',\'{}\',\'{}\',\'{}\',\'{}\','admin',getdate(),'AAA')\n&quot;.format(spid,pihao,yjpath,baozhiqi,sxrq)
+                    f.write(insersql)
+                print('写入sql脚本完成')
+            else:
+                with open('yj-err.txt', 'a+') as f:
+                    f.write('spid是{}批号是{}的图片{}不存在\n'.format(spid,pihao,imagepath))  # 加\n换行显
+
+    def copyfp(self, sqlscript):  # 拷贝发票图片
+        datas = self.mssqlDB.DBSelect(sqlscript)
+        for spid, folderpath, extend, imageid, pihao, baozhiqi,sxrq,fzxx2 in datas:
+            imagepath = &quot;{}/{}/{}{}&quot;.format(self.srcpath, folderpath, imageid, extend)
+            copypath = &quot;{}/{}_{}_{}{}&quot;.format(self.destfppath, spid, imageid, pihao,extend)
+            fppath = &quot;{}/{}_{}_{}{}&quot;.format(self.fppath, spid, imageid, pihao,extend)
+            if os.path.exists(imagepath):
+                try:
+                    shutil.copy(imagepath, copypath)
+                except:
+                    os.makedirs(os.path.dirname(copypath))
+                    shutil.copy(imagepath, copypath)
+                print('复制{}到{}成功'.format(imagepath, copypath))
+                with open('fp-sucess.txt', 'a+') as f:
+                    insersql = &quot; insert into t_invoice(djbh,dj_sn,spid,pihao,type,picPath,baozhiqi,sxrq,creater,create_date,bendian) values (\'{}\','0',\'{}\',\'{}\','1',\'{}\',\'{}\',\'{}\','admin',getdate(),'AAA')\n&quot;.format(fzxx2,spid, pihao, fppath, baozhiqi, sxrq)
+                    f.write(insersql)
+                print('写入sql脚本完成')
+            else:
+                with open('fp-err.txt', 'a+') as f:
+                    f.write('spid是{}批号是{}的图片{}不存在\n'.format(spid, pihao, imagepath))  # 加\n换行显
+
+
+
+if __name__ == &quot;__main__&quot;:
+    yjbg= yjbg('127.0.0.1','***','***','***','E:/Images','E:/copy/image/quality','E:/copy/image/invoice','/image/quality','/image/invoice')
+    yjbg.copyyj(&quot; select b.spid,folderpath,extend,imageid,b.pihao,b.baozhiqi,b.sxrq from ImageDoc a,sphwph b where a.detailid=b.spid and a.fzxx1=b.pihao and type_id='IMT00000000' and b.shl&gt;0 &quot;)
+    yjbg.copyfp(&quot; select  b.spid,a.folderpath,a.extend,a.imageid,b.pihao,b.baozhiqi,b.sxrq,a.fzxx2 from ImageDoc a,sphwph b where a.detailid=b.spid and a.fzxx1=b.pihao and type_id='IMT00000001' and b.shl&gt;0 and a.fzxx2&lt;&gt;'' &quot;)
+
+
+
+
+
+
+
+
+
+
+</rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
 </rich_text><rich_text background="#ffffff" foreground="#222222">视频播放：PotPlayer</rich_text><rich_text>
@@ -7098,7 +7369,8 @@ dd if=part1.img of=/dev/hda2
 
 
 </rich_text></node><node name="debian" prog_lang="custom-colors" readonly="False" tags="" unique_id="71"><rich_text scale="h1" weight="heavy">更新系统装必要依赖软件</rich_text><rich_text>
-apt-get -y update;apt-get install -y wget curl screen python3-pip libpq-dev vim
+sudo apt update &amp;&amp; sudo apt upgrade -y
+sudo apt-get install -y wget curl screen python3-pip libpq-dev vim
 </rich_text><rich_text scale="h1" weight="heavy">python3建立虚拟环境</rich_text><rich_text>
 cd ENV #创建虚拟环境目录
 source ./bin/activate #激活虚拟环境
@@ -9804,12 +10076,15 @@ AnacondaPath=&quot;D:\Program Files (x86)\Anaconda3\&quot; '添加python环境�
 AnacondaScripts=&quot;D:\Program Files (x86)\Anaconda3\Scripts\&quot;
 AnacondaLibrary= &quot;D:\Program Files (x86)\Anaconda3\Library\bin\&quot;
 WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = AnacondaPath + &quot;;&quot; + AnacondaScripts +&quot;;&quot; + AnacondaLibrary + &quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
-goPath=&quot;D:\Program Files (x86)\Go\bin\&quot; '添加golang环境变量'
-gcc=&quot;D:\Program Files (x86)\mingw64\bin\&quot; '添加mingw64环境变量'
-WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = gcc + &quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+goRoot=&quot;D:\Program Files (x86)\Go\bin\&quot; '添加golang环境变量'
+goPath=&quot;D:\Program Files (x86)\Go\gopath\bin\&quot; '添加golang环境变量'
+mingwPath=&quot;D:\Program Files (x86)\mingw64\bin\&quot; '添加mingw64环境变量'
+WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = goRoot + &quot;;&quot; + goPath + &quot;;&quot; + mingwPath + &quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
 gitPath=&quot;D:\Program Files (x86)\Git\bin\&quot; '添加git环境变量'
 WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = gitPath + &quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
 cmdtools=&quot;D:\Program Files (x86)\cmdtools\&quot; '添加wget rclone nc等cmd命令环境变量'
 WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = cmdtools + &quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+
+
 
 </rich_text></node></node></cherrytree>
