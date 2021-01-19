@@ -7024,6 +7024,331 @@ if __name__ == &quot;__main__&quot;:
 
 
 
+</rich_text></node><node name="subyaml" prog_lang="python" readonly="False" tags="" unique_id="76"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:subyaml.py
+# IDE:Pycharm
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# last edit 2021/01/18
+from utils.Fetch import httpGet, RandomUA
+from utils.GetIp import getIp
+import yaml
+import os
+
+class subyaml(object):
+    def __init__(self,url='',urls=[],fileName='app.yaml'): #第一个是url是clash的模版,第二个参数是其他订阅
+        try:
+            yaml.Dumper.ignore_aliases = lambda *args: True
+            html = httpGet(url, headers=RandomUA(), binary=True)
+            self.clashTemplate = yaml.load(html, Loader=yaml.SafeLoader)
+            self.urls = urls
+            self.proxies = []  #收集代理信息
+            self.proxyName =[] #收集代理名字
+            self.fileNanme = fileName
+            self.fetchPorxy()
+        except Exception as e:
+            print(&quot;出现如下异常{}&quot;.format(e))
+
+    def fetchPorxy(self): #
+        tempProxy = []
+        try:
+            for url in self.urls:
+                html = httpGet(url, headers=RandomUA(), binary=True)
+                clash = yaml.load(html, Loader=yaml.SafeLoader)
+                for proxy in clash['proxies']:
+                    if proxy:
+                        tempProxy.append(proxy)  #这里添加代理信息
+            for Templateproxy in self.clashTemplate['proxies']:
+                if Templateproxy:
+                    tempProxy.append(Templateproxy)  #这里添加模版的代理信息
+
+            for proxy in tempProxy:
+                if (proxy['type'] == 'ss'):
+                    ssIp = getIp(proxy['server'])
+                    proxy['server'] = ssIp
+                    proxy['name'] = '🚀vip1 ' + proxy['name']
+                    self.proxies.append(proxy)
+                    self.proxyName.append(proxy['name'])
+                if (proxy['type'] == 'vmess'):
+                    proxy['name'] = '🚀vip1 ' + proxy['name']
+                    self.proxies.append(proxy)
+                    self.proxyName.append(proxy['name'])
+                if (proxy['type'] == 'trojan'):
+                    proxy['name'] = '🚀vip2 ' + proxy['name']
+                    self.proxies.append(proxy)
+                    self.proxyName.append(proxy['name'])
+                if (proxy['type'] == 'ssr'):
+                    ssrIp = getIp(proxy['server'])
+                    proxy['server'] = ssrIp
+                    proxy['name'] = '🚀vip2 ' + proxy['name']
+                    self.proxies.append(proxy)
+                    self.proxyName.append(proxy['name'])
+
+        except Exception as e:
+            print(&quot;出现如下异常{}&quot;.format(e))
+
+
+    def resolveClash(self):
+        try:
+            self.clashTemplate['proxies'] = self.proxies
+            for proxyGroup in self.clashTemplate['proxy-groups']:
+                if proxyGroup['name'] == '🔰国外流量':
+                    proxyGroupPorxies = proxyGroup['proxies'][-1:]
+                    for proxy in self.proxyName[::-1]: #列表反转
+                        proxyGroupPorxies.insert(0,proxy)
+                    proxyGroup['proxies'] = proxyGroupPorxies
+                if proxyGroup['name'] == '✈️Telegram':
+                    proxyGroupPorxies = proxyGroup['proxies'][0:1]
+                    for proxy in self.proxyName: #列表反转
+                        proxyGroupPorxies.append(proxy)
+                    proxyGroup['proxies'] = proxyGroupPorxies
+                if proxyGroup['name'] == '✈️Telegram':
+                    proxyGroupPorxies = proxyGroup['proxies'][0:1]
+                    for proxy in self.proxyName:  # 列表反转
+                        proxyGroupPorxies.append(proxy)
+                    proxyGroup['proxies'] = proxyGroupPorxies
+                if proxyGroup['name'] == '🎬Youtube':
+                    proxyGroupPorxies = proxyGroup['proxies'][0:1]
+                    for proxy in self.proxyName:  # 列表反转
+                        proxyGroupPorxies.append(proxy)
+                    proxyGroup['proxies'] = proxyGroupPorxies
+                if proxyGroup['name'] == '🎬Netflix':
+                    proxyGroupPorxies = proxyGroup['proxies'][0:1]
+                    for proxy in self.proxyName:  # 列表反转
+                        proxyGroupPorxies.append(proxy)
+                    proxyGroup['proxies'] = proxyGroupPorxies
+                if proxyGroup['name'] == '🎬哔哩哔哩':
+                    proxyGroupPorxies = proxyGroup['proxies'][0:1]
+                    for proxy in self.proxyName:  # 列表反转
+                        proxyGroupPorxies.append(proxy)
+                    proxyGroup['proxies'] = proxyGroupPorxies
+                if proxyGroup['name'] == '🎬国外媒体':
+                    proxyGroupPorxies = proxyGroup['proxies'][0:1]
+                    for proxy in self.proxyName:  # 列表反转
+                        proxyGroupPorxies.append(proxy)
+                    proxyGroup['proxies'] = proxyGroupPorxies
+            with open(self.fileNanme , 'w+', encoding='utf-8') as f:
+                yaml.dump(self.clashTemplate, f,allow_unicode=True)
+
+        except Exception as e:
+            print(&quot;出现如下异常{}&quot;.format(e))
+
+
+
+
+
+
+if __name__ == &quot;__main__&quot;:
+    myssr1 = subyaml('https://XXX',['https://XXX'])
+    myssr1.resolveClash()
+
+
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/5/29
+import base64
+
+'''
+解密密文,缺失=号的自动补全再解密,返回str字符串
+加密文本,可选择是否压缩=号,返回str字符串
+'''
+
+
+def Decrypt(strText):
+    if isinstance(strText, str):
+        text = strText.encode()  # 默认就是utf-8
+    elif isinstance(strText, bytes):
+        text = strText  # 二进制不用编码了
+    else:
+        print('type error')
+    missing_padding = len(text) % 4  # 这里判断是否要补全=号
+    if missing_padding != 0:
+        text += b'=' * (4 - missing_padding)  # 补全=号
+    try:
+        deStr = base64.urlsafe_b64decode(text).decode()  # 返回uft-8
+    except Exception as e:
+        print(e)
+        return None
+    return deStr  # 返回解密字符串
+
+
+def Encrypt(strText, compress=True):  # compress是压缩=号
+    if isinstance(strText, str):
+        text = strText.encode()  # 默认就是utf-8
+    elif isinstance(strText, bytes):
+        text = strText  # 二进制不用编码了
+    else:
+        print('type error')
+    try:
+        compressStr = base64.urlsafe_b64encode(text).decode()  # 返回uft-8
+    except Exception as e:
+        print(e)
+        return None
+    if compress:  #默认是压缩
+        enstr = compressStr.replace('=', '')  #替换掉=号
+    else:
+        enstr = compressStr
+    return enstr
+
+
+if __name__ == &quot;__main__&quot;:
+    print(Decrypt('c3NyOi8vYzJjMUxtcHpjWEJ5Ynk1dFpUbzBORE02WVhWMGFGOWhaWE14TWpoZmMyaGhNVHBoWlhNdE1qVTJMV05tWWpwMGJITXhMakpmZEdsamEyVjBYMkYxZEdnNlZsWkpOV05XVm00dlAyOWlabk53WVhKaGJUMU5SMHBvVFhwck1rOUVZM1ZaTW5oMlpGZFNiV0pIUm5sYVV6VnFZakl3Sm5CeWIzUnZjR0Z5WVcwOVRtcG5NMDl1VG05aFdHeG9ZbTVrYkdKcVNYZE5WR3QxVEdrMEpuSmxiV0Z5YTNNOU5YSmxlRFZ5YVhaSlJVVm5URk5CZURWWlEwNDFORFpJSm1keWIzVndQVlJZYkZSVk1Vawpzc3I6Ly9jMmMyTG1wemNYQnlieTV0WlRvMU5URTRORHBoZFhSb1gzTm9ZVEZmZGpRNlkyaGhZMmhoTWpBNmFIUjBjRjl6YVcxd2JHVTZZekpvY0dWWFJuVmtNbFoxVFdwQmVFOVROSFZNWnk4X2IySm1jM0JoY21GdFBWcEhPVE5pYlhoMldWZFJkV1F5YkhWYVJ6a3pZek5XZDFwSFJqQmFVelZxWWpJd0puQnliM1J2Y0dGeVlXMDlKbkpsYldGeWEzTTlOWEpsZURWeWFYWkpSVWxuVEZOQk1UVlpRMDQxTkRaSUptZHliM1Z3UFZSWWJGUlZNVWsKc3NyOi8vYUdjeExtcHpjWEJ5Ynk1dFpUbzBORE02WVhWMGFGOWhaWE14TWpoZmMyaGhNVHBoWlhNdE1qVTJMV05tWWpwMGJITXhMakpmZEdsamEyVjBYMkYxZEdnNlZsWkpOV05XVm00dlAyOWlabk53WVhKaGJUMU5SMHBvVFhwck1rOUVZM1ZaTW5oMlpGZFNiV0pIUm5sYVV6VnFZakl3Sm5CeWIzUnZjR0Z5WVcwOVRtcG5NMDl1VG05aFdHeG9ZbTVrYkdKcVNYZE5WR3QxVEdrMEpuSmxiV0Z5YTNNOU5YSkxjVFZ5YVhaSlJVVm5URk5CZURWWlEwNDFORFpJSm1keWIzVndQVlJZYkZSVk1Vawpzc3I6Ly9jMmd0YUd0MExtcHpjWEJ5Ynk1dFpUbzFOVEU0TkRwaGRYUm9YM05vWVRGZmRqUTZZMmhoWTJoaE1qQTZhSFIwY0Y5emFXMXdiR1U2WXpKb2NHVlhSblZrTWxaMVRXcEJlRTlUTkhWTVp5OF9iMkptYzNCaGNtRnRQVnBIT1ROaWJYaDJXVmRSZFdReWJIVmFSemt6WXpOV2QxcEhSakJhVXpWcVlqSXdKbkJ5YjNSdmNHRnlZVzA5Sm5KbGJXRnlhM005TlhKTGNUVnlhWFpKUlVsblRGTkJNVFZaUTA0MU5EWklKbWR5YjNWd1BWUlliRlJWTVVrCnNzcjovL2RIY3Vhbk54Y0hKdkxtMWxPalEwTXpwaGRYUm9YMkZsY3pFeU9GOXphR0V4T21GbGN5MHlOVFl0WTJaaU9uUnNjekV1TWw5MGFXTnJaWFJmWVhWMGFEcFdWa2sxWTFaV2JpOF9iMkptYzNCaGNtRnRQVTFIU21oTmVtc3lUMFJqZFZreWVIWmtWMUp0WWtkR2VWcFROV3BpTWpBbWNISnZkRzl3WVhKaGJUMU9hbWN6VDI1T2IyRlliR2hpYm1Sc1ltcEpkMDFVYTNWTWFUUW1jbVZ0WVhKcmN6MDFXUzEzTlhKdExVbEZSbEZXUldOblRGTkJlRFZaUTA0MU5EWklKbWR5YjNWd1BWUlliRlJWTVVrCnNzcjovL2RIY3Vhbk54Y0hKdkxtbHVPalUxTVRnME9tRjFkR2hmYzJoaE1WOTJORHBqYUdGamFHRXlNRHBvZEhSd1gzTnBiWEJzWlRwak1taHdaVmRHZFdReVZuVk5ha0Y0VDFNMGRVeG5Mejl2WW1aemNHRnlZVzA5V2tjNU0ySnRlSFpaVjFGMVpESnNkVnBIT1ROak0xWjNXa2RHTUZwVE5XcGlNakFtY0hKdmRHOXdZWEpoYlQwbWNtVnRZWEpyY3owMVdTMTNOWEp0TFVsRmFIQlViVlpWU1VNd1owMUROREUxV1VOT05UUTJTQ1puY205MWNEMVVXR3hVVlRGSgpzc3I6Ly9hR3QwTWpBdWFuTnhjSEp2TG1sdU9qVTFNVGcwT21GMWRHaGZjMmhoTVY5Mk5EcGphR0ZqYUdFeU1EcG9kSFJ3WDNOcGJYQnNaVHBqTW1od1pWZEdkV1F5Vm5WTmFrRjRUMU0wZFV4bkx6OXZZbVp6Y0dGeVlXMDlXa2M1TTJKdGVIWlpWMUYxWkRKc2RWcEhPVE5qTTFaM1drZEdNRnBUTldwaU1qQW1jSEp2ZEc5d1lYSmhiVDBtY21WdFlYSnJjejAyWVdGYU5YSnBka2xGYUV4V1EwSkNTVU13WjAxbFYwRnFaV1ZQYUhjbVozSnZkWEE5VkZoc1ZGVXhTUQpzc3I6Ly9hR3QwTWpFdWFuTnhjSEp2TG1sdU9qVTFNVGcwT21GMWRHaGZjMmhoTVY5Mk5EcGphR0ZqYUdFeU1EcG9kSFJ3WDNOcGJYQnNaVHBqTW1od1pWZEdkV1F5Vm5WTmFrRjRUMU0wZFV4bkx6OXZZbVp6Y0dGeVlXMDlXa2M1TTJKdGVIWlpWMUYxWkRKc2RWcEhPVE5qTTFaM1drZEdNRnBUTldwaU1qQW1jSEp2ZEc5d1lYSmhiVDBtY21WdFlYSnJjejAyWVdGYU5YSnBka2xGYUV4V1EwSkRTVU13WjAxbFYwRnFaV1ZQYUhjbVozSnZkWEE5VkZoc1ZGVXhTUQpzc3I6Ly9hR3QwTWk1cWMzRndjbTh1YVc0Nk5UVXhPRFE2WVhWMGFGOXphR0V4WDNZME9tTm9ZV05vWVRJd09taDBkSEJmYzJsdGNHeGxPbU15YUhCbFYwWjFaREpXZFUxcVFYaFBVelIxVEdjdlAyOWlabk53WVhKaGJUMWFSemt6WW0xNGRsbFhVWFZrTW14MVdrYzVNMk16Vm5kYVIwWXdXbE0xYW1JeU1DWndjbTkwYjNCaGNtRnRQU1p5WlcxaGNtdHpQVFpoWVZvMWNtbDJTVVZvVEZaRFFrUkpRekJuVFdWWFFXcGxaVTlvZHlabmNtOTFjRDFVV0d4VVZURkoKc3NyOi8vYUd0ME15NXFjM0Z3Y204dWFXNDZOVFV4T0RRNllYVjBhRjl6YUdFeFgzWTBPbU5vWVdOb1lUSXdPbWgwZEhCZmMybHRjR3hsT21NeWFIQmxWMFoxWkRKV2RVMXFRWGhQVXpSMVRHY3ZQMjlpWm5Od1lYSmhiVDFhUnprelltMTRkbGxYVVhWa01teDFXa2M1TTJNelZuZGFSMFl3V2xNMWFtSXlNQ1p3Y205MGIzQmhjbUZ0UFNaeVpXMWhjbXR6UFRaaFlWbzFjbWwyU1VWb1RGWkRRa1ZKUXpCblRXVlhRV3BsWlU5b2R5Wm5jbTkxY0QxVVdHeFVWVEZKCnNzcjovL2FHdDBOUzVxYzNGd2NtOHVhVzQ2TlRVeE9EUTZZWFYwYUY5emFHRXhYM1kwT21Ob1lXTm9ZVEl3T21oMGRIQmZjMmx0Y0d4bE9tTXlhSEJsVjBaMVpESldkVTFxUVhoUFV6UjFUR2N2UDI5aVpuTndZWEpoYlQxYVJ6a3pZbTE0ZGxsWFVYVmtNbXgxV2tjNU0yTXpWbmRhUjBZd1dsTTFhbUl5TUNad2NtOTBiM0JoY21GdFBTWnlaVzFoY210elBUWmhZVm8xY21sMlNVVm9URlpEUWtaSlF6Qm5UV1ZYUVdwbFpVOW9keVpuY205MWNEMVVXR3hVVlRGSgpzc3I6Ly9hR3RqYmpJdWFuTnhjSEp2TG1sdU9qVTFNVGcwT21GMWRHaGZjMmhoTVY5Mk5EcGphR0ZqYUdFeU1EcG9kSFJ3WDNOcGJYQnNaVHBqTW1od1pWZEdkV1F5Vm5WTmFrRjRUMU0wZFV4bkx6OXZZbVp6Y0dGeVlXMDlXa2M1TTJKdGVIWlpWMUYxWkRKc2RWcEhPVE5qTTFaM1drZEdNRnBUTldwaU1qQW1jSEp2ZEc5d1lYSmhiVDBtY21WdFlYSnJjejAyWVdGYU5YSnBka2xGVGs5TmFVSkNTVU13WjAxMVYwRnFaV1ZQYUhjbVozSnZkWEE5VkZoc1ZGVXhTUQpzc3I6Ly9hR3N5WTI0eUxtcHpjWEJ5Ynk1cGJqbzFOVEU0TkRwaGRYUm9YM05vWVRGZmRqUTZZMmhoWTJoaE1qQTZhSFIwY0Y5emFXMXdiR1U2WXpKb2NHVlhSblZrTWxaMVRXcEJlRTlUTkhWTVp5OF9iMkptYzNCaGNtRnRQVnBIT1ROaWJYaDJXVmRSZFdReWJIVmFSemt6WXpOV2QxcEhSakJhVXpWcVlqSXdKbkJ5YjNSdmNHRnlZVzA5Sm5KbGJXRnlhM005Tm1GaFdqVnlhWFpKUlU1UFRXbENRMGxETUdkTmRWZEJhbVZsVDJoM0ptZHliM1Z3UFZSWWJGUlZNVWsKc3NyOi8vYUdzelkyNHlMbXB6Y1hCeWJ5NXBiam8xTlRFNE5EcGhkWFJvWDNOb1lURmZkalE2WTJoaFkyaGhNakE2YUhSMGNGOXphVzF3YkdVNll6Sm9jR1ZYUm5Wa01sWjFUV3BCZUU5VE5IVk1aeThfYjJKbWMzQmhjbUZ0UFZwSE9UTmliWGgyV1ZkUmRXUXliSFZhUnprell6TldkMXBIUmpCYVV6VnFZakl3Sm5CeWIzUnZjR0Z5WVcwOUpuSmxiV0Z5YTNNOU5tRmhXalZ5YVhaSlJVNVBUV2xDUkVsRE1HZE5kVmRCYW1WbFQyaDNKbWR5YjNWd1BWUlliRlJWTVVrCnNzcjovL2FHczFMbXB6Y1hCeWJ5NXBiam8xTlRFNE5EcGhkWFJvWDNOb1lURmZkalE2WTJoaFkyaGhNakE2YUhSMGNGOXphVzF3YkdVNll6Sm9jR1ZYUm5Wa01sWjFUV3BCZUU5VE5IVk1aeThfYjJKbWMzQmhjbUZ0UFZwSE9UTmliWGgyV1ZkUmRXUXliSFZhUnprell6TldkMXBIUmpCYVV6VnFZakl3Sm5CeWIzUnZjR0Z5WVcwOUpuSmxiV0Z5YTNNOU5tRmhXalZ5YVhaSlJVNVBUV2xDUlVsRE1HZE5RelI0TlZsRFRqVTBOa2dtWjNKdmRYQTlWRmhzVkZVeFNRCnNzcjovL1lYcG9heTVxYzNGd2NtOHViV1U2TlRVeE9EUTZZWFYwYUY5emFHRXhYM1kwT21Ob1lXTm9ZVEl3T21oMGRIQmZjMmx0Y0d4bE9tTXlhSEJsVjBaMVpESldkVTFxUVhoUFV6UjFUR2N2UDI5aVpuTndZWEpoYlQxYVJ6a3pZbTE0ZGxsWFVYVmtNbXgxV2tjNU0yTXpWbmRhUjBZd1dsTTFhbUl5TUNad2NtOTBiM0JoY21GdFBTWnlaVzFoY210elBUWmhZVm8xY21sMlNVVkdObVJZU214SlJVVm5URk5CZVRWWlEwNDFORFpJSm1keWIzVndQVlJZYkZSVk1Vawpzc3I6Ly9ZWHBvYXpJdWFuTnhjSEp2TG0xbE9qVTFNVGcwT21GMWRHaGZjMmhoTVY5Mk5EcGphR0ZqYUdFeU1EcG9kSFJ3WDNOcGJYQnNaVHBqTW1od1pWZEdkV1F5Vm5WTmFrRjRUMU0wZFV4bkx6OXZZbVp6Y0dGeVlXMDlXa2M1TTJKdGVIWlpWMUYxWkRKc2RWcEhPVE5qTTFaM1drZEdNRnBUTldwaU1qQW1jSEp2ZEc5d1lYSmhiVDBtY21WdFlYSnJjejAyWVdGYU5YSnBka2xGUmpaa1dFcHNTVVZKWjB4VFFYazFXVU5PTlRRMlNDWm5jbTkxY0QxVVdHeFVWVEZKCnNzcjovL1lYcG9hek11YW5OeGNISnZMbTFsT2pVMU1UZzBPbUYxZEdoZmMyaGhNVjkyTkRwamFHRmphR0V5TURwb2RIUndYM05wYlhCc1pUcGpNbWh3WlZkR2RXUXlWblZOYWtGNFQxTTBkVXhuTHo5dlltWnpjR0Z5WVcwOVdrYzVNMkp0ZUhaWlYxRjFaREpzZFZwSE9UTmpNMVozV2tkR01GcFROV3BpTWpBbWNISnZkRzl3WVhKaGJUMG1jbVZ0WVhKcmN6MDJZV0ZhTlhKcGRrbEZSalprV0Vwc1NVVk5aMHhUUVhrMVdVTk9OVFEyU0NabmNtOTFjRDFVV0d4VVZURkoKc3NyOi8vWVhwb2F6VXVhbk54Y0hKdkxtMWxPalUxTVRnME9tRjFkR2hmYzJoaE1WOTJORHBqYUdGamFHRXlNRHBvZEhSd1gzTnBiWEJzWlRwak1taHdaVmRHZFdReVZuVk5ha0Y0VDFNMGRVeG5Mejl2WW1aemNHRnlZVzA5V2tjNU0ySnRlSFpaVjFGMVpESnNkVnBIT1ROak0xWjNXa2RHTUZwVE5XcGlNakFtY0hKdmRHOXdZWEpoYlQwbWNtVnRZWEpyY3owMllXRmFOWEpwZGtsRlJqWmtXRXBzU1VWUloweFRRWGsxV1VOT05UUTJTQ1puY205MWNEMVVXR3hVVlRGSgpzc3I6Ly9kM1IwTG1wemNYQnlieTV0WlRvMU5URTRORHBoZFhSb1gzTm9ZVEZmZGpRNlkyaGhZMmhoTWpBNmFIUjBjRjl6YVcxd2JHVTZZekpvY0dWWFJuVmtNbFoxVFdwQmVFOVROSFZNWnk4X2IySm1jM0JoY21GdFBWcEhPVE5pYlhoMldWZFJkV1F5YkhWYVJ6a3pZek5XZDFwSFJqQmFVelZxWWpJd0puQnliM1J2Y0dGeVlXMDlKbkpsYldGeWEzTTlObUZoV2pWeWFYWkpSbVJWVmtOQmRFbEVTR3huU1ROdWFtOWpKbWR5YjNWd1BWUlliRlJWTVVrCnNzcjovL2FHZGpMbXB6Y1hCeWJ5NXBiam8wTkRNNllYVjBhRjloWlhNeE1qaGZjMmhoTVRwaFpYTXRNalUyTFdObVlqcDBiSE14TGpKZmRHbGphMlYwWDJGMWRHZzZWbFpKTldOV1ZtNHZQMjlpWm5Od1lYSmhiVDFOUjBwb1RYcHJNazlFWTNWWk1uaDJaRmRTYldKSFJubGFVelZxWWpJd0puQnliM1J2Y0dGeVlXMDlUbXBuTTA5dVRtOWhXR3hvWW01a2JHSnFTWGROVkd0MVRHazBKbkpsYldGeWEzTTlObUZoV2pWeWFYWkpSV2hJVVhsQmRFbEVTR3huU1ROdWFtOWpKbWR5YjNWd1BWUlliRlJWTVVrCnNzcjovL2FuQXVhbk54Y0hKdkxtbHVPalUxTVRnME9tRjFkR2hmYzJoaE1WOTJORHBqYUdGamFHRXlNRHBvZEhSd1gzTnBiWEJzWlRwak1taHdaVmRHZFdReVZuVk5ha0Y0VDFNMGRVeG5Mejl2WW1aemNHRnlZVzA5V2tjNU0ySnRlSFpaVjFGMVpESnNkVnBIT1ROak0xWjNXa2RHTUZwVE5XcGlNakFtY0hKdmRHOXdZWEpoYlQwbWNtVnRZWEpyY3owMWNHVnNOWEI1YzBsRlJXZE1VMEY0TlZsRFRqVTBOa2dtWjNKdmRYQTlWRmhzVkZVeFNRCnNzcjovL2FuQXpMbXB6Y1hCeWJ5NXRaVG8xTlRFNE5EcGhkWFJvWDNOb1lURmZkalE2WTJoaFkyaGhNakE2YUhSMGNGOXphVzF3YkdVNll6Sm9jR1ZYUm5Wa01sWjFUV3BCZUU5VE5IVk1aeThfYjJKbWMzQmhjbUZ0UFZwSE9UTmliWGgyV1ZkUmRXUXliSFZhUnprell6TldkMXBIUmpCYVV6VnFZakl3Sm5CeWIzUnZjR0Z5WVcwOUpuSmxiV0Z5YTNNOU5YQmxiRFZ3ZVhOSlJVbG5URk5CZURWWlEwNDFORFpJSm1keWIzVndQVlJZYkZSVk1Vawpzc3I6Ly9hbkF5TG1wemNYQnlieTV0WlRvMU5URTRORHBoZFhSb1gzTm9ZVEZmZGpRNlkyaGhZMmhoTWpBNmFIUjBjRjl6YVcxd2JHVTZZekpvY0dWWFJuVmtNbFoxVFdwQmVFOVROSFZNWnk4X2IySm1jM0JoY21GdFBWcEhPVE5pYlhoMldWZFJkV1F5YkhWYVJ6a3pZek5XZDFwSFJqQmFVelZxWWpJd0puQnliM1J2Y0dGeVlXMDlKbkpsYldGeWEzTTlOWEJsYkRWd2VYTkpSVTFuVEZOQmVEVlpRMDQxTkRaSUptZHliM1Z3UFZSWWJGUlZNVWsKc3NyOi8vYW5BMUxtcHpjWEJ5Ynk1dFpUbzFOVEU0TkRwaGRYUm9YM05vWVRGZmRqUTZZMmhoWTJoaE1qQTZhSFIwY0Y5emFXMXdiR1U2WXpKb2NHVlhSblZrTWxaMVRXcEJlRTlUTkhWTVp5OF9iMkptYzNCaGNtRnRQVnBIT1ROaWJYaDJXVmRSZFdReWJIVmFSemt6WXpOV2QxcEhSakJhVXpWcVlqSXdKbkJ5YjNSdmNHRnlZVzA5Sm5KbGJXRnlhM005TlhCbGJEVndlWE5KUlZGblRGTkJlRFZaUTA0MU5EWklKbWR5YjNWd1BWUlliRlJWTVVrCnNzcjovL2FuQTJMbXB6Y1hCeWJ5NXRaVG8xTlRFNE5EcGhkWFJvWDNOb1lURmZkalE2WTJoaFkyaGhNakE2YUhSMGNGOXphVzF3YkdVNll6Sm9jR1ZYUm5Wa01sWjFUV3BCZUU5VE5IVk1aeThfYjJKbWMzQmhjbUZ0UFZwSE9UTmliWGgyV1ZkUmRXUXliSFZhUnprell6TldkMXBIUmpCYVV6VnFZakl3Sm5CeWIzUnZjR0Z5WVcwOUpuSmxiV0Z5YTNNOU5YQmxiRFZ3ZVhOSlJWVm5URk5CZURWWlEwNDFORFpJSm1keWIzVndQVlJZYkZSVk1Vawpzc3I6Ly9hbkEzTG1wemNYQnlieTV0WlRvMU5URTRORHBoZFhSb1gzTm9ZVEZmZGpRNlkyaGhZMmhoTWpBNmFIUjBjRjl6YVcxd2JHVTZZekpvY0dWWFJuVmtNbFoxVFdwQmVFOVROSFZNWnk4X2IySm1jM0JoY21GdFBWcEhPVE5pYlhoMldWZFJkV1F5YkhWYVJ6a3pZek5XZDFwSFJqQmFVelZxWWpJd0puQnliM1J2Y0dGeVlXMDlKbkpsYldGeWEzTTlOWEJsYkRWd2VYTkpSVmxuVEZOQmVEVlpRMDQxTkRaSUptZHliM1Z3UFZSWWJGUlZNVWsKc3NyOi8vZFhNeExtcHpjWEJ5Ynk1dFpUbzFOVEU0TkRwaGRYUm9YM05vWVRGZmRqUTZZMmhoWTJoaE1qQTZhSFIwY0Y5emFXMXdiR1U2WXpKb2NHVlhSblZrTWxaMVRXcEJlRTlUTkhWTVp5OF9iMkptYzNCaGNtRnRQVnBIT1ROaWJYaDJXVmRSZFdReWJIVmFSemt6WXpOV2QxcEhSakJhVXpWcVlqSXdKbkJ5YjNSdmNHRnlZVzA5Sm5KbGJXRnlhM005TlRjMlR6VmFkVGxKUlVWblRGTkJlRFZaUTA0MU5EWklKbWR5YjNWd1BWUlliRlJWTVVrCnNzcjovL2RYTXhMbXB6Y1hCeWJ5NXBiam8xTlRFNE5EcGhkWFJvWDNOb1lURmZkalE2WTJoaFkyaGhNakE2YUhSMGNGOXphVzF3YkdVNll6Sm9jR1ZYUm5Wa01sWjFUV3BCZUU5VE5IVk1aeThfYjJKbWMzQmhjbUZ0UFZwSE9UTmliWGgyV1ZkUmRXUXliSFZhUnprell6TldkMXBIUmpCYVV6VnFZakl3Sm5CeWIzUnZjR0Z5WVcwOUpuSmxiV0Z5YTNNOU5UYzJUelZhZFRsSlJVbG5URk5CZURWWlEwNDFORFpJSm1keWIzVndQVlJZYkZSVk1Vawpzc3I6Ly9kWE01TG1wemNYQnlieTV0WlRvMU5URTRORHBoZFhSb1gzTm9ZVEZmZGpRNlkyaGhZMmhoTWpBNmFIUjBjRjl6YVcxd2JHVTZZekpvY0dWWFJuVmtNbFoxVFdwQmVFOVROSFZNWnk4X2IySm1jM0JoY21GdFBWcEhPVE5pYlhoMldWZFJkV1F5YkhWYVJ6a3pZek5XZDFwSFJqQmFVelZxWWpJd0puQnliM1J2Y0dGeVlXMDlKbkpsYldGeWEzTTlOVGMyVHpWYWRUbEpSVTFuVEZOQmVEVlpRMDQxTkRaSUptZHliM1Z3UFZSWWJGUlZNVWsKc3NyOi8vZFhNeE15NXFjM0Z3Y204dWJXVTZOVFV4T0RRNllYVjBhRjl6YUdFeFgzWTBPbU5vWVdOb1lUSXdPbWgwZEhCZmMybHRjR3hsT21NeWFIQmxWMFoxWkRKV2RVMXFRWGhQVXpSMVRHY3ZQMjlpWm5Od1lYSmhiVDFhUnprelltMTRkbGxYVVhWa01teDFXa2M1TTJNelZuZGFSMFl3V2xNMWFtSXlNQ1p3Y205MGIzQmhjbUZ0UFNaeVpXMWhjbXR6UFRVM05rODFXblU1U1VWWloweFRRWGcxV1VOT05UUTJTQ1puY205MWNEMVVXR3hVVlRGSgpzc3I6Ly9kWE0zTG1wemNYQnlieTV0WlRvMU5URTRORHBoZFhSb1gzTm9ZVEZmZGpRNlkyaGhZMmhoTWpBNmFIUjBjRjl6YVcxd2JHVTZZekpvY0dWWFJuVmtNbFoxVFdwQmVFOVROSFZNWnk4X2IySm1jM0JoY21GdFBWcEhPVE5pYlhoMldWZFJkV1F5YkhWYVJ6a3pZek5XZDFwSFJqQmFVelZxWWpJd0puQnliM1J2Y0dGeVlXMDlKbkpsYldGeWEzTTlOVGMyVHpWYWRUbEpSV05uVEZOQmVEVlpRMDQxTkRaSUptZHliM1Z3UFZSWWJGUlZNVWsKc3NyOi8vZFhNMUxtcHpjWEJ5Ynk1dFpUbzFOVEU0TkRwaGRYUm9YM05vWVRGZmRqUTZZMmhoWTJoaE1qQTZhSFIwY0Y5emFXMXdiR1U2WXpKb2NHVlhSblZrTWxaMVRXcEJlRTlUTkhWTVp5OF9iMkptYzNCaGNtRnRQVnBIT1ROaWJYaDJXVmRSZFdReWJIVmFSemt6WXpOV2QxcEhSakJhVXpWcVlqSXdKbkJ5YjNSdmNHRnlZVzA5Sm5KbGJXRnlhM005TlRjMlR6VmFkVGxKUldkblRGTkJlRFZaUTA0MU5EWklKbWR5YjNWd1BWUlliRlJWTVVrCnNzcjovL2RYTXpMbXB6Y1hCeWJ5NXRaVG8xTlRFNE5EcGhkWFJvWDNOb1lURmZkalE2WTJoaFkyaGhNakE2YUhSMGNGOXphVzF3YkdVNll6Sm9jR1ZYUm5Wa01sWjFUV3BCZUU5VE5IVk1aeThfYjJKbWMzQmhjbUZ0UFZwSE9UTmliWGgyV1ZkUmRXUXliSFZhUnprell6TldkMXBIUmpCYVV6VnFZakl3Sm5CeWIzUnZjR0Z5WVcwOUpuSmxiV0Z5YTNNOU5UYzJUelZhZFRsSlJXdG5URk5CZURWWlEwNDFORFpJSm1keWIzVndQVlJZYkZSVk1Vawpzc3I6Ly9jMmR3TVM1cWMzRndjbTh1YldVNk5UVXhPRFE2WVhWMGFGOXphR0V4WDNZME9tTm9ZV05vWVRJd09taDBkSEJmYzJsdGNHeGxPbU15YUhCbFYwWjFaREpXZFUxcVFYaFBVelIxVEdjdlAyOWlabk53WVhKaGJUMWFSemt6WW0xNGRsbFhVWFZrTW14MVdrYzVNMk16Vm5kYVIwWXdXbE0xYW1JeU1DWndjbTkwYjNCaGNtRnRQU1p5WlcxaGNtdHpQVFZ3WVhjMVdYRm5OVm95YUVsRlJXZE1VMEY0TlZsRFRqVTBOa2dtWjNKdmRYQTlWRmhzVkZVeFNRCnNzcjovL2MyZHdNaTVxYzNGd2NtOHViV1U2TlRVeE9EUTZZWFYwYUY5emFHRXhYM1kwT21Ob1lXTm9ZVEl3T21oMGRIQmZjMmx0Y0d4bE9tTXlhSEJsVjBaMVpESldkVTFxUVhoUFV6UjFUR2N2UDI5aVpuTndZWEpoYlQxYVJ6a3pZbTE0ZGxsWFVYVmtNbXgxV2tjNU0yTXpWbmRhUjBZd1dsTTFhbUl5TUNad2NtOTBiM0JoY21GdFBTWnlaVzFoY210elBUVndZWGMxV1hGbk5Wb3lhRWxGU1dkTVUwRjROVmxEVGpVME5rZ21aM0p2ZFhBOVZGaHNWRlV4U1EKc3NyOi8vYzJkd01TNXFjM0Z3Y204dWFXNDZOVFV4T0RRNllYVjBhRjl6YUdFeFgzWTBPbU5vWVdOb1lUSXdPbWgwZEhCZmMybHRjR3hsT21NeWFIQmxWMFoxWkRKV2RVMXFRWGhQVXpSMVRHY3ZQMjlpWm5Od1lYSmhiVDFhUnprelltMTRkbGxYVVhWa01teDFXa2M1TTJNelZuZGFSMFl3V2xNMWFtSXlNQ1p3Y205MGIzQmhjbUZ0UFNaeVpXMWhjbXR6UFRWd1lYYzFXWEZuTlZveWFFbEZUV2RNVTBGNE5WbERUalUwTmtnbVozSnZkWEE5VkZoc1ZGVXhTUQpzc3I6Ly9jMmR3TG1wemNYQnlieTV0WlRvMU5URTRORHBoZFhSb1gzTm9ZVEZmZGpRNlkyaGhZMmhoTWpBNmFIUjBjRjl6YVcxd2JHVTZZekpvY0dWWFJuVmtNbFoxVFdwQmVFOVROSFZNWnk4X2IySm1jM0JoY21GdFBWcEhPVE5pYlhoMldWZFJkV1F5YkhWYVJ6a3pZek5XZDFwSFJqQmFVelZxWWpJd0puQnliM1J2Y0dGeVlXMDlKbkpsYldGeWEzTTlOWEJoZHpWWmNXYzFXakpvU1VWUloweFRRWGcxV1VOT05UUTJTQ1puY205MWNEMVVXR3hVVlRGSgpzc3I6Ly9hM0l1YW5OeGNISnZMbTFsT2pVMU1UZzBPbUYxZEdoZmMyaGhNVjkyTkRwamFHRmphR0V5TURwb2RIUndYM05wYlhCc1pUcGpNbWh3WlZkR2RXUXlWblZOYWtGNFQxTTBkVXhuTHo5dlltWnpjR0Z5WVcwOVdrYzVNMkp0ZUhaWlYxRjFaREpzZFZwSE9UTmpNMVozV2tkR01GcFROV3BpTWpBbWNISnZkRzl3WVhKaGJUMG1jbVZ0WVhKcmN6MDJXaTF3TlZwMU9VbEZkRlZKUXpCblRYVlhRV3BsWlU5b2R5Wm5jbTkxY0QxVVdHeFVWVEZKCnNzcjovL2EzSXVhbk54Y0hKdkxtbHVPalUxTVRnME9tRjFkR2hmYzJoaE1WOTJORHBqYUdGamFHRXlNRHBvZEhSd1gzTnBiWEJzWlRwak1taHdaVmRHZFdReVZuVk5ha0Y0VDFNMGRVeG5Mejl2WW1aemNHRnlZVzA5V2tjNU0ySnRlSFpaVjFGMVpESnNkVnBIT1ROak0xWjNXa2RHTUZwVE5XcGlNakFtY0hKdmRHOXdZWEpoYlQwbWNtVnRZWEpyY3owMldpMXdOVnAxT1VsR1RreEpRekJuVFhWWFFXcGxaVTlvZHlabmNtOTFjRDFVV0d4VVZURkoKc3NyOi8vY25VdWFuTnhjSEp2TG0xbE9qVTFNVGcwT21GMWRHaGZjMmhoTVY5Mk5EcGphR0ZqYUdFeU1EcG9kSFJ3WDNOcGJYQnNaVHBqTW1od1pWZEdkV1F5Vm5WTmFrRjRUMU0wZFV4bkx6OXZZbVp6Y0dGeVlXMDlXa2M1TTJKdGVIWlpWMUYxWkRKc2RWcEhPVE5qTTFaM1drZEdNRnBUTldwaU1qQW1jSEp2ZEc5d1lYSmhiVDBtY21WdFlYSnJjejAxVEhsMk5WbHhZa2xETUdkTlpWZEJhbVZsVDJoM0ptZHliM1Z3UFZSWWJGUlZNVWsKc3NyOi8vY25VeExtcHpjWEJ5Ynk1dFpUbzFOVEU0TkRwaGRYUm9YM05vWVRGZmRqUTZZMmhoWTJoaE1qQTZhSFIwY0Y5emFXMXdiR1U2WXpKb2NHVlhSblZrTWxaMVRXcEJlRTlUTkhWTVp5OF9iMkptYzNCaGNtRnRQVnBIT1ROaWJYaDJXVmRSZFdReWJIVmFSemt6WXpOV2QxcEhSakJhVXpWcVlqSXdKbkJ5YjNSdmNHRnlZVzA5Sm5KbGJXRnlhM005TlV3dFJUVTNNbGcxY0dGMlNVTXdaMDFETkRFMVdVTk9OVFEyU0NabmNtOTFjRDFVV0d4VVZURkoKc3NyOi8vWVM1cWMzRndjbTh1YldVNk5UVXhPRFE2WVhWMGFGOXphR0V4WDNZME9tTm9ZV05vWVRJd09taDBkSEJmYzJsdGNHeGxPbU15YUhCbFYwWjFaREpXZFUxcVFYaFBVelIxVEdjdlAyOWlabk53WVhKaGJUMWFSemt6WW0xNGRsbFhVWFZrTW14MVdrYzVNMk16Vm5kYVIwWXdXbE0xYW1JeU1DWndjbTkwYjNCaGNtRnRQU1p5WlcxaGNtdHpQVFZ5Tm5vMVlWTnVOVmxwY0RWTWNXRkpRekJuVFdWWFFXcGxaVTlvZHlabmNtOTFjRDFVV0d4VVZURkoKc3NyOi8vZFdzdWFuTnhjSEp2TG0xbE9qVTFNVGcwT21GMWRHaGZjMmhoTVY5Mk5EcGphR0ZqYUdFeU1EcG9kSFJ3WDNOcGJYQnNaVHBqTW1od1pWZEdkV1F5Vm5WTmFrRjRUMU0wZFV4bkx6OXZZbVp6Y0dGeVlXMDlXa2M1TTJKdGVIWlpWMUYxWkRKc2RWcEhPVE5qTTFaM1drZEdNRnBUTldwaU1qQW1jSEp2ZEc5d1lYSmhiVDBtY21WdFlYSnJjejAyU1hWNE5WcDFPVWxETUdkTlpWZEJhbVZsVDJoM0ptZHliM1Z3UFZSWWJGUlZNVWsKc3NyOi8vZVdRdWFuTnhjSEp2TG0xbE9qVTFNVGcwT21GMWRHaGZjMmhoTVY5Mk5EcGphR0ZqYUdFeU1EcG9kSFJ3WDNOcGJYQnNaVHBqTW1od1pWZEdkV1F5Vm5WTmFrRjRUMU0wZFV4bkx6OXZZbVp6Y0dGeVlXMDlXa2M1TTJKdGVIWlpWMUYxWkRKc2RWcEhPVE5qTTFaM1drZEdNRnBUTldwaU1qQW1jSEp2ZEc5d1lYSmhiVDBtY21WdFlYSnJjejAxV1RKM05XSnhiVWxETUdkTlpWZEJhbVZsVDJoM0ptZHliM1Z3UFZSWWJGUlZNVWsKc3NyOi8vYzNvdWFuTnhjSEp2TG0xbE9qVTFNVGcwT21GMWRHaGZjMmhoTVY5Mk5EcGphR0ZqYUdFeU1EcG9kSFJ3WDNOcGJYQnNaVHBqTW1od1pWZEdkV1F5Vm5WTmFrRjRUMU0wZFV4bkx6OXZZbVp6Y0dGeVlXMDlXa2M1TTJKdGVIWlpWMUYxWkRKc2RWcEhPVE5qTTFaM1drZEdNRnBUTldwaU1qQW1jSEp2ZEc5d1lYSmhiVDBtY21WdFlYSnJjejAxY21WNE5WcDVla2xETUdkTlpWZEJhbVZsVDJoM0ptZHliM1Z3UFZSWWJGUlZNVWsKc3NyOi8vWTIxcExtcHpjWEJ5Ynk1dFpUbzFOVEU0TkRwaGRYUm9YM05vWVRGZmRqUTZZMmhoWTJoaE1qQTZhSFIwY0Y5emFXMXdiR1U2WXpKb2NHVlhSblZrTWxaMVRXcEJlRTlUTkhWTVp5OF9iMkptYzNCaGNtRnRQVnBIT1ROaWJYaDJXVmRSZFdReWJIVmFSemt6WXpOV2QxcEhSakJhVXpWcVlqSXdKbkJ5YjNSdmNHRnlZVzA5Sm5KbGJXRnlhM005Tm1GaFdqVnlhWFpKUlU1T1NVTXdaMDFsVjBGcVpXVlBhSGNtWjNKdmRYQTlWRmhzVkZVeFNRCgo='))
+
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/5/29
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/5/28
+import requests
+import time
+import random
+
+'''
+get和post访问网页,参数列表有随机浏览器头,代理,提交数据,二进制获取数据,debug调试模式
+'''
+
+
+def httpGet(url, headers={}, proxies={}, payload={}, binary=False,
+            debug=False):  # debug是调试模式,binary是否返回二进制数据,params是提交内容
+    ok = False  # 这是一个标志，表示网页访问成功
+    for _ in range(5):  # 循环5次
+        try:
+            req = requests.get(url, headers=headers, proxies=proxies, params=payload)  # 访问url
+            if binary:  # 返回二进制数据
+                reqobj = req.content
+            else:  # 返回文本数据
+                reqobj = req.text
+            ok = True  # 访问成功标志
+            break  # 循环退出
+        except Exception as e:
+            time.sleep(1)  # 如果访问失败则休息1秒
+            if debug:
+                print(e)
+            continue  # 继续循环
+
+    if not ok:  # 访问失败返回空
+        return None
+    if debug:
+        print('status:{}'.format(req.status_code))
+        print('headers:{}'.format(req.headers))
+        print(reqobj)
+    return reqobj
+
+
+def httpPost(url, headers={}, proxies={}, payload={}, binary=False, debug=False):  # debug是调试模式,binary是否返回二进制数据
+    ok = False  # 这是一个标志，表示网页访问成功
+    for _ in range(5):  # 循环5次
+        try:
+            req = requests.post(url, headers=headers, proxies=proxies,
+                                data=payload)  # 访问url,postdata是post参数是一个字典,headers是网页头部文件
+            if binary:  # 返回二进制数据
+                reqobj = req.content
+            else:  # 返回文本数据
+                reqobj = req.text
+            ok = True  # 访问成功标志
+            break  # 循环退出
+        except Exception as e:
+            time.sleep(1)  # 如果访问失败则休息1秒
+            if debug:
+                print(e)
+            continue  # 继续循环
+
+    if not ok:  # 如果循环10次都失败则写入错误url到error文件
+        return None
+    if debug:
+        print('status:{}'.format(req.status_code))
+        print('headers:{}'.format(req.headers))
+        print(reqobj)
+    return reqobj
+
+
+def RandomUA():  # 随机浏览器头
+    UA_list = ['Mozilla/5.0 (Windows NT 6.2; rv:16.0) Gecko/20100101 Firefox/16.0', \
+               'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.11 TaoBrowser/2.0 Safari/536.11', \
+               'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.71 Safari/537.1 LBBROWSER', \
+               'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; LBBROWSER)', \
+               'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E; LBBROWSER)', \
+               'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; QQBrowser/7.0.3698.400)', \
+               'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E)', \
+               'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.84 Safari/535.11 SE 2.X MetaSr 1.0', \
+               'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16']
+    UA = random.choice(UA_list)
+    header = {'User-Agent': UA}
+    return header
+
+
+if __name__ == &quot;__main__&quot;:
+    payload = {'key1': 'value1', 'key2': 'value2'}  # 提交数据
+    proxies = {&quot;http&quot;: &quot;http://127.0.0.1:1080&quot;, &quot;https&quot;: &quot;http://127.0.0.1:1080&quot;}  # 代理
+    httpGet('http://httpbin.org/get', headers=RandomUA(), debug=True)  # 正常访问不用代理
+    httpGet('http://httpbin.org/get', headers=RandomUA(), proxies=proxies, debug=True)  # 用代理访问
+    httpGet('http://httpbin.org/get', headers=RandomUA(), proxies=proxies, payload=payload, debug=True)  # 用代理提交参数
+    httpPost(&quot;http://httpbin.org/post&quot;, headers=RandomUA(), payload=payload, debug=True)  # 正常访问提交参数
+    httpPost(&quot;http://httpbin.org/post&quot;, headers=RandomUA(), proxies=proxies, payload=payload, debug=True)  # 代理访问提交参数
+
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/5/29
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:test.py
+# IDE:Pycharm2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin at 2018/5/28
+import socket
+import time
+
+'''
+通过域名获取ip
+'''
+
+
+def getIp(url, debug=False):
+    ok = False
+    for _ in range(5):
+        try:
+            ip = socket.gethostbyname(url)
+            ok = True
+            break
+        except Exception as e:
+            if debug:  # debug模式打印出错内容
+                print(e)
+            time.sleep(1)  # 如果访问失败则休息1秒
+            continue  # 继续循环
+    if not ok:
+        return None
+    return ip
+
+
+if __name__ == &quot;__main__&quot;:
+    ip = getIp('www.google.com', debug=True)
+    if ip:
+        print(ip)
 </rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
@@ -7371,11 +7696,14 @@ dd if=part1.img of=/dev/hda2
 </rich_text></node><node name="debian" prog_lang="custom-colors" readonly="False" tags="" unique_id="71"><rich_text scale="h1" weight="heavy">更新系统装必要依赖软件</rich_text><rich_text>
 sudo apt update &amp;&amp; sudo apt upgrade -y
 sudo apt-get install -y wget curl screen python3-pip libpq-dev vim
-</rich_text><rich_text scale="h1" weight="heavy">python3建立虚拟环境</rich_text><rich_text>
+</rich_text><rich_text scale="h1" weight="heavy">更改支持root远程登录</rich_text><rich_text>
+sed -i 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config &amp;&amp; sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config &amp;&amp; /etc/init.d/ssh restart      #debian9的改法，debian10略有不同
+</rich_text><rich_text scale="h1" weight="heavy">创建python3虚拟环境</rich_text><rich_text>
 cd ENV #创建虚拟环境目录
 source ./bin/activate #激活虚拟环境
 pip install requests scrapy psycopg2 #虚拟环境中安装需要的包,psycopg2需要依赖libpq-dev
 deactivate #退出虚拟环境
+
 </rich_text><rich_text scale="h1" weight="heavy">安装nginx</rich_text><rich_text>
 apt-get install nginx
 
