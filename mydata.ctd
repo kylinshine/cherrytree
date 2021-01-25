@@ -314,6 +314,14 @@ SET NASURL=NAS:/NAS/meizitu
 rclone sync --checksum --verbose --transfers 4 --checkers 8 --contimeout 60s --timeout 300s --retries 3 --low-level-retries 10 --stats 1s %SVPATH% %NASURL%
 echo Upload to NAS Complete
 pause
+
+##################################################运行爬虫完,然后用aria2c下载##################################################
+@ECHO OFF
+@setlocal enableextensions
+@cd /d &quot;%~dp0&quot;
+python run.py
+aria2c -c -x 16 -j 8 -d ./video -i url.txt
+pause
 </rich_text></node><node name="linux" prog_lang="sh" readonly="False" tags="" unique_id="28"><rich_text>
 </rich_text></node></node><node name="Python" prog_lang="python" readonly="False" tags="Python" unique_id="1"><rich_text>
 </rich_text><node name="包管理" prog_lang="python" readonly="False" tags="" unique_id="19"><rich_text>########################################################pip相关语法########################################################
@@ -10358,8 +10366,15 @@ aria2c.exe --conf-path=aria2.conf
 启动文件vbs
 
 CreateObject(&quot;WScript.Shell&quot;).Run &quot;aria2c.exe --conf-path=aria2.conf&quot;,0
-
-
+#运行爬虫完,然后用aria2c下载
+@ECHO OFF
+@setlocal enableextensions
+@cd /d &quot;%~dp0&quot;
+python run.py
+aria2c -c -x 16 -j 8 -d ./video -i url.txt
+pause
+#代理下载
+</rich_text><rich_text background="#ffffff" foreground="#000000">aria2c -all-proxy=http://127.0.0.1:8118 </rich_text><rich_text link="webs http://www.google.com/a.zip">http://www.google.com/a.zip</rich_text><rich_text> 
  </rich_text></node><node name="zeronet" prog_lang="custom-colors" readonly="False" tags="" unique_id="62"><rich_text>zeronet的数据库在data文件夹 采用的json和sqlite两种格式来保存的
 play这个站点的数据库是以下解释
 select * from title where name like 'Black Panther%'
