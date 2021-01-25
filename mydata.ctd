@@ -198,7 +198,6 @@ oShellLink.Description=&quot;Visual Studio Code&quot;
 oShellLink.WorkingDirectory=strDesktop  
 oShellLink.Save
 
-
 AnacondaPath =&quot;D:\Program Files (x86)\Anaconda3\&quot; '添加python环境变量'
 AnacondaLibrary= &quot;D:\Program Files (x86)\Anaconda3\Library\bin&quot; '添加python的Library,要不然pip出问题'
 AnacondaScripts=&quot;D:\Program Files (x86)\Anaconda3\Scripts\&quot;
@@ -253,7 +252,6 @@ echo Upload to NAS Complete
 del /s /q %DELPATH%
 echo Delete Complete
 pause
-
 ##################################################杀死ie进程##################################################
 taskkill /F /im iexplore.exe
 ##################################################循环多次运行某命令##################################################
@@ -304,7 +302,6 @@ del /s /q %DELPATH%
 echo Delete Complete
 pause
 ##################################################运行python脚本然后上传NAS##################################################
-
 @ECHO OFF
 @setlocal enableextensions
 @cd /d &quot;%~dp0&quot;
@@ -314,7 +311,6 @@ SET NASURL=NAS:/NAS/meizitu
 rclone sync --checksum --verbose --transfers 4 --checkers 8 --contimeout 60s --timeout 300s --retries 3 --low-level-retries 10 --stats 1s %SVPATH% %NASURL%
 echo Upload to NAS Complete
 pause
-
 ##################################################运行爬虫完,然后用aria2c下载##################################################
 @ECHO OFF
 @setlocal enableextensions
@@ -322,6 +318,8 @@ pause
 python run.py
 aria2c -c -x 16 -j 8 -d ./video -i url.txt
 pause
+##################################################用aria2c代理下载##################################################
+aria2c -c --all-proxy=http://127.0.0.1:10888 -x 16 -j 8 -d ./video -i url.txt
 </rich_text></node><node name="linux" prog_lang="sh" readonly="False" tags="" unique_id="28"><rich_text>
 </rich_text></node></node><node name="Python" prog_lang="python" readonly="False" tags="Python" unique_id="1"><rich_text>
 </rich_text><node name="包管理" prog_lang="python" readonly="False" tags="" unique_id="19"><rich_text>########################################################pip相关语法########################################################
