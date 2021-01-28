@@ -7355,6 +7355,102 @@ if __name__ == &quot;__main__&quot;:
     ip = getIp('www.google.com', debug=True)
     if ip:
         print(ip)
+</rich_text></node><node name="downapp" prog_lang="python" readonly="False" tags="" unique_id="77"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:downapp.py
+# IDE:Pycharm
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# last edit 2021/1/28
+import requests
+import os
+import re
+from lxml import etree #用xpath来分析链接
+import threading
+from tqdm import tqdm   #这是用来展现进度条
+from fake_useragent import UserAgent #这里用获得ua头
+
+#多线程下载,downapp是一个基类,可以用继承写法覆写Getlink来实现其他功能的下载,比如Downgithub就是覆写GitLink来下载github上的最新软件
+class DownApp(object):
+
+    def __init__(self, urls=[],proxies=None):
+        self.urls = urls
+        if 'pkg' not in os.listdir('.'):
+            os.mkdir('pkg')
+        self.path = os.path.join(os.path.abspath('.'), 'pkg')
+        self.proxies = proxies if proxies else None #代理是一个字典分别用于代理http和https
+        # proxies = {
+        #     'http': '127.0.0.1:1080',
+        #     'https': '127.0.0.1:1080',
+        # }
+
+    def DownFile(self, link, name):  # 这是下载链接以及保存文件名
+        for _ in range(5):
+            try:
+                headers = {&quot;User-Agent&quot;: UserAgent().chrome}
+                r = requests.get(link, headers=headers,proxies=self.proxies,stream=True)
+                savePath = os.path.join(self.path, name)
+                with open(savePath, &quot;wb&quot;) as code:
+                    for chunk in r.iter_content(chunk_size=4096):  # 边下载边存硬盘
+                        if chunk:
+                            code.write(chunk)
+                break
+            except Exception as e:
+                print(e)
+                continue
+
+    def GetLink(self):
+        for url in self.urls:
+            name = url.split('/')[-1] if url.split('/') else 'demo.zip'
+            yield url, name
+
+    def run(self):
+        tasks = []
+        try:
+            for link, name in self.GetLink():
+                t = threading.Thread(target=self.DownFile, args=(link, name))
+                tasks.append(t)
+            for task in tasks:
+                task.start()
+            for task in tqdm(tasks, desc=&quot;正在完成下载&quot;):
+                task.join()
+        except Exception as e:
+            print(e)
+
+
+class DownGithub(DownApp):
+
+    def GetLink(self):
+        for url, versionT, pattern in self.urls:  # （urls是一个列表，其中含有列表,第一个是网址tgs用于查询最新版本，第二个是的下载版本并用版本替换,第三个是解析是否最新版本会出现下载地址含v和不含v的情况）
+            html = requests.get(url + '/tags',proxies=self.proxies).content
+            data = etree.HTML(html)
+            tagList = data.xpath('//div[@class=&quot;commit js-details-container Details&quot;]/div/h4/a/@href')  # 获得版本号
+            versionList = tagList[0] if tagList else None  # 下载最新版本
+            lastVersion = versionList.split('/')[-1] if versionList.split('/') else None
+            if pattern:
+                realDown = re.search(pattern, lastVersion).group(0) if re.search(pattern,
+                                                                                 lastVersion).group() else None  # 这里用正则判断
+                appName = versionT.replace('{verison}', realDown)
+            else:
+                appName = versionT.replace('{verison}', lastVersion)  # 直接按照版本模板替换模板下载
+            link = '{}/releases/download/{}/{}'.format(url, lastVersion, appName)
+            yield link, appName
+
+
+if __name__ == &quot;__main__&quot;:
+    app1 = DownApp(['https://down.qq.com/qqweb/PCQQ/PCQQ_EXE/PCQQ2020.exe','https://dldir1.qq.com/weixin/Windows/WeChatSetup.exe'])
+    app1.run()
+    app2 = DownGithub([('https://github.com/fatedier/frp', 'frp_{verison}_windows_amd64.zip', '\d+\.\d+\.\d+'), \
+                       ('https://github.com/proxysu/ProxySU', 'ProxySU-{verison}.zip', ''), \
+                       ('https://github.com/aria2/aria2', 'aria2-{verison}-win-64bit-build1.zip', '\d+\.\d+\.\d+'), \
+                       ('https://github.com/kapitainsky/RcloneBrowser','rclone-browser-{verison}-a0b66c6-windows-64-bit.exe', ''), \
+                       ('https://github.com/winsw/winsw', 'WinSW-net461.exe', ''), \
+                       ('https://github.com/2dust/v2rayN', 'v2rayN.zip', ''), \
+                       ('https://github.com/Fndroid/clash_for_windows_pkg', 'Clash.for.Windows-{verison}-win.7z', ''), \
+                       ('https://github.com/canton7/SyncTrayzor', 'SyncTrayzorPortable-x64.zip', '') \
+                       ],proxies={'http': '127.0.0.1:7890','https': '127.0.0.1:7890'})
+    app2.run()
 </rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
