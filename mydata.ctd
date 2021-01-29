@@ -7529,8 +7529,7 @@ class DownGithub(DownApp):
             versionList = tagList[0] if tagList else None  # 下载最新版本
             lastVersion = versionList.split('/')[-1] if versionList.split('/') else None
             if pattern:
-                realDown = re.search(pattern, lastVersion).group(0) if re.search(pattern,
-                                                                                 lastVersion).group() else None  # 这里用正则判断
+                realDown = re.search(pattern, lastVersion).group(0) if re.search(pattern,lastVersion).group() else None  # 这里用正则判断
                 appName = versionT.replace('{verison}', realDown)
             else:
                 appName = versionT.replace('{verison}', lastVersion)  # 直接按照版本模板替换模板下载
