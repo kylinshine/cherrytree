@@ -7451,6 +7451,146 @@ if __name__ == &quot;__main__&quot;:
                        ('https://github.com/canton7/SyncTrayzor', 'SyncTrayzorPortable-x64.zip', '') \
                        ],proxies={'http': '127.0.0.1:7890','https': '127.0.0.1:7890'})
     app2.run()
+</rich_text></node><node name="ThreadPoolDownApp" prog_lang="python" readonly="False" tags="" unique_id="78"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:PoolDownApp.py
+# IDE:Pycharm
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# last edit 2021/1/29
+import requests
+import os
+import re
+from lxml import etree  # 用xpath来分析链接
+from tqdm import tqdm  # 这是用来展现进度条
+from fake_useragent import UserAgent  # 这里用获得ua头
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+
+class DownApp(object):
+
+    def __init__(self, urls=[], proxies=None,ThreadPool=8):
+        self.urls = urls
+        self.ThreadPool= ThreadPool #多线程池最大线程默认是8
+        if 'pkg' not in os.listdir('.'):
+            os.mkdir('pkg')
+        self.path = os.path.join(os.path.abspath('.'), 'pkg')
+        self.proxies = proxies if proxies else None  # 代理是一个字典分别用于代理http和https
+        # proxies = {
+        #     'http': '127.0.0.1:1080',
+        #     'https': '127.0.0.1:1080',
+        # }
+
+    def DownFile(self, link, name):  # 这是下载链接以及保存文件名
+        for _ in range(5):
+            try:
+                headers = {&quot;User-Agent&quot;: UserAgent().chrome}
+                r = requests.get(link, headers=headers, proxies=self.proxies, stream=True)
+                savePath = os.path.join(self.path, name)
+                with open(savePath, &quot;wb&quot;) as code:
+                    for chunk in r.iter_content(chunk_size=4096):  # 边下载边存硬盘
+                        if chunk:
+                            code.write(chunk)
+                break
+            except Exception as e:
+                print(e)
+                continue
+
+    def GetLink(self):
+        for url in self.urls:
+            name = url.split('/')[-1] if url.split('/') else 'demo.zip'
+            yield url, name
+
+    def run(self):
+
+        tasks = []
+        try:
+            with ThreadPoolExecutor(max_workers=self.ThreadPool) as t:
+                for link, name in self.GetLink():
+                    task = t.submit(self.DownFile, link, name)
+                    tasks.append(task)
+                with tqdm(total=len(tasks)) as pbar:
+                    pbar.set_description(&quot;正在下载&quot;)
+                    for future in as_completed(tasks):
+                        pbar.update()
+
+        except Exception as e:
+            print(e)
+
+
+class DownGithub(DownApp):
+
+    def GetLink(self):
+        for url, versionT, pattern in self.urls:  # （urls是一个列表，其中含有列表,第一个是网址tgs用于查询最新版本，第二个是的下载版本并用版本替换,第三个是解析是否最新版本会出现下载地址含v和不含v的情况）
+            html = requests.get(url + '/tags', proxies=self.proxies).content
+            data = etree.HTML(html)
+            tagList = data.xpath('//div[@class=&quot;commit js-details-container Details&quot;]/div/h4/a/@href')  # 获得版本号
+            versionList = tagList[0] if tagList else None  # 下载最新版本
+            lastVersion = versionList.split('/')[-1] if versionList.split('/') else None
+            if pattern:
+                realDown = re.search(pattern, lastVersion).group(0) if re.search(pattern,
+                                                                                 lastVersion).group() else None  # 这里用正则判断
+                appName = versionT.replace('{verison}', realDown)
+            else:
+                appName = versionT.replace('{verison}', lastVersion)  # 直接按照版本模板替换模板下载
+            link = '{}/releases/download/{}/{}'.format(url, lastVersion, appName)
+            yield link, appName
+
+
+if __name__ == &quot;__main__&quot;:
+    app1 = DownApp([&quot;https://dl.softmgr.qq.com/original/im/QQ9.4.2.27666.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/im/WeChatSetup_3.1.0.41.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Video/QQliveSetup_20_523-11.13.2056.0.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/game/QMProxyAcc_Setup_3.0.8429.134_2000.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Office/TencentMeeting_1410000017_2.6.0.493.publish.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Input/sogou_pinyin_10.0.0.4300_6990.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/im/WeChat3.1.2_Beta.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/im/QQ9.4.3.27701.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Browser/88.0.4324.104_chrome_installer_32.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Office/W.P.S.10314.50.517.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Audio/QQMusic_Setup_1791.5297_QMgr.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Office/DingTalk_v6.0.0.11902.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Browser/QQBrowser_Setup_Qqpcmgr_10.7.4313.400.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Browser/88.0.4324.104_chrome_installer_64.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Download/XunLeiSetup11.1.7.1334tencent.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Office/DeskGo_3_1_1430_127_lite.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Video/youkuclient_setup_8.0.8.12173.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Video/IQIYIsetup_txtw_8.1.128.2646.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Browser/sogou_explorer_10.0.2.33514_qm1019.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/game/WeGameSetup3.35.4.12023_gjwegame_0_0.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Video/install_flash_player_offline_ax_cn_33.0.0.401_qqguanjia.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/game/QXInstallAndOpenGame_5.28.57507.0.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/im/YYSetup-8.67.0.1-zh-CN.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Office/WeCom_3.1.1.3006_100004.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Office/DingTalk_v5.1.41.20.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Office/DWGFastViewCN-4_x64_4_4.5.2.0.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Office/DWGFastViewCN-4_x86_4_4.5.2.0.exe&quot;, \
+                    &quot;https://sm.myapp.com/original/game/SteamSetup-0902.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/net_app/QQPhoneManager_990420.5300.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Audio/kugou7_1173_9.2.27.24100.exe&quot;, \
+                    &quot;https://sm.myapp.com/original/channelpkg/qqpcmgr_v13.5.20525.234_1349_0.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/im/HuyaClientInstall002_5.4.3.5.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Browser/89.0.4385.0_chrome_installer_32.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/game/LOL_V4.2.2.8_FULL_0_tgod_signed.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Picture/xiuxiu64_channel_6.4.4.2.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/game/syzs_installer_200203332_market-3.10.586.100.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Input/sogou_wubi_4.2.0.2108-9003.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/multimedia/FormatFactory_5.6.0.0_qqpc_setup.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Input/QQPinyin_Setup_6.6.6304.400_10002.exe&quot;, \
+                    &quot;https://dl.softmgr.qq.com/original/Video/mgtv-client-6.3.6-qq.exe&quot;])
+    app1.run()
+    app2 = DownGithub([('https://github.com/fatedier/frp', 'frp_{verison}_windows_amd64.zip', '\d+\.\d+\.\d+'), \
+                       ('https://github.com/proxysu/ProxySU', 'ProxySU-{verison}.zip', ''), \
+                       ('https://github.com/aria2/aria2', 'aria2-{verison}-win-64bit-build1.zip', '\d+\.\d+\.\d+'), \
+                       ('https://github.com/kapitainsky/RcloneBrowser',
+                        'rclone-browser-{verison}-a0b66c6-windows-64-bit.exe', ''), \
+                       ('https://github.com/winsw/winsw', 'WinSW-net461.exe', ''), \
+                       ('https://github.com/2dust/v2rayN', 'v2rayN.zip', ''), \
+                       ('https://github.com/Fndroid/clash_for_windows_pkg', 'Clash.for.Windows-{verison}-win.7z', ''), \
+                       ('https://github.com/canton7/SyncTrayzor', 'SyncTrayzorPortable-x64.zip', '') \
+                       ])
+    app2.run()
 </rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
