@@ -23,11 +23,12 @@
 
 ##关于
 
-```javascript
-  var myscript = {
-    name  : "kylinshine",
-	cn_name："史艳文",
-    qq :"78619808"，
-    age：36
+```python
+  Info = {
+    "name"  : "kylinshine",
+	"cn"    ："史艳文",
+    "qq"    :"78619808",
+    "age"   ：36
+	"goodAt":("python","sqlserver")
   }
 ```
