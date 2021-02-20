@@ -6917,8 +6917,139 @@ if __name__ == &quot;__main__&quot;:
     Files = FindFiles(['D:\\mega'], 'photo',1)
     Files.FileInfo()
     
-    
-    
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# With Pycharm 2017
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# Created by Kylin on 2018/6/9
+import os
+import hashlib
+from DButil import SqliteHelper #自己写的DButil类
+# FindFiles v2版本 添加视频类型mov扩展名,对报错异常进行了处理,数据库文件默认用内存数据库,也增加本地数据库持久化的处理
+
+class FindFiles(object):  # 查找文件相关模块
+
+    def __init__(self, path=[], fileType='photo', delFile=-1, DBFile=':memory:'):  # 查找文件的位置是个列表,默认查找是图片,默认是用内存数据库过滤
+        self.path = path  # 需要查询的路径列表
+        self.delFile = delFile  # -1是显示,0是改名，1是删除
+        self.createSqlScript = '''
+                                    CREATE TABLE &quot;files&quot; (
+                                    &quot;FileMd5&quot;	varchar(32) ,
+        	                        &quot;FilePath&quot;	TEXT DEFAULT NULL,
+        	                        PRIMARY KEY(&quot;FileMd5&quot;) ); 
+        	                    '''
+        self.fileIsExistSql = ' select FileMd5 from files where Filemd5 = ? '
+        self.fileInfoSql = ' insert into files values (?,?) '
+
+        if DBFile == ':memory:':  # 内存数据库
+            self.sqliteDB = SqliteHelper(':memory:')  # 建立内存数据库
+            self.sqliteDB.DBExecute(self.createSqlScript)  # 执行建表语句
+        else:
+            if not os.path.isfile(DBFile): #本地sqliteDB文件不存在
+                self.sqliteDB = SqliteHelper(DBFile)  # 建立本地数据库
+                self.sqliteDB.DBExecute(self.createSqlScript)  # 执行建表语句
+            else:
+                self.sqliteDB = SqliteHelper(DBFile)  # 直接打开本地文件
+
+        if fileType == 'video':
+            self.fileSizeMin = 1024   # 1k
+            self.fileSizeMax = 1024 * 1024 * 1024 * 50  # 50g
+            self.fileType = ['.mp4', '.rmvb', '.rm', '.mpg', '.avi', '.mpg', '.mkv', '.vob', '.3gp', '.flv', '.ts','.mov']
+        if fileType == 'photo':
+            self.fileSizeMin = 1024  # 1k
+            self.fileSizeMax = 1024 * 1024 * 500  # 500M
+            self.fileType = ['.gif', '.bmp', '.jpg', '.jpeg', '.jgp', '.png']
+        if fileType == 'zip':
+            self.fileSizeMin = 1024 * 10  # 10k
+            self.fileSizeMax = 1024 * 1024 * 1024 * 50  # 50g
+            self.fileType = ['.zip', '.gz', '.rar', '.bz2', '.tar', '.7z']
+        if fileType == 'all':
+            self.fileType = 'all'
+
+    def setFileSize(self, minSize=0, maxSize=1024 * 1024 * 1024 * 10):
+        self.fileSizeMin = int(minSize)
+        self.fileSizeMax = int(maxSize)
+
+    def setFileType(self, fileType):
+        self.fileType = fileType
+
+    def GetFileMd5(self, filePath):
+        hashObj = hashlib.md5()
+        if os.path.isfile(filePath):
+            with open(filePath, 'rb') as f:
+                while True:
+                    data = f.read(1024)
+                    if not data:
+                        break
+                    hashObj.update(data)
+        hashCode = hashObj.hexdigest()
+        fileMd5 = str(hashCode).upper()
+        return fileMd5
+
+    def GetFileInfo(self, type=0):  #
+        fileName = &quot;&quot;
+        fileSize = 0
+        try:
+            for path in self.path:
+                if os.path.isdir(path):
+                    for root, dirs, names in os.walk(path):
+                        for name in names:
+                            if self.fileType == 'all':
+                                fileName = os.path.join(root, name)
+                                fileSize = os.path.getsize(fileName)
+                            else:
+                                if os.path.splitext(name)[1].lower() in self.fileType:
+                                    if self.fileSizeMin &lt;= os.path.getsize(
+                                            os.path.join(root, name)) &lt;= self.fileSizeMax:
+                                        fileName = os.path.join(root, name)
+                                        fileSize = os.path.getsize(fileName)
+                                else:  # 扩展名不在过滤里面 之间跳出循环
+                                    continue
+                            if 0 == int(type):
+                                yield (name, fileName, fileSize)  # 这里返回一个生成器,遍历生成器得到需要数据
+                            if 1 == int(type):
+                                fileMd5 = self.GetFileMd5(fileName)
+                                yield (name, fileName, fileSize, fileMd5)
+                            if 2 == int(type):
+                                fileMd5 = self.GetFileMd5(fileName)
+                                parentDir = os.path.split(root)[1]  # 获取父文件夹名称
+                                yield (parentDir, name, fileName, fileSize, fileMd5)
+        except Exception as err:
+            print('Fileinfo Error: ' + str(err))
+
+    def WriteFileinfo(self,fileMd5,filePath):
+        fileIsExist = self.sqliteDB.DBSelectParamDataExist(self.fileIsExistSql, (fileMd5,))  # 文件是否在表里
+        if fileIsExist:
+            if self.delFile == 1:
+                os.remove(filePath)
+                print('文件 {}重复 md5为{},删除完毕'.format(filePath, fileMd5))
+            elif self.delFile == 0:
+                newFilePath = filePath + '.same'
+                os.rename(filePath, newFilePath)
+                print('文件 {}重复 md5为{},已改名为{}'.format(filePath, fileMd5, newFilePath))
+            else:
+                print('文件 {}重复 md5为{}'.format(filePath, fileMd5))
+        else:
+            self.sqliteDB.DBExecuteParam(self.fileInfoSql, (fileMd5,filePath))
+            print('文件 {} md5为{},写入成功'.format(filePath, fileMd5))
+
+    def FileInfo(self):
+        files = self.GetFileInfo(1)
+        for name, fileName, fileSize, fileMd5 in files:
+            try:
+                self.WriteFileinfo(fileMd5, fileName)
+            except Exception as err:
+                print('WriteFileinfo Error: ' + str(err))
+                continue
+        self.sqliteDB.close()
+
+
+if __name__ == &quot;__main__&quot;:
+    Files = FindFiles(['D:/video','E:/video','F:/down/tumblr'], 'video', 0,'video.db')
+    Files.FileInfo()
+
 </rich_text></node><node name="DelDir" prog_lang="python" readonly="False" tags="" unique_id="74"><rich_text>#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 # With Pycharm 2017
