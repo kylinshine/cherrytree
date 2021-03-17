@@ -8968,6 +8968,69 @@ cd /home/ubuntu
 source ENV/bin/activate; #激活virtualenv环境
 cd /home/ubuntu/app; # 进入flask项目目录
 gunicorn -w 2 -b 127.0.0.1:9000 flaskApp:app; # 启动gunicorn服务
+</rich_text></node><node name="docker" prog_lang="custom-colors" readonly="False" tags="" unique_id="79"><rich_text scale="h1" weight="heavy">debian下docker的学习</rich_text><rich_text>
+curl -sSL https://get.docker.com/ | sh  #docker官方一键脚本
+curl -sSL https://get.daocloud.io/docker | sh #</rich_text><rich_text background="#ffffff" foreground="#333333">DaoCloud的安装脚本</rich_text><rich_text>
+systemctl </rich_text><rich_text foreground="#658b00">enable </rich_text><rich_text>docker.service #自启动docker
+systemctl </rich_text><rich_text foreground="#658b00">enable </rich_text><rich_text>containerd.service #自启动容器
+docker run hello-world #</rich_text><rich_text background="#ffffff" foreground="#333333">运行测试Hello World镜像</rich_text><rich_text>
+docker images #查看本地镜像
+</rich_text><rich_text scale="h1" weight="heavy">docker的常用命令</rich_text><rich_text>
+docker version #docker的版本
+docker info #显示docker信息
+docker 命令 --help #docker帮助命令
+</rich_text><rich_text scale="h1" weight="heavy">镜像命令</rich_text><rich_text>
+docker images #显示本地的所有镜像
+RESPOSITORY 镜像的仓库源
+TAG 镜像的标签
+IMAGE ID 镜像的id
+CAEATED 镜像的大小
+docker images -a #列出所有镜像,-a是-all的缩写
+docker images -q #只显示镜像的id,-q是--quiet的缩写
+docker search mysql #后面跟需要搜索的内容
+docker search mysql -f=stars=3000 #过滤条件按星大于3000进行过滤
+docker pull mysql #下载默认最新的mysql镜像
+docker pull mysql:5.7 #指定下载版本
+docker rmi -f (id) #删除镜像,记忆rm是删除i是image
+docker rmi -f (id) (id) (id) #删除多个镜像
+docker rmi -f $(docker images -aq)#查询本地镜像并删除
+</rich_text><rich_text scale="h1" weight="heavy">容器命令</rich_text><rich_text>
+docker pull centos #下载centos镜像
+docker run [参数] image #新建容器并启动
+--name=&quot;Name&quot; #容器名字centos01
+-d #后台方式运行
+-it #使用交互方式运行,进入容器查看内容
+-p #指定容器端口
+-p ip:主机端口:容器端口
+-p 主机端口:容器端口
+-p 容器端口
+-P 随机端口 #这里是大写字母p
+docker run -it centos /bin/bash #启动并进入容器
+[root@1d385e490ac6 /]#exit #退出容器
+docker ps #列出当前运行的容器
+docker ps -a #列出运行过的容器 
+docker ps -aq #列出运行过的容器的id
+docker rm 容器id #删除容器id
+docker rm -f $(docker ps -aq) #-f是强制删除用查询作为参数
+docker start 容器id #启动容器
+docker restart 容器id #重启容器
+docker stop 容器id #停止容器
+docker kill 容器id #杀掉容器
+docker top 容器id #查看容器内部的id
+docker inspect 容器id #查看镜像的具体信息
+通常容器都是后台运行的,需要进入容器,修改容器
+docker exec -it 容器id bashshell #l另开一个交互模式进入容器
+docker attach 容器id #连结上正在运行的容器
+docker run -it centos /bin/bash #ctrl+p+q 可以直接切换到容器外
+docker cp b2eb8bf41bc0:/home/hero.hero /home #从容器里拷贝文件到本地
+</rich_text><rich_text scale="h1" weight="heavy">建立一个nginx容器</rich_text><rich_text>
+docker search nginx #搜索nginx
+docker pull nginx #下载nginx镜像
+docker run -d --name nginx01 -p 82:80 nginx #用nginx镜像启动一个名字叫nginx01的容器,宿主端口是82容器端口是80,注意防火墙放开82端口
+</rich_text><rich_text scale="h1" weight="heavy">建立一个tomcat容器</rich_text><rich_text>
+docker pull tomcat #下载镜像
+docker run -d --name tomcat01 -p 82:8080 tomcat
+
 </rich_text></node></node><node name="Java" prog_lang="java" readonly="False" tags="java" unique_id="2"><rich_text>
 </rich_text><node name="环境变量" prog_lang="sh" readonly="False" tags="" unique_id="29"><rich_text>###################################################设置java的jdk#################################################################
 Dim MyVar
