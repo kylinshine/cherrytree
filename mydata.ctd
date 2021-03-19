@@ -9034,10 +9034,12 @@ docker kill 容器id #杀掉容器
 docker top 容器id #查看容器内部的id
 docker inspect 容器id #查看镜像的具体信息
 通常容器都是后台运行的,需要进入容器,修改容器
-docker exec -it 容器id bashshell #l另开一个交互模式进入容器
+docker exec -it 容器id bashshell #运行容器后再进入容器
 docker attach 容器id #连结上正在运行的容器
 docker run -it centos /bin/bash #ctrl+p+q 可以直接切换到容器外
 docker cp b2eb8bf41bc0:/home/hero.hero /home #从容器里拷贝文件到本地
+docker commit -a=&quot;hero&quot; -m=&quot;python3 hero debian&quot; 容器id 新容器tag #在进入基础镜像里添加操作后的容器,通过commit提交为新的镜像即可
+eg:docker commit -a=&quot;mydebian&quot; -m=&quot;python3 debian&quot; b53331456655 mydebian:1.0
 </rich_text><rich_text scale="h1" weight="heavy">建立一个nginx容器</rich_text><rich_text>
 docker search nginx #搜索nginx
 docker pull nginx #下载nginx镜像
