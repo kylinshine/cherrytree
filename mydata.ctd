@@ -8430,7 +8430,7 @@ Install_Rclone(){
 	chmod -R 755 &quot;/usr/bin/rclone&quot; &amp;&amp; Echo_Sky &quot;安装Rclone成功..&quot;	
 }
 
-Install_Nginx){
+Install_Nginx(){
 	clear
 	cd /root
 	apt-get install -y nginx
