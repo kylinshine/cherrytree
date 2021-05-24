@@ -335,6 +335,9 @@ aria2c -c -x 16 -j 8 -d ./video -i url.txt
 pause
 ##################################################用aria2c代理下载##################################################
 aria2c -c --all-proxy=http://127.0.0.1:10888 -x 16 -j 8 -d ./video -i url.txt
+##################################################rlcone加载配置上传并删除本地##################################################
+&quot;D:\Program Files\Rclone Browser\rclone\rclone.exe&quot; --config &quot;D:/Program Files/Rclone Browser/rclone/rclone.conf&quot; move --checksum --verbose --transfers 4 --checkers 8 --contimeout 60s --timeout 300s --retries 3 --low-level-retries 10 --stats 1s --stats-file-name-length 0 --fast-list C:\konachan-down godbell:konachan
+pause
 </rich_text></node><node name="linux" prog_lang="sh" readonly="False" tags="" unique_id="28"><rich_text>
 </rich_text></node></node><node name="Python" prog_lang="python" readonly="False" tags="Python" unique_id="1"><rich_text>
 </rich_text><node name="包管理" prog_lang="python" readonly="False" tags="" unique_id="19"><rich_text>########################################################pip相关语法########################################################
