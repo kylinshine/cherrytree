@@ -7893,6 +7893,221 @@ if __name__ == &quot;__main__&quot;:
                        ])
     app2.run()
 
+</rich_text></node><node name="FileHelper" prog_lang="python" readonly="False" tags="" unique_id="80"><rich_text>#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+# Program Name:FileHelper.py
+# IDE:Pycharm
+# author: Kylin
+# email: kylinshine@163.com
+# QQ: 78619808
+# last edit 2021/6/30
+import os
+from DButil import SqliteHelper
+import hashlib
+import re
+import shutil
+
+class FileHelper(object):
+    def __init__(self, dirs=None, matchReg=None): #目录和正则表达式,移动文件夹
+        if dirs is None:
+            raise Exception(&quot;目录不能为空!&quot;)
+        self.dirs = dirs  # 目录是个列表
+        self.matchReg = matchReg
+
+    def SetDBFilter(self,delFile=-1, DBFile=':memory:'): #用来过滤重复的函数
+        self.delFile = delFile  # -1是显示,0是改名，1是删除
+        sqlScript = '''
+                               CREATE TABLE &quot;files&quot; (
+                               &quot;FileMd5&quot;	varchar(32) ,
+                      	        &quot;FilePath&quot;	TEXT DEFAULT NULL,
+                      	        PRIMARY KEY(&quot;FileMd5&quot;) ); 
+                      	    '''
+
+        self.fileIsExistSql = ' select FileMd5 from files where Filemd5 = ? '
+        self.fileInfoSql = ' insert into files values (?,?) '
+        if DBFile == ':memory:':  # 内存数据库
+            self.sqliteDB = SqliteHelper(':memory:')  # 建立内存数据库
+            self.sqliteDB.DBExecute(sqlScript)  # 执行建表语句
+        else:
+            if not os.path.isfile(DBFile):  # 本地sqliteDB文件不存在
+                self.sqliteDB = SqliteHelper(DBFile)  # 建立本地数据库
+                self.sqliteDB.DBExecute(sqlScript)  # 执行建表语句
+            else:
+                self.sqliteDB = SqliteHelper(DBFile)  # 直接打开本地文件
+
+
+
+    def FindMatchFile(self, folder):  # 获取文件夹下指定格式的所有文件
+        if os.path.isdir(folder):
+            for root, dirs, files in os.walk(folder):
+                for file in files:
+                    if self.matchReg:  # 有正则表达式
+                        fileObj = re.match(self.matchReg, file)
+                        if fileObj:
+                            filePath = os.path.join(root, fileObj.group())
+                            yield filePath
+                    else:  # 没有正则直接返回
+                        filePath = os.path.join(root, file)
+                        yield filePath
+
+    def ListFolderFile(self):
+        if self.dirs:
+            for dir in self.dirs:
+                return self.FindMatchFile(dir)
+
+    def FileFilter(self, filePath):
+        md5 = self.GetFileMd5(filePath)
+        fileIsExist = self.sqliteDB.DBSelectParamDataExist(self.fileIsExistSql, (md5,))  # 文件是否在表里
+        if fileIsExist:
+            if self.delFile == 1:
+                try:
+                    os.remove(filePath)
+                    print(f'文件{filePath}重复 md5为{md5},删除完毕')
+                except Exception as e:
+                    print(f&quot;删除文件{filePath}失败&quot; + str(e))
+            elif self.delFile == 0:
+                newFileName = self.FileExist(filePath)
+                os.rename(filePath, newFileName)
+                print(f'文件{filePath}重复 md5为{md5},已改名为{newFileName}')
+            else:
+                print(f'文件{filePath}重复 md5为{md5}')
+        else:
+            self.sqliteDB.DBExecuteParam(self.fileInfoSql, (md5, filePath))
+            print(f'文件{filePath} md5为{md5},写入成功')
+
+
+    def MoveFolder(self, ufile, folder,useMd5=False):  #移动文件到指定文件夹
+        try:
+            dFile = os.path.join(folder, os.path.basename(ufile))
+            dstFile = self.FileExist(dFile)  #存在则重命名
+            if useMd5:
+                md5 = self.GetFileMd5(ufile)
+                stem, suffix = os.path.splitext(os.path.basename(ufile))
+                md5Name = md5 + suffix
+                md5FilePath = os.path.join(folder, md5Name)
+                md5File = self.FileExist(md5FilePath)  #md5可能也存在,则重命名
+                shutil.move(ufile, md5File)
+                print(f&quot;移动文件{ufile}到{md5File}成功&quot;)
+            else:
+                shutil.move(ufile, dstFile)
+                print(f&quot;移动文件{ufile}到{dstFile}成功&quot;)
+
+        except Exception as e:
+            print(&quot;移动文件失败&quot; + str(e))
+
+    def FolderExist(self, uDir):
+        if os.path.exists(uDir):
+            return uDir
+        else:
+            os.mkdir(uDir)
+            return uDir
+
+    def FileExist(self,uFile):
+        if not os.path.exists(uFile):
+            return uFile
+        else:
+            stem, suffix = os.path.splitext(uFile)
+            dFile = stem + '_-1'  + suffix
+            return self.FileExist(dFile)   ## 递归重命名
+
+
+    def GetFileMd5(self, filePath):
+        hashObj = hashlib.md5()
+        if os.path.isfile(filePath):
+            with open(filePath, 'rb') as f:
+                while True:
+                    data = f.read(1024)
+                    if not data:
+                        break
+                    hashObj.update(data)
+        hashCode = hashObj.hexdigest()
+        fileMd5 = str(hashCode).upper()
+        return fileMd5
+
+    def DeleteDir(self, dir):  # 删除空目录
+        if os.path.isdir(dir):
+            for d in os.listdir(dir):
+                try:
+                    self.DeleteDir(os.path.join(dir, d))
+                except Exception as err:
+                    print(str(err))
+                    continue
+            if not os.listdir(dir):
+                print(f'目录{dir}是一个空目录')
+                try:
+                    os.rmdir(dir)
+                    print(f'删除目录{dir}成功')
+                except Exception as err:
+                    print(&quot;删除目录失败&quot; + str(err))
+
+    def DeleteEmptyFile(self, dir):
+        if os.path.isdir(dir):
+            for root, dirs, files in os.walk(dir):
+                for file in files:
+                    try:
+                        fileName = os.path.join(root, file)
+                        if os.path.getsize(fileName) == 0:
+                            os.remove(fileName)
+                            print(f'删除文件{fileName}完成')
+                    except Exception as err:
+                        print('删除文件失败' + str(err))
+
+    def RdDir(self):  # 马甲删除空目录
+        if self.dirs:
+            for dir in self.dirs:
+                self.DeleteDir(dir)
+
+    def RmEmptyFile(self):  # 马甲删除空文件
+        if self.dirs:
+            for dir in self.dirs:
+                self.DeleteEmptyFile(dir)
+
+    def FileMoveToFolder(self,mFolder=None,useParentDir=False,useFileName=False,useMd5Name=False):  # 移动到指定文件夹加上文件上一层文件夹,useParentDir是用连文件的上一级目录也复制，useFileName用文件名的作为目录
+        if not mFolder:
+            raise Exception(&quot;移动文件夹不能为空&quot;)
+        dFolder = self.FolderExist(mFolder)
+        for file in self.ListFolderFile():
+            if useParentDir and useFileName:
+                parentDir = os.path.basename(os.path.dirname(file))
+                pFolder = self.FolderExist(os.path.join(dFolder, parentDir))
+                stem, suffix = os.path.splitext(file)
+                fileNameDir = os.path.basename(stem)
+                uFolder = os.path.join(pFolder,fileNameDir)
+                dst = self.FolderExist(uFolder)
+                self.MoveFolder(file, dst)
+            elif useParentDir:
+                parentDir = os.path.basename(os.path.dirname(file))
+                uFolder = os.path.join(dFolder, parentDir)
+                dst = self.FolderExist(uFolder)
+                self.MoveFolder(file, dst)
+            elif useFileName:
+                stem, suffix = os.path.splitext(file)
+                fileNameDir = os.path.basename(stem)
+                uFolder = os.path.join(dFolder, fileNameDir)
+                dst = self.FolderExist(uFolder)
+                self.MoveFolder(file, dst)
+            elif useMd5Name:
+                self.MoveFolder(file, dFolder,True)
+            else:
+                self.MoveFolder(file,  dFolder)
+
+    def FilterByMd5(self):
+        for file in self.ListFolderFile():
+            self.FileFilter(file)
+
+
+
+
+
+
+
+
+if __name__ == &quot;__main__&quot;:
+    Files = FileHelper(['C:\\tumblr-video'],'.*?\.mp4')
+    Files.SetDBFilter(1)
+    Files.FilterByMd5()
+    Files.FileMoveToFolder('c:\\test')
+
 </rich_text></node></node></node><node name="soft" prog_lang="custom-colors" readonly="False" tags="" unique_id="26"><rich_text background="#ffffff" foreground="#222222">文件编辑</rich_text><rich_text>: Notepad++
 python语言:Anaconda2
 </rich_text><rich_text background="#ffffff" foreground="#222222">文件查找：everything</rich_text><rich_text>
