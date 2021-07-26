@@ -8369,12 +8369,12 @@ java ide:intellij idea </rich_text><rich_text background="#ffffff" foreground="#
 </rich_text><rich_text foreground="#000000">DNS1=114.114.114.114 #DNS1 配置  </rich_text><rich_text>
 </rich_text><rich_text foreground="#000000">DNS2=8.8.8.8 #DNS2 配置  </rich_text><rich_text>
 </rich_text><rich_text background="#ffffff" foreground="#000000">service network restart </rich_text><rich_text>#centos7 之前的重启网络
-systemctl restart NetworkManager.service #这是centos8的重启网络
 检验网卡配置
 </rich_text><rich_text background="#ffffff" foreground="#000000">ip addr  </rich_text><rich_text>
 检验网络是否通畅
 ping www.baidu.com -c 4 #ping4次百度,参数-c 是count的意思
-
+sestatus #查看selinux状态
+</rich_text><rich_text background="#ffffff" foreground="#333333">/etc/selinux/config，将SELINU置为disabled</rich_text><rich_text> #关闭SELINU
 </rich_text><rich_text foreground="#000000000000" scale="h1" weight="heavy">yum命令使用实例</rich_text><rich_text>
 yum clean all  #清理缓存
 yum makecache  #重新生成缓存
@@ -8389,8 +8389,7 @@ rpm -qa | grep kernel  #重启后再查看
 yum -y remove kernel-3.10.0-957.el7.x86_64  kernel-core-4.18.0-147.el8.x86_64 #卸载旧内核和核心(重启后才能删除)
 yum -y install vsftpd #安装ftp服务
 cat /etc/redhat-release #查看cetnos版本
-dnf clean all &amp;&amp; dnf makecache  &amp;&amp; dnf -y update &amp;&amp; dnf -y install epel-release tar bzip2 wget curl python36 #centos8中采用了dnf命令,在没装三方源screen无法安装
-dnf -y install screen  &amp;&amp;  dnf clean all #安装screen并清理
+
 
 </rich_text><rich_text scale="h1" weight="heavy">备份恢复centos系统</rich_text><rich_text>
 mkdir /home/system
@@ -8594,6 +8593,10 @@ firewall-cmd --get-services #查看还有哪些服务可以打开
 firewall-cmd --list-ports #查看所有开放的端口,这里只是看端口,如果是开放的服务不在这里显示
 firewall-cmd --zone=public --list-ports #查看pulic区域开放的端口
 vi /etc/firewalld/zones/public.xml #这个是防火墙的配置文件
+firewall-cmd --permanent --zone=public --add-port=7000/tcp
+firewall-cmd --permanent --zone=public --add-port=7500/tcp
+firewall-cmd --reload　#重新加载防火墙
+firewall-cmd --permanent --query-port=7000/tcp #查看端口是否通
 
 
 </rich_text><rich_text scale="h1" weight="heavy">centos下查看历史命令</rich_text><rich_text>
@@ -9431,17 +9434,27 @@ cd /home/ubuntu
 source ENV/bin/activate; #激活virtualenv环境
 cd /home/ubuntu/app; # 进入flask项目目录
 gunicorn -w 2 -b 127.0.0.1:9000 flaskApp:app; # 启动gunicorn服务
-</rich_text></node><node name="docker" prog_lang="custom-colors" readonly="False" tags="" unique_id="79"><rich_text scale="h1" weight="heavy">debian下docker的学习</rich_text><rich_text>
-curl -sSL https://get.docker.com/ | sh  #docker官方一键脚本
-curl -sSL https://get.daocloud.io/docker | sh #</rich_text><rich_text background="#ffffff" foreground="#333333">DaoCloud的安装脚本</rich_text><rich_text>
+</rich_text></node><node name="docker" prog_lang="custom-colors" readonly="False" tags="" unique_id="79"><rich_text scale="h1" weight="heavy">centos7 下docker</rich_text><rich_text>
+
+yum install -y yum-utils device-mapper-persistent-data  lvm2
+yum-config-manager --add-repo </rich_text><rich_text link="webs http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo">http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</rich_text><rich_text>
 systemctl </rich_text><rich_text foreground="#658b00">enable </rich_text><rich_text>docker.service #自启动docker
 systemctl </rich_text><rich_text foreground="#658b00">enable </rich_text><rich_text>containerd.service #自启动容器
+systemctl start docker
 docker run hello-world #</rich_text><rich_text background="#ffffff" foreground="#333333">运行测试Hello World镜像</rich_text><rich_text>
 docker images #查看本地镜像
 </rich_text><rich_text scale="h1" weight="heavy">docker的常用命令</rich_text><rich_text>
 docker version #docker的版本
 docker info #显示docker信息
 docker 命令 --help #docker帮助命令
+
+</rich_text><rich_text scale="h1" weight="heavy">防火墙相关</rich_text><rich_text>
+端口映射会自动修改防火墙策略,对于docker --net host模式需要添加防火墙策略
+firewall-cmd --permanent --zone=public --add-port=7000/tcp #添加frps端口
+firewall-cmd --permanent --zone=public --add-port=7500/tcp #添加frpc端口
+firewall-cmd --reload　#必须重新加载防火墙
+firewall-cmd --permanent --query-port=7000/tcp #查看端口是否通
+firewall-cmd --zone=public --list-ports #查看pulic区域开放的端口
 </rich_text><rich_text scale="h1" weight="heavy">镜像命令</rich_text><rich_text>
 docker images #显示本地的所有镜像
 RESPOSITORY 镜像的仓库源
@@ -9491,11 +9504,54 @@ eg:docker commit -a=&quot;mydebian&quot; -m=&quot;python3 debian&quot; b53331456
 </rich_text><rich_text scale="h1" weight="heavy">建立一个nginx容器</rich_text><rich_text>
 docker search nginx #搜索nginx
 docker pull nginx #下载nginx镜像
-docker run -d --name nginx01 -p 82:80 nginx #用nginx镜像启动一个名字叫nginx01的容器,宿主端口是82容器端口是80,注意防火墙放开82端口
+docker run -d --name nginx01 -p 8000:80 nginx #用nginx镜像启动一个名字叫nginx01的容器,宿主端口是82容器端口是80,注意防火墙放开82端口
 </rich_text><rich_text scale="h1" weight="heavy">建立一个tomcat容器</rich_text><rich_text>
 docker pull tomcat #下载镜像
 docker run -d --name tomcat01 -p 82:8080 tomcat
 
+</rich_text><rich_text scale="h1" weight="heavy">创建自己的myfrps的镜像</rich_text><rich_text>
+FROM amd64/alpine
+LABEL maintainer=&quot;kylinshine&quot;
+ENV FRP_VERSION 0.37.0
+RUN cd /root \
+    &amp;&amp;  wget --no-check-certificate -c </rich_text><rich_text link="webs https://github.com/fatedier/frp/releases/download/v${FRP_VERSION}/frp_${FRP_VERSION}_linux_amd64.tar.gz">https://github.com/fatedier/frp/releases/download/v${FRP_VERSION}/frp_${FRP_VERSION}_linux_amd64.tar.gz</rich_text><rich_text> \
+    &amp;&amp;  tar zxvf frp_${FRP_VERSION}_linux_amd64.tar.gz  \
+    &amp;&amp;  cd frp_${FRP_VERSION}_linux_amd64/ \
+    &amp;&amp;  cp frps /usr/bin/ \
+    &amp;&amp;  mkdir -p /etc/frp \
+    &amp;&amp;  cd /root \
+    &amp;&amp;  rm frp_${FRP_VERSION}_linux_amd64.tar.gz \
+    &amp;&amp;  rm -rf frp_${FRP_VERSION}_linux_amd64/ 
+ADD frps.ini /etc/frp
+ENTRYPOINT /usr/bin/frps -c /etc/frp/frps.ini
+
+#docker build -t myfrps:v1 .
+#docker run -d -p 7000:7000 -p 7100:7100 -p 7200:7200 -p 7300:7300 -p 7700:7700 -p 7800:7800 -p 7900:7900 -p 80:80 --name frps myfrps:v1
+#docker run --restart=always -d --net host --name frps myfrps:v1
+
+</rich_text><rich_text scale="h1" weight="heavy">docker运行aria2</rich_text><rich_text>
+docker run -d \
+  --name aria2-pro \
+  --restart unless-stopped \
+  --log-opt max-size=1m \
+  -e PUID=$UID \
+  -e PGID=$GID \
+  -e UMASK_SET=022 \
+  -e RPC_SECRET=78619808 \
+  -e RPC_PORT=6800 \
+  -p 6800:6800 \
+  -e LISTEN_PORT=6888 \
+  -p 6888:6888 \
+  -p 6888:6888/udp \
+  -v $PWD/aria2-config:/config \
+  -v $PWD/aria2-downloads:/downloads \
+  p3terx/aria2-pro
+  
+</rich_text><rich_text scale="h1"> </rich_text><rich_text scale="h1" weight="heavy">docker运行发卡平台</rich_text><rich_text>
+  docker run --name fk -itd -p 8000:8000 baiyuetribe/kamifaka:latest
+  
+</rich_text><rich_text scale="h1" weight="heavy">下载安装docker-compose</rich_text><rich_text>
+curl -L &quot;</rich_text><rich_text link="webs https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname">https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname</rich_text><rich_text> -s)-$(uname -m)&quot; -o /usr/local/bin/docker-compose &amp;&amp; chmod +x /usr/local/bin/docker-compose &amp;&amp; ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 </rich_text></node></node><node name="Java" prog_lang="java" readonly="False" tags="java" unique_id="2"><rich_text>
 </rich_text><node name="环境变量" prog_lang="sh" readonly="False" tags="" unique_id="29"><rich_text>###################################################设置java的jdk#################################################################
 Dim MyVar
