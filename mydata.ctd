@@ -3,7 +3,9 @@
 复制配置文件，包含密码或者软件配置
 初始化快捷方式,还原系统后可以正常使用
 notepad++编写脚本在windows下用ANSI编码
-</rich_text><node name="win" prog_lang="sh" readonly="False" tags="" unique_id="48"><rich_text>########################################################java初始化环境变量########################################################
+</rich_text><node name="win" prog_lang="sh" readonly="False" tags="" unique_id="48"><rich_text>#记事本才采用ANSI编码,utf-8会报错
+########################################################java初始化环境变量########################################################
+
 Dim MyVar
 Set shell = CreateObject(&quot;Shell.Application&quot;)   
 Set selFolder = shell.BrowseForFolder(0, &quot;请选择JAVA_HOME目录(如:D:/jdk1.5.0_16):&quot;, 0, ssfDRIVES)   
@@ -341,7 +343,34 @@ pause
 </rich_text></node><node name="linux" prog_lang="sh" readonly="False" tags="" unique_id="28"><rich_text>
 </rich_text></node></node><node name="Python" prog_lang="python" readonly="False" tags="Python" unique_id="1"><rich_text>
 </rich_text><node name="包管理" prog_lang="python" readonly="False" tags="" unique_id="19"><rich_text>########################################################pip相关语法########################################################
-安装完python 2.7之后,用pip安装常用模块，不常用的可以用virtualenv在虚拟环境中安装,默认安装完python2.7后先升级pip和setuptolls
+#在windows环境下如果是日常开发直接用Anaconda3简单省事
+#初始化环境变量,vbs文件初始化环境
+set WshShell=WScript.CreateObject(&quot;WScript.Shell&quot;)  
+AnacondaPath=&quot;D:\Program Files (x86)\Anaconda3\&quot; '添加python环境变量'
+AnacondaScripts=&quot;D:\Program Files (x86)\Anaconda3\Scripts\&quot;
+AnacondaLibrary= &quot;D:\Program Files (x86)\Anaconda3\Library\bin\&quot;
+WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = AnacondaPath + &quot;;&quot; + AnacondaScripts +&quot;;&quot; + AnacondaLibrary + &quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+#配置conda源
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ #添加清华园
+conda config --set show_channel_urls yes #显示URL,设置不设置都无关重要
+conda update conda #升级conda
+#创建虚拟环境,创建了虚拟环境 随便折腾
+conda env list
+conda create -n myenv --clone base #环境不能写root,pkgs安装暂时不要删 这样不用下载
+activate myenv
+&lt;myenv&gt; conda install scrapy psycopg2 pymysql flask requests SQLAlchemy #虚拟环境中安装开发包 
+pip install -i https://pypi.douban.com/simple django scrapy psycopg2 pymysql flask requests SQLAlchemy #虚拟环境中安装开发包 
+#用创建虚拟环境为默认python,这里study是上面创建的环境名称
+set WshShell=WScript.CreateObject(&quot;WScript.Shell&quot;)  
+AnacondaPath=&quot;D:\Program Files (x86)\Anaconda3\envs\study\&quot; '添加python环境变量'
+AnacondaScripts=&quot;D:\Program Files (x86)\Anaconda3\envs\study\Scripts\&quot;
+AnacondaLibrary= &quot;D:\Program Files (x86)\Anaconda3\envs\study\Library\bin\&quot;
+WshShell.Environment(&quot;system&quot;).Item(&quot;Path&quot;) = AnacondaPath + &quot;;&quot; + AnacondaScripts +&quot;;&quot; + AnacondaLibrary + &quot;;&quot; + WshShell.Environment(&quot;system&quot;).Item(&quot;path&quot;)
+#安装完Anaconda3删除第三方压缩包pkgs
+#创建开发环境需要的包
+#创建虚拟环境test用来测试
+conda create -n test conda pip
+
 pip list --outdated #列出过期的第三方包
 pip install --upgrade pip setuptools wheel #一次升级多个
 pip install virtualenv #安装virtualenv虚拟环境
@@ -376,13 +405,13 @@ pip install pywin32 #操作win32包
 pip install reportlab #操作PDF报表包
 pip install pyttsx #pyttsx是Python的一个关于文字转语音方面的很不错的库
 pip install tushare #一个获得股票的接口(还包括一些电影票房信息)
-pip install -i https://pypi.douban.com/simple pandas #换豆瓣源安装
+pip install -i https://pypi.douban.com/simple django scrapy psycopg2 pymysql flask requests SQLAlchemy #换豆瓣源安装
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple virtualenv #官方源不稳定改用清华的源
 virtualenv env --no-site-packages   #建立一个env虚拟环境如果不想依赖这些package，那么可以加上参数--no-site-packages　
 cd env #进入虚拟环境
 scripts\activate #激活虚拟环境,其实就是环境(env)\srcipts\activate.bat这个批处理
 (env)---&gt;pip list #查看虚拟环境的安装包
-(env)---&gt;pip install -i https://pypi.tuna.tsinghua.edu.cn/simple django  #虚拟环境安装django
+(env)---&gt;pip install -i https://pypi.tuna.tsinghua.edu.cn/simple django scrapy psycopg2 pymysql flask requests SQLAlchemy  #虚拟环境安装django
 ########################################################conda相关语法########################################################
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ #添加清华园
 conda config --set show_channel_urls yes #显示URL,设置不设置都无关重要
@@ -9441,6 +9470,7 @@ yum-config-manager --add-repo </rich_text><rich_text link="webs http://mirrors.
 systemctl </rich_text><rich_text foreground="#658b00">enable </rich_text><rich_text>docker.service #自启动docker
 systemctl </rich_text><rich_text foreground="#658b00">enable </rich_text><rich_text>containerd.service #自启动容器
 systemctl start docker
+systemctl restart docker
 docker run hello-world #</rich_text><rich_text background="#ffffff" foreground="#333333">运行测试Hello World镜像</rich_text><rich_text>
 docker images #查看本地镜像
 </rich_text><rich_text scale="h1" weight="heavy">docker的常用命令</rich_text><rich_text>
@@ -9470,6 +9500,7 @@ docker pull mysql:5.7 #指定下载版本
 docker rmi -f (id) #删除镜像,记忆rm是删除i是image
 docker rmi -f (id) (id) (id) #删除多个镜像
 docker rmi -f $(docker images -aq)#查询本地镜像并删除
+</rich_text><rich_text background="#ffffff" foreground="#333333">docker rm $(sudo docker ps -qf status=exited)</rich_text><rich_text> #删除已经运行状态是退出的容易
 </rich_text><rich_text scale="h1" weight="heavy">容器命令</rich_text><rich_text>
 docker pull centos #下载centos镜像
 docker run [参数] image #新建容器并启动
@@ -9508,6 +9539,9 @@ docker run -d --name nginx01 -p 8000:80 nginx #用nginx镜像启动一个名字�
 </rich_text><rich_text scale="h1" weight="heavy">建立一个tomcat容器</rich_text><rich_text>
 docker pull tomcat #下载镜像
 docker run -d --name tomcat01 -p 82:8080 tomcat
+
+</rich_text><rich_text scale="h1" weight="heavy">建立一个mysql容器</rich_text><rich_text>
+docker run -v /home/data:/var/lib/mysql --name mysql -e MYSQL_ROOT_PASSWORD=78619808 -d -p 3306:3306 --restart=always amd64/mysql:5.7
 
 </rich_text><rich_text scale="h1" weight="heavy">创建自己的myfrps的镜像</rich_text><rich_text>
 FROM amd64/alpine
@@ -9552,6 +9586,13 @@ docker run -d \
   
 </rich_text><rich_text scale="h1" weight="heavy">下载安装docker-compose</rich_text><rich_text>
 curl -L &quot;</rich_text><rich_text link="webs https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname">https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname</rich_text><rich_text> -s)-$(uname -m)&quot; -o /usr/local/bin/docker-compose &amp;&amp; chmod +x /usr/local/bin/docker-compose &amp;&amp; ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+搭建docker nginx订阅服务器
+因为不能挂在文件 文件要提前复制出来
+
+
+docker run --privileged -p 8000:80 -v /home/docker/nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro -v /home/docker/nginx/conf/conf.d:/etc/nginx/conf.d:ro -v /home/docker/nginx/html:/usr/share/nginx/html:rw -d nginx
+
 </rich_text></node></node><node name="Java" prog_lang="java" readonly="False" tags="java" unique_id="2"><rich_text>
 </rich_text><node name="环境变量" prog_lang="sh" readonly="False" tags="" unique_id="29"><rich_text>###################################################设置java的jdk#################################################################
 Dim MyVar
